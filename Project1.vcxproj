@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Program_Files\Debug_Resource\Debug_Collision.cpp" />
+    <ClCompile Include="Program_Files\Debug_Resource\debug_ostream.cpp" />
+    <ClCompile Include="Program_Files\Debug_Resource\debug_text.cpp" />
+    <ClCompile Include="Program_Files\DirectX\direct3d.cpp" />
+    <ClCompile Include="Program_Files\DirectX\WICTextureLoader11.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Bullet.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Effect.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Enemy.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Enemy_Bullet.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Enemy_Spawner.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Game_Back.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Item.cpp" />
+    <ClCompile Include="Program_Files\Draw_Resource\Player.cpp" />
+    <ClCompile Include="Program_Files\Draw_Set\shader.cpp" />
+    <ClCompile Include="Program_Files\Draw_Set\Sprite.cpp" />
+    <ClCompile Include="Program_Files\Draw_Set\Sprite_Animation.cpp" />
+    <ClCompile Include="Program_Files\Draw_Set\Texture.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Ending.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Game_Menu.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Game_Select.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Setting.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Stage_Game_Over.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Stage_Select.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Stage_Update.cpp" />
+    <ClCompile Include="Program_Files\Game_Draw\Title.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Boss_Manager.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Boss_Pattern.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Enemy_Pattern.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Game_Audio.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Game_Intro_Manager.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Game_Logic.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Game_Screen_Manager.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Game_Status.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Main_UI_Setting.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Score.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Update_Game.cpp" />
+    <ClCompile Include="Program_Files\Game_Settings\Update_Screen.cpp" />
+    <ClCompile Include="Program_Files\Main.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\Audio_Manager.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\Controller_Input.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\Game_Window.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\keyboard.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\KeyLogger.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\mouse.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\Save_Data.cpp" />
+    <ClCompile Include="Program_Files\Programe_Settings\system_timer.cpp" />
+    <ClCompile Include="Program_Files\Script\Script_Draw.cpp" />
+    <ClCompile Include="Program_Files\Script\Story_Manager.cpp" />
+    <ClCompile Include="Program_Files\Script\Story_Script.cpp" />
+    <ClCompile Include="Program_Files\Tools\Collision.cpp" />
+    <ClCompile Include="Program_Files\Tools\Fade.cpp" />
+    <ClCompile Include="Program_Files\Tools\Game_Mode_Manager.cpp" />
+    <ClCompile Include="Program_Files\Tools\Saver_And_Re_Create.cpp" />
+    <ClCompile Include="Program_Files\Tools\System_Logic_Manager.cpp" />
+    <ClCompile Include="Program_Files\Tools\Window_Re_Creator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Program_Files\Debug_Resource\Debug_Collision.h" />
+    <ClInclude Include="Program_Files\Debug_Resource\debug_ostream.h" />
+    <ClInclude Include="Program_Files\Debug_Resource\debug_text.h" />
+    <ClInclude Include="Program_Files\DirectX\direct3d.h" />
+    <ClInclude Include="Program_Files\DirectX\DirectXTex.h" />
+    <ClInclude Include="Program_Files\DirectX\WICTextureLoader11.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Bullet.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Effect.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Enemy.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Enemy_Bullet.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Enemy_Spawner.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Game_Back.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Item.h" />
+    <ClInclude Include="Program_Files\Draw_Resource\Player.h" />
+    <ClInclude Include="Program_Files\Draw_Set\shader.h" />
+    <ClInclude Include="Program_Files\Draw_Set\Sprite.h" />
+    <ClInclude Include="Program_Files\Draw_Set\Sprite_Animation.h" />
+    <ClInclude Include="Program_Files\Draw_Set\Texture.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Ending.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Game_Menu.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Game_Select.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Setting.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Stage_Game_Over.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Stage_Select.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Stage_Update.h" />
+    <ClInclude Include="Program_Files\Game_Draw\Title.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Boss_Manager.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Boss_Pattern.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Enemy_Pattern.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Game_Audio.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Game_Intro_Manager.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Game_Logic.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Game_Screen_Manager.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Game_Status.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Main_UI_Setting.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Score.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Update_Game.h" />
+    <ClInclude Include="Program_Files\Game_Settings\Update_Screen.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\Audio_Manager.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\Controller_Input.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\Game_Window.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\keyboard.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\KeyLogger.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\mouse.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\Save_Data.h" />
+    <ClInclude Include="Program_Files\Programe_Settings\system_timer.h" />
+    <ClInclude Include="Program_Files\Script\Script_Draw.h" />
+    <ClInclude Include="Program_Files\Script\Story_Manager.h" />
+    <ClInclude Include="Program_Files\Script\Story_Script.h" />
+    <ClInclude Include="Program_Files\Tools\Collision.h" />
+    <ClInclude Include="Program_Files\Tools\Fade.h" />
+    <ClInclude Include="Program_Files\Tools\Frame.h" />
+    <ClInclude Include="Program_Files\Tools\Game_Header_Manager.h" />
+    <ClInclude Include="Program_Files\Tools\Game_Mode_Manager.h" />
+    <ClInclude Include="Program_Files\Tools\Game_State.h" />
+    <ClInclude Include="Program_Files\Tools\Palette.h" />
+    <ClInclude Include="Program_Files\Tools\Saver_And_Re_Create.h" />
+    <ClInclude Include="Program_Files\Tools\System_Logic_Manager.h" />
+    <ClInclude Include="Program_Files\Tools\Window_Re_Creator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ascii_texture_generator.py" />
+    <None Include="Program_Files\DirectX\DirectXTex.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="DirectXTex_Debug.lib" />
+    <Library Include="DirectXTex_Release.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader_pixel_2d.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shader_vertex_2d.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6a5abad1-a95d-439a-a373-28de583e492f}</ProjectGuid>
+    <RootNamespace>Project1</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Void_Nova</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)program_Files\Tools;$(ProjectDir)program_Files\Script;$(ProjectDir)program_Files\Programe_Settings;$(ProjectDir)program_Files\Game_Settings;$(ProjectDir)program_Files\Game_Draw;$(ProjectDir)program_Files\Draw_Set;$(ProjectDir)program_Files\Draw_Resource;$(ProjectDir)program_Files\DirectX;$(ProjectDir)Program_Files\Debug_Resource;$(ProjectDir)Program_Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;winmm.lib;DirectXTex_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /D /Y "$(TargetDir)*.cso" "$(ProjectDir)Resource/Shader"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)program_Files\Tools;$(ProjectDir)program_Files\Script;$(ProjectDir)program_Files\Programe_Settings;$(ProjectDir)program_Files\Game_Settings;$(ProjectDir)program_Files\Game_Draw;$(ProjectDir)program_Files\Draw_Set;$(ProjectDir)program_Files\Draw_Resource;$(ProjectDir)program_Files\DirectX;$(ProjectDir)Program_Files\Debug_Resource;$(ProjectDir)Program_Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;winmm.lib;DirectXTex_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /D /Y "$(TargetDir)*.cso" "$(ProjectDir)Resource/Shader"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
