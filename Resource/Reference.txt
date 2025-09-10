@@ -1,0 +1,41 @@
+------------------------------------------------------------------------
+Reference
+------------------------------------------------------------------------
+■ Texture ■
+
+◆ ChatGPT
+- Enemy Texture
+- Bullet Texture
+- BackGround Texture
+- UI Texture
+
+◆ Free Pik
+- Player Texture
+- Story UI Textrure
+
+◆ Xbox One Controller Textures
+- https://forums.dolphin-emu.org/Thread-xbox-one-controller-textaures
+
+------------------------------------------------------------------------
+■ BGM / SFX ■
+
+◆ DOVA-SYNDROME
+- https://dova-s.jp/
+
+◆ 効果音ラボ
+- https://soundeffect-lab.info/
+
+------------------------------------------------------------------------
+■ Editor Tools Site ■
+
+◆ 123APPS
+https://123apps.com/
+
+------------------------------------------------------------------------
+■ Reference Games ■
+
+- Galaga 
+- 1942
+- Strikers 1945
+- Touhou Project
+- Under Defeat
