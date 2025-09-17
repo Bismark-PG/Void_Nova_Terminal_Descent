@@ -79,6 +79,8 @@ Please keep in mind that this is a student project, and my skills are still deve
 ## 📝 Roadmap & Dev Notes
 - **This section outlines known issues and future plans for the project.**
 
+---
+
 > ### ⁉️ Known Issues
 >   + ***Stage 5 Progression Bug : A critical bug prevents progress in Stage 5.***
 >   + **Ending Sequence** : The ending cutscene requires further debugging.
