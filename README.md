@@ -1,6 +1,6 @@
 # 🚀 Void Nova : Terminal Descent
 
-### A 2D bullet-hell shooter created with DirectX 11, inspired by the classic arcade shoot 'em ups.
+- **A 2D bullet-hell shooter created with DirectX 11, inspired by the classic arcade shoot 'em ups.**
 
 This project was developed as a school assignment and serves as a spiritual successor to a previous Unity project, 'Void Nova'.\
 Please keep in mind that this is a student project, and my skills are still developing. Any feedback is welcome!
