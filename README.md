@@ -29,6 +29,33 @@ Please keep in mind that this is a student project, and my skills are still deve
 
 ---
 
+## ✨ Patch And Update History
+### v1.0 (2025.09.09)
+- Initial Release!
+   + Early access version launched. While some bugs remain, Stages 1 through 4 are fully playable.
+
+## 📝 Roadmap & Dev Notes
+- **This section outlines known issues and future plans for the project.**
+
+---
+
+> ### ⁉️ Known Issues
+>   + ***Stage 5 Progression Bug : A critical bug prevents progress in Stage 5.***
+>   + **Ending Sequence** : The ending cutscene requires further debugging.
+>
+> ### 🗃️ Planned Improvements
+>   + **Audio Balancing** : Adjust the volume for item acquisition sound effects.
+>   + **Difficulty Tuning** : Rebalance the overall game difficulty.
+>   + **Pattern Refinement** : Rework and improve existing boss and enemy patterns.
+>
+> ### 📬 Received Feedback
+>  + ~~***(I`m Waiting!)***~~
+>
+> ### ✔️ Completed
+>  + ~~***(Coming Soon!)***~~
+
+---
+
 # ©️ Credits
 
 ## ■ Texture ■
@@ -68,33 +95,6 @@ Please keep in mind that this is a student project, and my skills are still deve
 - [Strikers 1945](https://en.wikipedia.org/wiki/Strikers_1945)
 - [Touhou Project](https://en.wikipedia.org/wiki/Touhou_Project)
 - [Under Defeat](https://en.wikipedia.org/wiki/Under_Defeat)
-
----
-
-## ✨ Patch And Update History
-### v1.0 (2025.09.09)
-- Initial Release!
-   + Early access version launched. While some bugs remain, Stages 1 through 4 are fully playable.
-
-## 📝 Roadmap & Dev Notes
-- **This section outlines known issues and future plans for the project.**
-
----
-
-> ### ⁉️ Known Issues
->   + ***Stage 5 Progression Bug : A critical bug prevents progress in Stage 5.***
->   + **Ending Sequence** : The ending cutscene requires further debugging.
->
-> ### 🗃️ Planned Improvements
->   + **Audio Balancing** : Adjust the volume for item acquisition sound effects.
->   + **Difficulty Tuning** : Rebalance the overall game difficulty.
->   + **Pattern Refinement** : Rework and improve existing boss and enemy patterns.
->
-> ### 📬 Received Feedback
->  + ~~***(I`m Waiting!)***~~
->
-> ### ✔️ Completed
->  + ~~***(Coming Soon!)***~~
 
 ---
 
