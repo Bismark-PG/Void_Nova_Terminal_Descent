@@ -9,110 +9,150 @@
 #include "Game_Header_Manager.h"
 #include "Palette.h"
 #include "Story_Script.h"
+#include "System_Logic_Manager.h"
+#include "Update_Screen.h"
+#include "Game_Select.h"
+#include "Title.h"
+#include "Game_Menu.h"
+#include "Setting.h"
 
 using namespace DirectX;
 using namespace PALETTE;
 
 static ENDING_SEQUENCE Current_Sequence;
 static double State_Timer = 0.0;
-static float Current_Alpha = 0.0f;
 
 static int Ending_BG_TexID = -1;
 static float Ending_BG_Y1 = 0.0f;
 static float Ending_BG_Y2 = 0.0f;
 
-static bool Is_Player_Moving = false;
-static XMFLOAT2 Player_Target_Pos;
-static float Player_Current_Speed = 0.0f;
-static float Player_Max_Speed = 0.0f;
+static float Credit_Base_Y = 0.0f;
+static float Text_Space = 0.0f;
+static const float SCROLL_SPEED = 75.0f;
+static const float TEXT_SPACING = 25.0f;
 
-static int Sample_Text_TexID_1 = -1;
-static int Sample_Text_TexID_2 = -1;
-static int Sample_Text_TexID_3 = -1;
-static int Sample_Text_TexID_4 = -1;
-static int Sample_Text_TexID_5 = -1;
-static int Sample_Text_TexID_6 = -1;
-static int Sample_Text_TexID_7 = -1;
+static int Anime_Player = -1;
+static int Play_Player = -1;
+static XMFLOAT2 Ending_Player_Pos;
+static XMFLOAT2 Ending_Player_Target_Pos;
+static float Ending_Player_W = PLAYER_WIDTH  * A_Double;
+static float Ending_Player_H = PLAYER_HEIGHT * A_Double;
+static float Ending_Player_Speed = 0.0f;
+static float Ending_Player_Alpha = 1.0f;
+static bool Is_Ending_Player_Moving = false;
+
+static int Ending_1_TexID = -1;
+static int Ending_2_TexID = -1;
+static int Ending_3_TexID = -1;
+static int Ending_4_TexID = -1;
+static int Ending_5_TexID = -1;
+static int Ending_6_TexID = -1;
+static int Ending_7_TexID = -1;
+static int Ending_8_TexID = -1;
+static int Ending_9_TexID = -1;
+static int Ending_10_TexID = -1;
+static int Ending_Commender_TexID = -1;
+static int Thanks_TexID = -1;
 
 static int Base_TexID = -1;
 static XMFLOAT2 Base_Position;
+static float Base_Target_Y = 0.0f;
+static float Base_Width = 0.0f;
+static float Base_Height = 0.0f;
+static float Base_Speed = 50.0f;
 
-static int Thanks_TexID = -1;
+static float W;
+static float H;
+static float X;
 
-static float w;
-static float h;
-static float x;
-static float y;
+static float Ending_X;
+static float Ending_Y;
+static float Ending_W;
+static float Ending_H;
+static bool Is_Ending_Text_Active = false;
 
-static float Ending_Commander_X;
-static float Ending_Commander_Y;
-static float Ending_Commander_W;
-static float Ending_Commander_H;
+static float BGM_Volume = 0.0f;
+static double BGM_Timer = 0.0f;
+static constexpr float FADE_OUT_TIMER = 5.0f;
+static bool Is_Fade_Active = false;
 
 void Ending_Initialize()
 {
-	Ending_BG_TexID = Texture_Load(L"Resource/Texture/BG/Game_BG_Ending.png");
-	Base_TexID = Texture_Load(L"Resource/Texture/Enemy/Main.png");
+	Ending_BG_TexID = Texture_M->GetID("BG_Ending");
+	Base_TexID = Texture_M->GetID("Ending_Base");
+	Ending_1_TexID = Texture_M->GetID("Ending_Text_1");
+	Ending_2_TexID = Texture_M->GetID("Ending_Text_2");
+	Ending_3_TexID = Texture_M->GetID("Ending_Text_3");
+	Ending_4_TexID = Texture_M->GetID("Ending_Text_4");
+	Ending_5_TexID = Texture_M->GetID("Ending_Text_5");
+	Ending_6_TexID = Texture_M->GetID("Ending_Text_6");
+	Ending_7_TexID = Texture_M->GetID("Ending_Text_7");
+	Ending_8_TexID = Texture_M->GetID("Ending_Text_8");
+	Ending_9_TexID = Texture_M->GetID("Ending_Text_9");
+	Ending_10_TexID = Texture_M->GetID("Ending_Text_10");
+	Ending_Commender_TexID = Texture_M->GetID("Ending_Text_Commander");
+	Thanks_TexID = Texture_M->GetID("Ending_Text_Thanks");
 
-	Sample_Text_TexID_1 = Texture_Load(L"Resource/Texture/Story/Script/Ending_1.png");
-	Sample_Text_TexID_2 = Texture_Load(L"Resource/Texture/Story/Script/Ending_2.png");
-	Sample_Text_TexID_3 = Texture_Load(L"Resource/Texture/Story/Script/Ending_3.png");
-	Sample_Text_TexID_4 = Texture_Load(L"Resource/Texture/Story/Script/Ending_4.png");
-	Sample_Text_TexID_5 = Texture_Load(L"Resource/Texture/Story/Script/Ending_5.png");
-	Sample_Text_TexID_6 = Texture_Load(L"Resource/Texture/Story/Script/Ending_6.png");
-	Sample_Text_TexID_7 = Texture_Load(L"Resource/Texture/Story/Script/Ending_Commander.png");
+	int Straight = Texture_M->GetID("Player_Ending_BG");
+	Anime_Player = SpriteAni_Get_Pattern_Info(Straight, 16, 4, 0.25, { 1000, 800 }, { 1000 * 0, 800 * 0 }, true);
+	Play_Player = SpriteAni_CreatePlayer(Anime_Player);
 
-	Thanks_TexID = Texture_Load(L"Resource/Texture/Story/Script/Ending_7.png");
-
-	Current_Sequence = ENDING_SEQUENCE::FADE_IN;
+	Current_Sequence = ENDING_SEQUENCE::IDLE;
 	State_Timer = 0.0;
-	Current_Alpha = 0.0f;
 
 	Ending_BG_Y1 = 0.0f;
 	Ending_BG_Y2 = -static_cast<float>(SCREEN_HEIGHT);
 
-	Player_Reset_For_Story();
-	Player_Set_Position({
-		Game_Offset.x + (Game_Screen_Width * 0.75f) - (Player_Width * 0.5f),
-		static_cast<float>(SCREEN_HEIGHT)
-		});
-	Player_Max_Speed = 150.0f * Game_Scale;
-	Is_Player_Moving = false;
+	Ending_Player_Pos = { static_cast<float>(SCREEN_WIDTH) * 0.75f, static_cast<float>(SCREEN_HEIGHT) };
+	Is_Ending_Player_Moving = false;
+	Is_Ending_Text_Active = false;
+	Is_Fade_Active = false;
+	Ending_Player_Alpha = 1.0f;
 
-	Base_Position = { Game_Offset.x, -static_cast<float>(SCREEN_HEIGHT) * 0.5f };
+	Base_Width  = static_cast<float>(SCREEN_WIDTH) * 1.2f;
+	Base_Height = static_cast<float>(SCREEN_HEIGHT) * 0.5f;
+	Base_Position = { (static_cast<float>(SCREEN_WIDTH) * 0.5f) - (Base_Width * 0.5f), -Base_Height};
+	Base_Target_Y = -Game_Screen_Height * 0.1f;
+	Base_Speed *= Game_Scale;
 
-	SM->Stop_BGM();
-	SM->Play_BGM("Ending");
-	Fade_Start(3.0, false);
+	W = Game_Screen_Width * 0.6f;
+	H = W;
+	X = Game_Offset.x + (Game_Screen_Width * 0.5f) - (W * 0.5f);
+	Credit_Base_Y = static_cast<float>(SCREEN_HEIGHT);
+	Text_Space = TEXT_SPACING * Game_Scale;
 
-	w = WM.Get_Now_Screen_Mode() == Window_Mode ? 400.0f : 600.0f;
-	h = WM.Get_Now_Screen_Mode() == Window_Mode ? 400.0f : 600.0f;
-	x = WM.Get_Now_Screen_Mode() == Window_Mode ? 250.0f : 600.0f;
-	y = WM.Get_Now_Screen_Mode() == Window_Mode ? 200.0f : 600.0f;
-}
+	BGM_Timer = 0.0f;
+	BGM_Volume = 0.0f;
 
-void Ending_Set_Position(float X, float Y, float W, float H)
-{
-	Ending_Commander_X = X;
-	Ending_Commander_Y = Y;
-	Ending_Commander_W = W;
-	Ending_Commander_H = H;
+	Script_Reset();
 }
 
 void Ending_Finalize()
 {
-	Update_Main_Screen(Main_Screen::SELECT_GAME);
-	Update_Sub_Screen(Sub_Screen::S_DONE);
-	Update_Game_Select_Screen(Game_Select_Screen::GAME_MENU_SELECT);
-	Update_Game_Select_Buffer(SELECT_GAME::SELECT_WAIT);
+	System_Reset_For_Ending();
+}
 
-	Title_Initialize();
-	Menu_Initialize();
-	Game_Select_Initialize();
-	Setting_Initialize();
+void Update_Ending_Player_Movement(double elapsed_time)
+{
+	if (!Is_Ending_Player_Moving) return;
 
-	SM->Stop_BGM();
-	SM->Play_BGM("Title");
+	XMVECTOR currentVec = XMLoadFloat2(&Ending_Player_Pos);
+	XMVECTOR targetVec = XMLoadFloat2(&Ending_Player_Target_Pos);
+	XMVECTOR toTarget = targetVec - currentVec;
+	float distance = XMVectorGetX(XMVector2Length(toTarget));
+	float moveAmount = Ending_Player_Speed * static_cast<float>(elapsed_time);
+
+	if (distance > moveAmount)
+	{
+		XMVECTOR direction = XMVector2Normalize(toTarget);
+		currentVec += direction * moveAmount;
+		XMStoreFloat2(&Ending_Player_Pos, currentVec);
+	}
+	else
+	{
+		Ending_Player_Pos = Ending_Player_Target_Pos;
+		Is_Ending_Player_Moving = false;
+	}
 }
 
 
@@ -120,115 +160,124 @@ void Ending_Update(double elapsed_time)
 {
 	Ending_BG_Y1 += 1.0f * Game_Scale;
 	Ending_BG_Y2 += 1.0f * Game_Scale;
+
 	if (Ending_BG_Y1 >= static_cast<float>(SCREEN_HEIGHT)) Ending_BG_Y1 = -static_cast<float>(SCREEN_HEIGHT);
 	if (Ending_BG_Y2 >= static_cast<float>(SCREEN_HEIGHT)) Ending_BG_Y2 = -static_cast<float>(SCREEN_HEIGHT);
 
-	if (Is_Player_Moving)
+	Update_Ending_Player_Movement(elapsed_time);
+
+	if (Current_Sequence == ENDING_SEQUENCE::COMMANDER_APPEAR)
 	{
-		XMFLOAT2 currentPos = Player_Get_Position();
-		XMVECTOR dir = XMVector2Normalize(XMVectorSet(Player_Target_Pos.x - currentPos.x, Player_Target_Pos.y - currentPos.y, 0, 0));
-
-		float distance = XMVectorGetX(XMVector2Length(XMVectorSet(Player_Target_Pos.x - currentPos.x, Player_Target_Pos.y - currentPos.y, 0, 0)));
-		if (Current_Sequence == ENDING_SEQUENCE::PLAYER_RISE)
-		{
-			Player_Current_Speed = Player_Max_Speed * (distance / (Game_Screen_Height * 0.4f));
-			Player_Current_Speed = max(Player_Current_Speed, Player_Max_Speed * 0.1f);
-		}
-		else
-		{
-			Player_Current_Speed += 100.0f * Game_Scale * static_cast<float>(elapsed_time);
-			if (Player_Current_Speed > Player_Max_Speed) Player_Current_Speed = Player_Max_Speed;
-		}
-
-		currentPos.x += XMVectorGetX(dir) * Player_Current_Speed * static_cast<float>(elapsed_time);
-		currentPos.y += XMVectorGetY(dir) * Player_Current_Speed * static_cast<float>(elapsed_time);
-		Player_Set_Position(currentPos);
-
-		if (distance < 5.0f)
-		{
-			Player_Set_Position(Player_Target_Pos);
-			Is_Player_Moving = false;
-			Player_Current_Speed = 0.0f;
-		}
+		Ending_Commander_Update(elapsed_time);
 	}
 
 	State_Timer += elapsed_time;
+
 	switch (Current_Sequence)
 	{
+	case ENDING_SEQUENCE::IDLE:
+		break;
+
+	case ENDING_SEQUENCE::ENDING_START:
+		Sound_M->Stop_BGM();
+		Sound_M->Play_BGM("Ending");
+		Fade_Start(3.0, false);
+		Set_Ending_Status(ENDING_SEQUENCE::FADE_IN);
+		break;
+
 	case ENDING_SEQUENCE::FADE_IN:
 		if (Fade_GetState() == FADE_STATE::FINISHED_IN)
 		{
-			Is_Player_Moving = true;
-			Player_Target_Pos = { Game_Offset.x + (Game_Screen_Width * 0.75f) - (Player_Width * 0.5f), Game_Screen_Height * 0.6f };
-			Current_Sequence = ENDING_SEQUENCE::PLAYER_RISE;
+
+			Ending_Player_Target_Pos = { Ending_Player_Pos.x, Game_Screen_Height * A_T_Quarters };
+			Ending_Player_Speed = 75.0f * Game_Scale;
+			Is_Ending_Player_Moving = true;
+			State_Timer = 0.0;
+
+			Set_Ending_Status(ENDING_SEQUENCE::PLAYER_RISE);
 		}
 		break;
 
 	case ENDING_SEQUENCE::PLAYER_RISE:
-		if (!Is_Player_Moving)
+		if (!Is_Ending_Player_Moving)
 		{
 			State_Timer = 0.0;
-			Current_Alpha = 0.0f;
-			Current_Sequence = ENDING_SEQUENCE::SHOW_TEXT_1;
+
+			Set_Ending_Status(ENDING_SEQUENCE::CREDIT_ROLL);
 		}
 		break;
 
-	case ENDING_SEQUENCE::SHOW_TEXT_1:
-	case ENDING_SEQUENCE::SHOW_TEXT_2:
-	case ENDING_SEQUENCE::SHOW_TEXT_3:
-	case ENDING_SEQUENCE::SHOW_TEXT_4:
-	case ENDING_SEQUENCE::SHOW_TEXT_5:
-	case ENDING_SEQUENCE::SHOW_TEXT_6:
-		if (State_Timer < 2.0) Current_Alpha += (float)elapsed_time / 2.0f; // Fade in
-		else if (State_Timer >= 8.0 && State_Timer < 10.0) Current_Alpha -= (float)elapsed_time / 2.0f; // Fade out
+	case ENDING_SEQUENCE::CREDIT_ROLL:
+	{
+		Credit_Base_Y -= SCROLL_SPEED * Game_Scale * static_cast<float>(elapsed_time);
 
-		Current_Alpha = max(0.0f, min(1.0f, Current_Alpha));
-
-		if (State_Timer >= 10.0)
+		float last_text_y = Credit_Base_Y + 10 * (H + Text_Space);
+		if (last_text_y < -H)
 		{
 			State_Timer = 0.0;
-			Current_Alpha = 0.0f;
-			if (Current_Sequence == ENDING_SEQUENCE::SHOW_TEXT_6)
+
+			Set_Ending_Status(ENDING_SEQUENCE::BASE_APPEAR);
+		}
+		break;
+	}
+
+	case ENDING_SEQUENCE::BASE_APPEAR:
+	{
+		float Amount = Base_Speed * static_cast<float>(elapsed_time);
+		if (Base_Position.y < Base_Target_Y)
+		{
+			Base_Position.y += Amount;
+			if (Base_Position.y > Base_Target_Y)
 			{
-				Current_Sequence = ENDING_SEQUENCE::BASE_DESCEND;
-			}
-			else
-			{
-				Current_Sequence = static_cast<ENDING_SEQUENCE>(static_cast<int>(Current_Sequence) + 1);
+				Base_Position.y = Base_Target_Y;
 			}
 		}
-		break;
 
-	case ENDING_SEQUENCE::BASE_DESCEND:
-		Base_Position.y += (Game_Screen_Height * 0.1f) * static_cast<float>(elapsed_time);
-		if (State_Timer >= 5.0)
+		if (Base_Position.y == Base_Target_Y)
 		{
-			Is_Player_Moving = true;
-			Player_Target_Pos = { Game_Offset.x + (Game_Screen_Width / 2.0f) - (Player_Width * 0.5f), Base_Position.y };
-			Player_Max_Speed *= 2.0f;
-			Current_Sequence = ENDING_SEQUENCE::PLAYER_APPROACH_BASE;
-		}
-		break;
-
-	case ENDING_SEQUENCE::PLAYER_APPROACH_BASE:
-		if (!Is_Player_Moving)
-		{
-			Player_Set_Enable(false);
+			Ending_Player_Target_Pos = { Ending_Player_Pos.x, -Ending_Player_H * 1.5f };
+			Ending_Player_Speed = 80.0f * Game_Scale;
+			Is_Ending_Player_Moving = true;
 			State_Timer = 0.0;
-			Current_Sequence = ENDING_SEQUENCE::COMMANDER_APPEAR;
+
+			Set_Ending_Status(ENDING_SEQUENCE::PLAYER_MOVE_TO_BASE);
 		}
 		break;
+	}
+
+	case ENDING_SEQUENCE::PLAYER_MOVE_TO_BASE:
+		if (!Is_Ending_Player_Moving)
+		{
+			State_Timer = 0.0;
+
+			Set_Ending_Status(ENDING_SEQUENCE::COMMANDER_ANIM_START);
+		}
+		break;
+
+	case ENDING_SEQUENCE::COMMANDER_ANIM_START:
+		Ending_Commander_Start();
+		State_Timer = 0.0;
+
+		Set_Ending_Status(ENDING_SEQUENCE::COMMANDER_APPEAR);
+		break;
+
 
 	case ENDING_SEQUENCE::COMMANDER_APPEAR:
-		if (State_Timer == 0.0)
-			Ending_Commander_Start();
-
-		Ending_Commander_Update(elapsed_time);
-
-		if (State_Timer >= 3.0)
+		if (State_Timer > 1.0)
 		{
 			State_Timer = 0.0;
-			Current_Sequence = ENDING_SEQUENCE::COMMANDER_MESSAGE;
+
+			Set_Ending_Status(ENDING_SEQUENCE::COMMANDER_BG_WAIT);
+		}
+		break;
+
+	case ENDING_SEQUENCE::COMMANDER_BG_WAIT:
+		if (State_Timer > 1.0)
+		{
+			State_Timer = 0.0;
+			Is_Ending_Text_Active = true;
+
+			Set_Ending_Status(ENDING_SEQUENCE::COMMANDER_MESSAGE);
 		}
 		break;
 
@@ -236,41 +285,51 @@ void Ending_Update(double elapsed_time)
 		if (State_Timer >= 3.0)
 		{
 			State_Timer = 0.0;
-			Current_Sequence = ENDING_SEQUENCE::FINAL_FADE_OUT;
+			BGM_Timer = 0.0f;
+
+			Set_Ending_Status(ENDING_SEQUENCE::FINAL_FADE_OUT);
 		}
 		break;
 
 	case ENDING_SEQUENCE::FINAL_FADE_OUT:
-		if (State_Timer == 0.0) Fade_Start(5.0, true);
-		if (Fade_GetState() == FADE_STATE::FINISHED_OUT)
+	{
+		BGM_Timer += elapsed_time;
+
+		if (!Is_Fade_Active)
 		{
+			Fade_Start(5.0, true);
+			Is_Fade_Active = true;
+		}
+
+		if (BGM_Timer > FADE_OUT_TIMER)
+		{
+			Sound_M->Stop_BGM();
+			Sound_M->Update_Current_BGM_Volume(Sound_M->Get_Target_BGM_Volume());
+
 			State_Timer = 0.0;
-			Current_Alpha = 0.0f;
-			Current_Sequence = ENDING_SEQUENCE::THANKS_MESSAGE;
-		}
-		break;
 
-	case ENDING_SEQUENCE::THANKS_MESSAGE:
-		if (SM->Get_BGM_Volume() > 0)
-		{
-			int newVolume = SM->Get_BGM_Volume() - 1;
-			SM->Set_BGM_Volume(max(0, newVolume));
+			Set_Ending_Status(ENDING_SEQUENCE::RESET_TO_MAIN);
 		}
 
-		if (State_Timer < 2.0)
-			Current_Alpha += (float)elapsed_time / 2.0f;
-		else if (State_Timer >= 5.0 && State_Timer < 7.0)
-			Current_Alpha -= (float)elapsed_time / 2.0f;
+		float Target_Volume = Sound_M->Get_Target_BGM_Volume();
+		BGM_Volume = Target_Volume * (1.0f - static_cast<float>(BGM_Timer / FADE_OUT_TIMER));
 
-		Current_Alpha = max(0.0f, min(1.0f, Current_Alpha));
+		if (BGM_Volume < 0.0f)
+			BGM_Volume = 0.0f;
 
-		if (State_Timer >= 10.0)
-			Current_Sequence = ENDING_SEQUENCE::RESET_TO_MAIN;
+		Sound_M->Update_Current_BGM_Volume(BGM_Volume);
+	}
 		break;
 
 	case ENDING_SEQUENCE::RESET_TO_MAIN:
+	{
+		float User_Set_Volume = Sound_M->Get_Target_BGM_Volume();
+		Sound_M->Update_Current_BGM_Volume(User_Set_Volume);
 		Ending_Finalize();
-		Current_Sequence = ENDING_SEQUENCE::DONE;
+
+		if (Fade_GetState() == FADE_STATE::FINISHED_OUT)
+			Set_Ending_Status(ENDING_SEQUENCE::DONE);
+	}
 		break;
 
 	case ENDING_SEQUENCE::DONE:
@@ -281,55 +340,65 @@ void Ending_Update(double elapsed_time)
 
 void Ending_Draw()
 {
-	Sprite_Draw(Ending_BG_TexID, Game_Offset.x, Ending_BG_Y1, static_cast<float>(Game_Screen_Width), static_cast<float>(SCREEN_HEIGHT), 0.0f);
-	Sprite_Draw(Ending_BG_TexID, Game_Offset.x, Ending_BG_Y2, static_cast<float>(Game_Screen_Width), static_cast<float>(SCREEN_HEIGHT), 0.0f);
+	Sprite_Draw(Ending_BG_TexID, 0.0f, Ending_BG_Y1, static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), 0.0f);
+	Sprite_Draw(Ending_BG_TexID, 0.0f, Ending_BG_Y2, static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), 0.0f);
 
-	Player_Draw();
-
-
-	if (Current_Sequence >= ENDING_SEQUENCE::BASE_DESCEND)
+	if (Current_Sequence >= ENDING_SEQUENCE::PLAYER_RISE && Current_Sequence < ENDING_SEQUENCE::COMMANDER_ANIM_START) 
 	{
-		float base_h = static_cast<float>(SCREEN_HEIGHT) * 0.5f;
-		Sprite_Draw(Base_TexID, Base_Position.x, Base_Position.y, static_cast<float>(Game_Screen_Width), base_h, 0.0f);
+		SpriteAni_Draw(Play_Player, Ending_Player_Pos.x, Ending_Player_Pos.y, Ending_Player_W, Ending_Player_H, 30.0f,
+			{ A_Origin, A_Origin, A_Origin, Ending_Player_Alpha });
 	}
 
-
+	if (Current_Sequence >= ENDING_SEQUENCE::BASE_APPEAR)
+	{
+		Sprite_Draw(Base_TexID, Base_Position.x, Base_Position.y, Base_Width, Base_Height, 0.0f);
+	}			
 
 	switch (Current_Sequence)
 	{
-	case ENDING_SEQUENCE::SHOW_TEXT_1:
-		Sprite_Draw(Sample_Text_TexID_1, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
+	case ENDING_SEQUENCE::CREDIT_ROLL:
+		Sprite_Draw(Ending_1_TexID, X, Credit_Base_Y + 0 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_2_TexID, X, Credit_Base_Y + 1 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_3_TexID, X, Credit_Base_Y + 2 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_4_TexID, X, Credit_Base_Y + 3 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_5_TexID, X, Credit_Base_Y + 4 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_6_TexID, X, Credit_Base_Y + 5 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_7_TexID, X, Credit_Base_Y + 6 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_8_TexID, X, Credit_Base_Y + 7 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_9_TexID, X, Credit_Base_Y + 8 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Ending_10_TexID, X, Credit_Base_Y + 9 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
+		Sprite_Draw(Thanks_TexID, X, Credit_Base_Y + 10 * (H + Text_Space), W, H, 0.0f, { 1,1,1, 1.0f });
 		break;
-	case ENDING_SEQUENCE::SHOW_TEXT_2:
-		Sprite_Draw(Sample_Text_TexID_2, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
-		break;
-	case ENDING_SEQUENCE::SHOW_TEXT_3:
-		Sprite_Draw(Sample_Text_TexID_3, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
-		break;
-	case ENDING_SEQUENCE::SHOW_TEXT_4:
-		Sprite_Draw(Sample_Text_TexID_4, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
-		break;
-	case ENDING_SEQUENCE::SHOW_TEXT_5:
-		Sprite_Draw(Sample_Text_TexID_5, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
-		break;
-	case ENDING_SEQUENCE::SHOW_TEXT_6:
-		Sprite_Draw(Sample_Text_TexID_6, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
-		break;
-	}
 
-	if (Current_Sequence >= ENDING_SEQUENCE::COMMANDER_MESSAGE && Current_Sequence < ENDING_SEQUENCE::FINAL_FADE_OUT)
-	{
+	case ENDING_SEQUENCE::COMMANDER_APPEAR:
+	case ENDING_SEQUENCE::COMMANDER_BG_WAIT:
+	case ENDING_SEQUENCE::COMMANDER_MESSAGE:
+	case ENDING_SEQUENCE::FINAL_FADE_OUT:
 		Ending_Commander_Draw();
-		if (State_Timer > 3.0)
-			Sprite_Draw(Sample_Text_TexID_7, Ending_Commander_X, Ending_Commander_Y, Ending_Commander_W, Ending_Commander_H, 0.0f);
-	}
 
-	if (Current_Sequence == ENDING_SEQUENCE::THANKS_MESSAGE)
-	{
-		float w = SCREEN_WIDTH * 0.7f;
-		float h = w * 0.2f;
-		float x = (SCREEN_WIDTH - w) / 2.0f;
-		float y = (SCREEN_HEIGHT - h) / 2.0f;
-		Sprite_Draw(Thanks_TexID, x, y, w, h, 0.0f, { 1,1,1, Current_Alpha });
+		if (Is_Ending_Text_Active)
+			Sprite_Draw(Ending_Commender_TexID, Ending_X, Ending_Y, Ending_W, Ending_H);
+
+		if (Current_Sequence == ENDING_SEQUENCE::COMMANDER_MESSAGE)
+			Is_Ending_Text_Active = true;
+		break;
 	}
+}
+
+void Ending_Get_Text_POS(float x, float y, float w, float h)
+{
+	Ending_X = x;
+	Ending_Y = y;
+	Ending_W = w;
+	Ending_H = h;
+}
+
+ENDING_SEQUENCE Get_Ending_Status()
+{
+	return Current_Sequence;
+}
+
+void Set_Ending_Status(ENDING_SEQUENCE Status)
+{
+	Current_Sequence = Status;
 }

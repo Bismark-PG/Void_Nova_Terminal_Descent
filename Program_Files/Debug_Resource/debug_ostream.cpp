@@ -1,12 +1,12 @@
 /*==============================================================================
 
-    Make Debug Ostream [debug_ostream.cpp]
+    Make Debug Ostream [Debug_Ostream.cpp]
     
     Author : Choi HyungJoon
 
 ==============================================================================*/
-#include "debug_ostream.h"
+#include "Debug_Ostream.h"
 
 namespace Debug {
-    debug_ostream D_Out;
+    Debug_Ostream D_Out;
 }

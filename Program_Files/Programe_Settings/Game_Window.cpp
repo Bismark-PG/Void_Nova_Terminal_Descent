@@ -34,8 +34,13 @@ UI_Rect UI_Area = {};
 
 float Game_Scale = 1;
 
+#if defined(DEBUG) || defined(_DEBUG)
+static constexpr char WINDOW_CLASS[] = "GameWindow";
+static constexpr char TITLE[] = "Void Nova";
+#else
 static constexpr wchar_t WINDOW_CLASS[] = L"GameWindow";
 static constexpr wchar_t TITLE[] = L"Void Nova";
+#endif
 
 LRESULT CALLBACK Wnd_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -174,8 +179,13 @@ void Window_Manager::Game_Window_Re_Create(ScreenMode Mode, HINSTANCE hInstance)
 
 	if (IF_IS_Recreating)
 	{
+#if defined(DEBUG) || defined(_DEBUG)
+		if (MessageBox(Game_Window, "Window is Already Recreating", "*>>-FETAL_WARNING-<<*", MB_OK) == IDOK)
+			PostQuitMessage(0);
+#else
 		if (MessageBox(Game_Window, L"Window is Already Recreating", L"*>>-FETAL_WARNING-<<*", MB_OK) == IDOK)
 			PostQuitMessage(0);
+#endif
 	}
 	else
 		IF_IS_Recreating = true;
@@ -202,12 +212,12 @@ void Window_Manager::Game_Window_Re_Create(ScreenMode Mode, HINSTANCE hInstance)
 
 ScreenMode Window_Manager::Get_Now_Screen_Mode()
 {
-	return WM.MODE;
+	return Window_M.MODE;
 }
 
 void Window_Manager::Set_Now_Screen_Mode(ScreenMode Mode)
 {
-	WM.MODE = Mode;
+	Window_M.MODE = Mode;
 }
 bool Window_Manager::Is_MessageBox_Active()
 {
@@ -246,8 +256,13 @@ LRESULT CALLBACK Wnd_Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		Is_Message_Box_Open = true;
 
+#if defined(DEBUG) || defined(_DEBUG)
+		if (MessageBox(hWnd, "Really Want Exit Game?", "WARNING", MB_OKCANCEL) == IDOK)
+			DestroyWindow(hWnd);
+#else
 		if (MessageBox(hWnd, L"Really Want Exit Game?", L"WARNING", MB_OKCANCEL) == IDOK)
 			DestroyWindow(hWnd);
+#endif
 
 		Is_Message_Box_Open = false;
 		break;

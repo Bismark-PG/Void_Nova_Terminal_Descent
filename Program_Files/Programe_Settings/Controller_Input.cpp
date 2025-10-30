@@ -1,6 +1,6 @@
 /*==============================================================================
 
-	Controller Input Draw [Controller_Input.h]
+	Controller Input Draw [Controller_Input.cpp]
 
 	Author : Choi HyungJoon
 
@@ -8,13 +8,13 @@
 #include "Controller_Input.h"
 #include "Audio_Manager.h"
 
-static int Controller_Alert_BG = -1;
-static int Controller_Alert_Input = -1;
-static int Controller_Alert_Output = -1;
-static int Controller_Alert_Button_Up = -1;
-static int Controller_Alert_Button_Press = -1;
-static int Controller_Alert_Enter_Up = -1;
-static int Controller_Alert_Enter_Press = -1;
+static int UI_Controller_BG = -1;
+static int UI_Controller_Input = -1;
+static int UI_Controller_Ourput = -1;
+static int UI_Controller_Button_Up = -1;
+static int UI_Controller_Button_Down = -1;
+static int UI_Controller_Enter_Up = -1;
+static int UI_Controller_Enter_Down = -1;
 
 static bool Is_Pressed = false;
 static double Pressed_Time = 0.0f;
@@ -25,15 +25,9 @@ CONTROLLER_STATE STATE;
 
 void Controller_Set_Initialize()
 {
-	Controller_Setup_State = false;
+	Controller_Texture();
 
-	Controller_Alert_BG				= Texture_Load(L"Resource/Texture/Controller/Controller_Input_BG_Fixed.png");
-	Controller_Alert_Input			= Texture_Load(L"Resource/Texture/Controller/Controller_Input_Alert_Fixed.png");
-	Controller_Alert_Output			= Texture_Load(L"Resource/Texture/Controller/Controller_Output_Alert_Fixed.png");
-	Controller_Alert_Button_Up		= Texture_Load(L"Resource/Texture/Controller/A_Pressed_UP.png");
-	Controller_Alert_Button_Press	= Texture_Load(L"Resource/Texture/Controller/A_Pressed_Fixed.png");
-	Controller_Alert_Enter_Up		= Texture_Load(L"Resource/Texture/Controller/Enter_Alpha.png");
-	Controller_Alert_Enter_Press	= Texture_Load(L"Resource/Texture/Controller/Enter_Alpha_Press.png");
+	Controller_Setup_State = false;
 
 	STATE = CONTROLLER_STATE::NONE;
 
@@ -82,14 +76,14 @@ void Controller_Set_Update()
 		{
 			STATE = CONTROLLER_STATE::INPUT;
 			Controller_Setup_State = true;
-			SM->Play_SFX("Controller_Alert");
+			Sound_M->Play_SFX("Controller_Alert");
 		}
 
 		if (XKeyLogger_GetControllerDisconnected())
 		{
 			STATE = CONTROLLER_STATE::OUTPUT;
 			Controller_Setup_State = true;
-			SM->Play_SFX("Controller_Alert");
+			Sound_M->Play_SFX("Controller_Alert");
 		}
 		break;
 
@@ -98,7 +92,7 @@ void Controller_Set_Update()
 		{
 			Controller_Setup_State = false;
 			STATE = CONTROLLER_STATE::NONE;
-			SM->Play_SFX("Buffer_Denied");
+			Sound_M->Play_SFX("Buffer_Denied");
 		}
 
 		if ((int)(SystemTimer_GetTime() - Pressed_Time) % 2 == 0)
@@ -112,7 +106,7 @@ void Controller_Set_Update()
 		{
 			Controller_Setup_State = false;
 			STATE = CONTROLLER_STATE::NONE;
-			SM->Play_SFX("Buffer_Denied");
+			Sound_M->Play_SFX("Buffer_Denied");
 		}
 
 		if ((int)(SystemTimer_GetTime() - Pressed_Time) % 2 == 0)
@@ -131,23 +125,23 @@ void Controller_Set_Draw()
 		break;
 
 	case CONTROLLER_STATE::INPUT:
-		Sprite_Draw(Controller_Alert_BG, Alert_BG_X, Alert_BG_y, Alert_BG_Width, Alert_BG_Height, 0.f);
-		Sprite_Draw(Controller_Alert_Input, Alert_X, Alert_y, Alert_Width, Alert_Height, 0.f);
+		Sprite_Draw(UI_Controller_BG, Alert_BG_X, Alert_BG_y, Alert_BG_Width, Alert_BG_Height);
+		Sprite_Draw(UI_Controller_Input, Alert_X, Alert_y, Alert_Width, Alert_Height, 0.f);
 
 		if(Is_Pressed)
-			Sprite_Draw(Controller_Alert_Button_Up, Button_X, Button_y, Button_Size, Button_Size, 0.f);
+			Sprite_Draw(UI_Controller_Button_Up, Button_X, Button_y, Button_Size, Button_Size, 0.f);
 		else
-			Sprite_Draw(Controller_Alert_Button_Press, Button_X, Button_y, Button_Size, Button_Size, 0.f);
+			Sprite_Draw(UI_Controller_Button_Down, Button_X, Button_y, Button_Size, Button_Size, 0.f);
 		break;
 
 	case CONTROLLER_STATE::OUTPUT:
-		Sprite_Draw(Controller_Alert_BG, Alert_BG_X, Alert_BG_y, Alert_BG_Width, Alert_BG_Height, 0.f);
-		Sprite_Draw(Controller_Alert_Output, Alert_X, Alert_y, Alert_Width, Alert_Height, 0.f);
+		Sprite_Draw(UI_Controller_BG, Alert_BG_X, Alert_BG_y, Alert_BG_Width, Alert_BG_Height, 0.f);
+		Sprite_Draw(UI_Controller_Ourput, Alert_X, Alert_y, Alert_Width, Alert_Height, 0.f);
 
 		if (Is_Pressed)
-			Sprite_Draw(Controller_Alert_Enter_Up, Button_X, Button_y, Button_Size, Button_Size, 0.f);
+			Sprite_Draw(UI_Controller_Enter_Up, Button_X, Button_y, Button_Size, Button_Size, 0.f);
 		else
-			Sprite_Draw(Controller_Alert_Enter_Press, Button_X, Button_y, Button_Size, Button_Size, 0.f);
+			Sprite_Draw(UI_Controller_Enter_Down, Button_X, Button_y, Button_Size, Button_Size, 0.f);
 		break;
 	}
 }
@@ -155,4 +149,15 @@ void Controller_Set_Draw()
 bool Controller_Set_UP()
 {
 	return Controller_Setup_State;
+}
+
+void Controller_Texture()
+{
+	UI_Controller_BG			= Texture_M->GetID("UI_Controller_BG");
+	UI_Controller_Input			= Texture_M->GetID("UI_Controller_Input");
+	UI_Controller_Ourput		= Texture_M->GetID("UI_Controller_Output");
+	UI_Controller_Button_Up		= Texture_M->GetID("UI_Controller_Button_Up");
+	UI_Controller_Button_Down	= Texture_M->GetID("UI_Controller_Button_Down");
+	UI_Controller_Enter_Up		= Texture_M->GetID("UI_Controller_Enter_Up");
+	UI_Controller_Enter_Down	= Texture_M->GetID("UI_Controller_Enter_Down");
 }

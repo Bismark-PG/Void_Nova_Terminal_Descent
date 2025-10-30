@@ -139,4 +139,6 @@ extern ScreenMode Pre_W_Mode_Buffer;
 
 void Setting_Sound_TexID(int Now_Scale, SOUND_SETTING_STATE Now_State);
 
+void Setting_Texture();
+
 #endif // SETTING_H

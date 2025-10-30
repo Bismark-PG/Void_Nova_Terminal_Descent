@@ -16,29 +16,13 @@ void Sprite_Finalize(void);
 
 void Sprite_Begin();
 
-// Show All Texture
-void Sprite_Draw(int Tex_ID, float dx, float dy,
-				 const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f }); // White Color
-
 // Show All Texture (Can Change Size)
-void Sprite_Draw(int Tex_ID, float dx, float dy, float dw, float dh, float angle,
-				 const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-
-// Cut UV
-void Sprite_Draw(int Tex_ID, float dx, float dy, 
-				 // Cut UV Range (Pixel Range)
-				 int px, int py, int pw, int ph,  
-				 const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-
-// Cut UV (Change Texture Size)
 void Sprite_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
-				 // Cut UV Range (Pixel Range)
-			     int px, int py, int pw, int ph, 
-				 const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+				 float angle = 0.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
-// Rotation
-void Sprite_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
-			   	 float px, float py, float pw, float ph, float angle = 0,
-			     const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+// Cut UV, And Rotation
+void Sprite_UV_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
+					    float px, float py, float pw, float ph, float angle = 0.0f,
+					    const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 #endif // SPRITE_H

@@ -6,6 +6,8 @@
 
 ==============================================================================*/
 #include "Sprite_Animation.h"
+#include "Sprite.h"
+#include "Texture_Manager.h"
 using namespace DirectX;
 
 struct AniPatternData
@@ -68,9 +70,11 @@ void SpriteAni_Update(double elapsed_time)
 			continue; // If Pattern ID Not Set, Can`t Update Animation, Continue Loop
 
 		AniPatternData* pAniPatternData = &g_AniPattern[g_AniPlay[i].PatternID];
+		g_AniPlay[i].Accumulated_Time += elapsed_time;
 
 		if (g_AniPlay[i].Accumulated_Time >= pAniPatternData->PatternPlayTime)
 		{
+			g_AniPlay[i].Accumulated_Time -= pAniPatternData->PatternPlayTime;
 			g_AniPlay[i].PatternNUM++;
 		
 			// Set Pattern Count
@@ -86,32 +90,33 @@ void SpriteAni_Update(double elapsed_time)
 					g_AniPlay[i].IsStopped = true;
 				}
 			}
-			g_AniPlay[i].Accumulated_Time -= pAniPatternData->PatternPlayTime;
 		}
-		g_AniPlay[i].Accumulated_Time += elapsed_time;
 	}
 }
 
 void SpriteAni_Draw(int PlayID, float dx, float dy, float dw, float dh, float angle, const DirectX::XMFLOAT4& color)
 {
+	if (PlayID < 0 || PlayID >= ANI_PLAY_MAX || g_AniPlay[PlayID].PatternID < 0) return;
+
 	int Ani_Pattern_ID = g_AniPlay[PlayID].PatternID;
 	int Ani_Pattern_Num = g_AniPlay[PlayID].PatternNUM;
 	AniPatternData* pAniPatternData = &g_AniPattern[Ani_Pattern_ID];
 
-	Sprite_Draw(pAniPatternData->TextureID,
-		dx, dy, dw, dh,
+	if (pAniPatternData->TextureID < 0) return;
 
-		static_cast<float>(pAniPatternData->StartPosition.x
+	float px = static_cast<float>(pAniPatternData->StartPosition.x
 		+ pAniPatternData->PatternSize.x
-		* (Ani_Pattern_Num % pAniPatternData->HorizonPatternMAX)),
+		* (Ani_Pattern_Num % pAniPatternData->HorizonPatternMAX));
 
-		static_cast<float>(pAniPatternData->StartPosition.y
+	float py = static_cast<float>(pAniPatternData->StartPosition.y
 		+ pAniPatternData->PatternSize.y
-		* (Ani_Pattern_Num / pAniPatternData->HorizonPatternMAX)),
-		
-		static_cast<float>(pAniPatternData->PatternSize.x),
-		static_cast<float>(pAniPatternData->PatternSize.y),
-		angle, color);
+		* (Ani_Pattern_Num / pAniPatternData->HorizonPatternMAX));
+
+	float pw = static_cast<float>(pAniPatternData->PatternSize.x);
+	float ph = static_cast<float>(pAniPatternData->PatternSize.y);
+
+
+	Sprite_UV_Draw(pAniPatternData->TextureID, dx, dy, dw, dh, px, py, pw, ph, angle, color);
 }
 
 // Read Texture And Make Texture Info
@@ -160,7 +165,7 @@ int SpriteAni_CreatePlayer(int AniPatternID)
 
 bool SpriteAni_IsStopped(int Index)
 {
-
+	if (Index < 0 || Index >= ANI_PLAY_MAX) return true;
 	return g_AniPlay[Index].IsStopped;
 }
 

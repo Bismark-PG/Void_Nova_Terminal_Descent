@@ -18,6 +18,7 @@
 #include "Audio_Manager.h"
 #include "Item.h"
 #include "Stage_Update.h"
+#include <Boss_Manager.h>
 
 void Game_Logic_Initialize()
 {
@@ -33,12 +34,10 @@ void Game_Logic_Initialize()
 	Enemy_Spawner_Initialize();
 
 	Effect_Initialize();
-	Debug_Collision_Initialize();
 }
 
 void Game_Logic_Finalize()
 {
-	Debug_Collision_Finalize();
 	Effect_Finalize();
 
 	Enemy_Spawner_Finalize();
@@ -143,7 +142,7 @@ void AABB_Bullet_VS_Enemy()
 				Bullet_Destroy(B_Index);
 				Enemy_Damage(E_Index);
 
-				SM->Play_SFX("Bullet_Hit");
+				Sound_M->Play_SFX("Bullet_Hit");
 
 				if (!Enemy_IsEnable(E_Index))
 					Enemy_Give_Score(E_Index);

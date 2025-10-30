@@ -12,32 +12,32 @@
 
 enum class ENDING_SEQUENCE
 {
-	FADE_IN,					
-	PLAYER_RISE,				
-	SHOW_TEXT_1,				
-	SHOW_TEXT_2,				
-	SHOW_TEXT_3,				
-	SHOW_TEXT_4,				
-	SHOW_TEXT_5,				
-	SHOW_TEXT_6,				
-	BASE_DESCEND,				
-	PLAYER_APPROACH_BASE,		
-	COMMANDER_APPEAR,			
-	COMMANDER_MESSAGE,			
-	FINAL_FADE_OUT,				
-	THANKS_MESSAGE,				
-	RESET_TO_MAIN,				
-	DONE						
+	IDLE,				
+	ENDING_START,				
+	FADE_IN,               
+	PLAYER_RISE,           
+	CREDIT_ROLL,		
+	BASE_APPEAR,		
+	PLAYER_MOVE_TO_BASE,   
+	COMMANDER_ANIM_START,  
+	COMMANDER_APPEAR,	
+	COMMANDER_BG_WAIT,
+	COMMANDER_MESSAGE,	
+	FINAL_FADE_OUT,		
+	RESET_TO_MAIN,		
+	DONE				
 };
 
-
 void Ending_Initialize();
-void Ending_Set_Position(float X, float Y, float W, float H);
-
 void Ending_Finalize();
 
+void Update_Ending_Player_Movement(double elapsed_time);
 void Ending_Update(double elapsed_time);
 
 void Ending_Draw();
+void Ending_Get_Text_POS(float x, float y, float w, float h);
+
+ENDING_SEQUENCE Get_Ending_Status();
+void Set_Ending_Status(ENDING_SEQUENCE Status);
 
 #endif // ENDING_SCREEN_H

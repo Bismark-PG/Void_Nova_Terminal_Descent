@@ -9,6 +9,7 @@
 #define SCRIPT_MANAGER_H
 #include "Stage_Select.h"
 #include <DirectXMath.h>
+#include <Story_Manager.h>
 
 enum class SCRIPT_ANIMATION_STATE
 {
@@ -21,6 +22,14 @@ enum class SCRIPT_ANIMATION_STATE
 	COMMANDER_BOX_OUTRO, 
 	BG_OUTRO,            
 	FINISHED
+};
+
+enum class PLAYER_MOVE_POSITION
+{
+	STAGE_START_POS,
+	STAGE_3_BOSS_START_POS,
+	STAGE_4_BOSS_START_POS,
+	STAGE_5_BOSS_START_POS
 };
 
 static constexpr float STORY_WIDTH_SACLE = 0.8f;
@@ -65,12 +74,10 @@ static constexpr double PAGE_INPUT_DELAY = 0.5;
 static double Boss_Page_Auto_Timer = 0.0;
 static constexpr double BOSS_PAGE_AUTO_DELAY = 2.0;
 
-extern DirectX::XMFLOAT2 Stage_1_2_3_Start_Pos;
-extern DirectX::XMFLOAT2 Stage_3_Boss_Start_Pos;
-extern DirectX::XMFLOAT2 Stage_4_Start_Pos;
-extern DirectX::XMFLOAT2 Stage_4_Boss_Start_Pos;
-extern DirectX::XMFLOAT2 Stage_5_Start_Pos;
-extern DirectX::XMFLOAT2 Stage_5_Boss_Start_Pos;
+static DirectX::XMFLOAT2 Stage_Start_Pos;
+static DirectX::XMFLOAT2 Stage_3_Boss_Start_Pos;
+static DirectX::XMFLOAT2 Stage_4_Boss_Start_Pos;
+static DirectX::XMFLOAT2 Stage_5_Boss_Start_Pos;
 
 static constexpr float Stage_1_Start_Speed = 100.0f;
 static constexpr float Stage_2_Start_Speed = 50.0f;
@@ -78,38 +85,30 @@ static constexpr float Stage_2_Start_Speed = 50.0f;
 void Script_Initialize();
 void Script_Finalize();
 
-bool Script_Update(double elapsed_time);
-bool Script_Boss_Update(double elapsed_time);
+bool Script_Update(double elapsed_time, bool Stoty_Type, bool Is_Boss_Story);
 
 void Ending_Commander_Update(double elapsed_time);
 void Ending_Commander_Draw();
 void Ending_Commander_Start();
 
-void Script_Animation_Draw();
-void Script_Start();
-void Script_Start_Outro();
+void Script_Animation_Draw(bool Is_Boss_Story);
+void Script_Text_Draw(NOW_PLAYING_STAGE Now_Playing_Stage, int Now_Playing_Page, bool Is_Boss_Story, STORY_TYPE Type);
+
+void Script_Begin(bool isAutoForward, bool Is_Boss_Story);
+void Script_Start_Outro(bool Is_Boss_Story);
+
 void Script_Reset();
 
-void Script_Boss_Animation_Draw();
-void Script_Boss_Start();
-void Script_Boss_Start_Outro();
-void Script_Boss_Reset();
+void Script_Next_Button_Draw(bool Is_Boss_Story);
 
-void Script_Text_Draw(NOW_PLAYING_STAGE Now_Playing_Stage, int Now_Playing_Page, bool Is_Boss_Story);
-void Script_Next_Button_Draw();
-
-void Set_Script_State(SCRIPT_ANIMATION_STATE State, bool Is_Boss = false);
-
+void Set_Script_State(SCRIPT_ANIMATION_STATE State);
 SCRIPT_ANIMATION_STATE Get_Script_State();
-SCRIPT_ANIMATION_STATE Get_Boss_Script_State();
-bool Is_Script_Outro_Finished(bool Is_Boss);
 
-void Script_Set_Player_POS_Enum();
+bool Is_Script_Outro_Finished();
 
-void Script_Stage_1_Draw(int Now_Page);
-void Script_Stage_2_Draw(int Now_Page);
-void Script_Stage_3_Draw(int Now_Page, bool is_boss_story);
-void Script_Stage_4_Draw(int Now_Page, bool is_boss_story);
-void Script_Stage_5_Draw(int Now_Page, bool is_boss_story);
+DirectX::XMFLOAT2 Script_Get_Enum(PLAYER_MOVE_POSITION POS);
+void Script_Set_Player_Target_Pos();
+
+void Script_Texture();
 
 #endif // SCRIPT_MANAGER_H

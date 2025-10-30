@@ -1,5 +1,5 @@
 /*==============================================================================
-
+	
 	Reset Direct3D [direct3d.h]
 
 	Author : Choi HyungJoon
@@ -26,11 +26,12 @@ void Direct3D_Present(); // バックバッファの表示
 unsigned int Direct3D_GetBackBufferWidth();
 unsigned int Direct3D_GetBackBufferHeight();
 
-//Earn D3D Device
+// Earn D3D Device
 ID3D11Device* Direct3D_GetDevice();
-//Earn D3D Context
+// Earn D3D Context
 ID3D11DeviceContext* Direct3D_GetContext();
 
+void Direct3D_SetDepthEnable(bool enable);
 void Direct3D_Re_Size(UINT width, UINT height);
 
 #endif // DIRECT3D_H

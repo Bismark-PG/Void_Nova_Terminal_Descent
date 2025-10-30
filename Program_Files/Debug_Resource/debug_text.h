@@ -12,9 +12,7 @@
 #define DEBUG_TEXT_H
 
 #include <d3d11.h>
-#include <unordered_map>
 #include <string>
-#include <tuple>
 #include <list>
 #include <wrl/client.h> // Microsoft::WRL::ComPtrを使用する場合は必要
 #include <DirectXMath.h>
@@ -25,85 +23,83 @@ namespace Text
 	class DebugText
 	{
 	private:
-		// 注意！初期化で外部から設定されるもの。Release不要。
+		// Device, Context
 		ID3D11Device* m_pDevice = nullptr;
 		ID3D11DeviceContext* m_pContext = nullptr;
 
-		float m_OffsetX{ 0.0f }; // オフセットX座標
-		float m_OffsetY{ 0.0f }; // オフセットY座標
-		ULONG m_MaxLine{ 0 }; // 最大行数
-		ULONG m_MaxCharactersPerLine{ 0 }; // 1行あたりの最大文字数
-		float m_LineSpacing{ 0.0f }; // 行間隔
-		float m_CharacterSpacing{ 0.0f }; // 文字間隔
-		float m_Scale{ 1.0f }; // 文字のスケール
+		// Text properties
+		float m_OffsetX, m_OffsetY, m_Scale;
+		UINT m_MaxLine{ 0 }; // For line limit
+		UINT m_MaxCharactersPerLine{ 0 }; // For line wrap
 
-		struct Characters { 
+		// Text data structures
+		struct Characters
+		{
 			Characters(const DirectX::XMFLOAT4& color) : color(color) {}
-			std::string characters; 
+			std::string characters;
 			DirectX::XMFLOAT4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
 		};
 
-		struct LineStrings {
+		struct LineStrings
+		{
 			std::list<Characters> strings;
-			ULONG characterCount{ 0 };
-			ULONG spaceCount{ 0 };
+			UINT characterCount{ 0 }; // For line wrap and tab
+			UINT spaceCount{ 0 };     // For character count
 		};
 
-		std::list<LineStrings> m_TextLines; // 表示するテキスト行のリスト
-		UINT m_CharacterCount{ 0 }; // 現在の文字数（空白文字、改行文字、タブ文字を除く)
+		std::list<LineStrings> m_TextLines;
+		UINT m_CharacterCount{ 0 };
 
-		// フォントテクスチャ
-		std::wstring m_FileName; // ファイル名
-		ID3D11Resource* m_pTexture = nullptr;
-		ID3D11ShaderResourceView* m_pTextureView = nullptr;
-		UINT m_TextureWidth{ 0 }; // テクスチャの幅
-		UINT m_TextureHeight{ 0 }; // テクスチャの高さ
+		// Font texture (Manage in Texture Manager)
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+		UINT m_TextureWidth{ 0 };
+		UINT m_TextureHeight{ 0 };
 
-		// テクスチャ管理MAP
-		static std::unordered_map<std::wstring, std::tuple<ID3D11Resource*, ID3D11ShaderResourceView*>> m_TextureMap;
+		// Buffers
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer;
+		UINT m_BufferAllocatedCount{ 0 };
 
-		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer; // 頂点バッファ
-		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer; // インデックスバッファ
-		UINT m_BufferSourceCharacterCount{ 0 }; // バッファに登録されている文字数
+		// D3D States
+		Microsoft::WRL::ComPtr<ID3D11BlendState> m_pBlendState;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_pDepthStencilState;
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_pRasterizerState;
 
-		Microsoft::WRL::ComPtr<ID3D11BlendState> m_pBlendState; // ブレンドステート
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_pDepthStencilState; // 深度ステンシルステート
-		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_pRasterizerState; // ラスタライザーステート
-
-		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader; // 頂点シェーダー
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_pInputLayout; // 入力レイアウト
-		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVSConstantBuffer; // 頂点シェーダー定数バッファ
-		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader; // ピクセルシェーダー
-		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pSamplerState; // サンプラーステート
+		// Shaders
+		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader;
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_pInputLayout;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVSConstantBuffer;
+		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader;
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pSamplerState;
 
 	public:
 		DebugText() = delete;
-		DebugText(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wchar_t* pFontTextureFileName, UINT screenWidth, UINT screenHeight, float offsetX = 0.0f, float offsetY = 0.0f, ULONG maxLine = 0, ULONG maxCharactersPerLine = 0, float lineSpacing = 0.0f, float characterSpacing = 0.0f);
-		~DebugText();
+		DebugText(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, int fontTextureID, UINT screenWidth, UINT screenHeight);
+		~DebugText() = default;
 
-		// ※一万文字くらいまで登録可能（空白文字、改行文字、タブ文字を除く）
-		void SetText(const char* pText, DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		void SetOffset(float x, float y)
+		{
+			m_OffsetX = x; m_OffsetY = y;
+		}
 
+		void SetScale(float scale)
+		{
+			m_Scale = scale;
+		}
+
+		void Print(const std::string& text, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 		void Draw();
-
-		void Clear(); // 登録されているテキストをクリア
-
+		void Clear();
 		void Resize(UINT screenWidth, UINT screenHeight);
 
-		void SetScale(float scale);
-
-		static void ReleaseAllTextures();
-
 	private:
-		
 		struct Vertex
 		{
-			DirectX::XMFLOAT3 position; // 座標
-			DirectX::XMFLOAT4 color;    // 色
-			DirectX::XMFLOAT2 TexCoord; // テクスチャ座標
+			DirectX::XMFLOAT3 position;
+			DirectX::XMFLOAT4 color;
+			DirectX::XMFLOAT2 TexCoord;
 		};
-
-		void createBuffer(ULONG characterCount);
+		void createBuffers(UINT characterCount);
 	};
 }
 #endif // DEBUG_TEXT_H

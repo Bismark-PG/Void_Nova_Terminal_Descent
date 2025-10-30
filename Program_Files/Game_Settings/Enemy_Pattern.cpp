@@ -98,7 +98,7 @@ void Pattern_Down_And_Up(Enemy& enemy, double elapsed_time)
 
 				XMVECTOR D_Vector = XMVector2Normalize(XMVectorSet(Player_Center_X - Enemy_Bullet_Spawn_Pos.x, Player_Center_Y - Enemy_Bullet_Spawn_Pos.y, 0, 0));
 				float B_Speed = Enemy_Get_Bullet_Speed(Bullet_Type);
-				float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
+				float Angle = (atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2) * (R_One_Pie / XM_PI);
 
 				switch (Bullet_Type)
 				{
@@ -214,7 +214,7 @@ void Pattern_Down_And_Down(Enemy& enemy, double elapsed_time)
 
 				XMVECTOR D_Vector = XMVector2Normalize(XMVectorSet(Player_Center_X - Enemy_Bullet_Spawn_Pos.x, Player_Center_Y - Enemy_Bullet_Spawn_Pos.y, 0, 0));
 				float B_Speed = Enemy_Get_Bullet_Speed(Bullet_Type);
-				float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
+				float Angle = (atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2) * (R_One_Pie / XM_PI);
 				
 				switch (Bullet_Type)
 				{
@@ -342,7 +342,7 @@ void Pattern_Patrol(Enemy& enemy, double elapsed_time)
 
 				XMVECTOR D_Vector = XMVector2Normalize(XMVectorSet(Player_Center_X - Enemy_Bullet_Spawn_Pos.x, Player_Center_Y - Enemy_Bullet_Spawn_Pos.y, 0, 0));
 				float B_Speed = Enemy_Get_Bullet_Speed(Bullet_Type);
-				float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
+				float Angle = (atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2) * (R_One_Pie / XM_PI);
 
 				switch (Bullet_Type)
 				{
@@ -449,7 +449,7 @@ void Pattern_Chaser(Enemy& enemy, double elapsed_time)
 
 				XMVECTOR D_Vector = XMVector2Normalize(XMVectorSet(Player_Center_X - Enemy_Bullet_Spawn_Pos.x, Player_Center_Y - Enemy_Bullet_Spawn_Pos.y, 0, 0));
 				float B_Speed = Enemy_Get_Bullet_Speed(Bullet_Type);
-				float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
+				float Angle = (atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2) * (R_One_Pie / XM_PI);
 
 				switch (Bullet_Type)
 				{
@@ -490,7 +490,7 @@ void Pattern_Chaser(Enemy& enemy, double elapsed_time)
 					XMVECTOR Final_Pos_Vec = Enemy_Vec + Direcion_Vec * (Game_Screen_Height * 1.5f);
 					XMStoreFloat2(&enemy.Target_POS, Final_Pos_Vec);
 
-					enemy.Angle = atan2f(XMVectorGetY(Direcion_Vec), XMVectorGetX(Direcion_Vec)) + XM_PIDIV2 + XM_PI;
+					enemy.Angle = (atan2f(XMVectorGetY(Direcion_Vec), XMVectorGetX(Direcion_Vec)) - XM_PIDIV2) * (R_One_Pie / XM_PI);
 				}
 				else
 					enemy.Target_POS = { enemy.Position.x, Game_Screen_Height + enemy.Size.y };
@@ -585,8 +585,8 @@ void Pattern_Fixed(Enemy& enemy, double elapsed_time)
 
 				XMVECTOR D_Vector = XMVector2Normalize(XMVectorSet(Player_Center_X - Enemy_Bullet_Spawn_Pos.x, Player_Center_Y - Enemy_Bullet_Spawn_Pos.y, 0, 0));
 				float B_Speed = Enemy_Get_Bullet_Speed(Bullet_Type);
-				float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-				
+				float Angle = (atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2) * (R_One_Pie / XM_PI);
+
 				switch (Bullet_Type)
 				{
 				case Enemy_Bullet_Type::NORMAL:
@@ -719,16 +719,14 @@ void Pattern_Down_Shoot_Down(Enemy& enemy, double elapsed_time)
 				{
 					XMFLOAT2 L_Velocity;
 					XMStoreFloat2(&L_Velocity, D_Vector * B_Speed);
-					float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-					Enemy_Bullet_Long_creat(Enemy_Bullet_Spawn_Pos, L_Velocity, Angle);
+					Enemy_Bullet_Long_creat(Enemy_Bullet_Spawn_Pos, L_Velocity, 180.0f);
 					break;
 				}
 				case Enemy_Bullet_Type::SPIRE:
 				{
 					XMFLOAT2 S_Velocity;
 					XMStoreFloat2(&S_Velocity, D_Vector * B_Speed);
-					float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-					Enemy_Bullet_Spire_creat(Enemy_Bullet_Spawn_Pos, S_Velocity, Angle);
+					Enemy_Bullet_Spire_creat(Enemy_Bullet_Spawn_Pos, S_Velocity, 180.0f);
 					break;
 				}
 				}
@@ -830,16 +828,14 @@ void Pattern_Down_Shoot_Up(Enemy& enemy, double elapsed_time)
 				{
 					XMFLOAT2 L_Velocity;
 					XMStoreFloat2(&L_Velocity, D_Vector * B_Speed);
-					float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-					Enemy_Bullet_Long_creat(Enemy_Bullet_Spawn_Pos, L_Velocity, Angle);
+					Enemy_Bullet_Long_creat(Enemy_Bullet_Spawn_Pos, L_Velocity, 180.0f);
 					break;
 				}
 				case Enemy_Bullet_Type::SPIRE:
 				{
 					XMFLOAT2 S_Velocity;
 					XMStoreFloat2(&S_Velocity, D_Vector * B_Speed);
-					float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-					Enemy_Bullet_Spire_creat(Enemy_Bullet_Spawn_Pos, S_Velocity, Angle);
+					Enemy_Bullet_Spire_creat(Enemy_Bullet_Spawn_Pos, S_Velocity, 180.0f);
 					break;
 				}
 				}
@@ -954,16 +950,14 @@ void Pattern_Down_Shoot_Patrol(Enemy& enemy, double elapsed_time)
 				{
 					XMFLOAT2 L_Velocity;
 					XMStoreFloat2(&L_Velocity, D_Vector * B_Speed);
-					float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-					Enemy_Bullet_Long_creat(Enemy_Bullet_Spawn_Pos, L_Velocity, Angle);
+					Enemy_Bullet_Long_creat(Enemy_Bullet_Spawn_Pos, L_Velocity, 180.0f);
 					break;
 				}
 				case Enemy_Bullet_Type::SPIRE:
 				{
 					XMFLOAT2 S_Velocity;
 					XMStoreFloat2(&S_Velocity, D_Vector * B_Speed);
-					float Angle = atan2f(XMVectorGetY(D_Vector), XMVectorGetX(D_Vector)) + XM_PIDIV2;
-					Enemy_Bullet_Spire_creat(Enemy_Bullet_Spawn_Pos, S_Velocity, Angle);
+					Enemy_Bullet_Spire_creat(Enemy_Bullet_Spawn_Pos, S_Velocity, 180.0f);
 					break;
 				}
 				}

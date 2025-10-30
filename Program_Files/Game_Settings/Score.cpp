@@ -7,7 +7,7 @@
 ==============================================================================*/
 #include "score.h"
 #include "sprite.h"
-#include "Texture.h"
+#include "Texture_Manager.h"
 #include "Game_Window.h"
 #include "Palette.h"    
 #include <string>       

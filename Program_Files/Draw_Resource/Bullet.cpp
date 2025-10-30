@@ -13,19 +13,18 @@
 using namespace DirectX;
 using namespace PALETTE;
 
-static Bullet Bullets[BULLET_MAX]{};
+static int Bullet_Normal = -1;
+static int Bullet_Laser  = -1;
 
-static int Bullet_TexID{};
-static int Laser_TexID{};
+static Bullet Bullets[BULLET_MAX]{};
 
 void Bullet_Initialize()
 {
+	Bullet_Normal = Texture_M->GetID("Player_Bullet");
+	Bullet_Laser  = Texture_M->GetID("Player_Laser");
+
 	for (Bullet& Bullet : Bullets)
-	{
 		Bullet.isEnable = false;
-	}
-	Bullet_TexID = Texture_Load(L"Resource/Texture/Player/Bullet_Power_Standard.png");
-	Laser_TexID  = Texture_Load(L"Resource/Texture/Player/Bullet_Power_Max.png");
 	
 	Bullet_Width  = BULLET_WIDTH  * Game_Scale;
 	Bullet_Height = BULLET_HEIGHT * Game_Scale;
@@ -87,6 +86,11 @@ void Bullet_Update(double elapsed_time)
 			break;
 		}
 
+#if defined(DEBUG) || defined(_DEBUG)
+		// Use For Debug
+		//Bullet_Damage_For_Power = 100;
+#endif
+
 		if (Bullet.position.y < -Bullet.size.y || 
 			Bullet.position.y > SCREEN_HEIGHT ||
 			Bullet.position.x < -Bullet.size.x ||
@@ -114,8 +118,8 @@ void Bullet_Draw()
 	{
 		if (!Bullet.isEnable)	continue;
 
-		Sprite_Draw(Bullet_TexID, Bullet.position.x, Bullet.position.y, Bullet.size.x, Bullet.size.y,
-			0.f, { A_Origin, A_Origin, A_Origin, A_Third });
+		Sprite_Draw(Bullet_Normal, Bullet.position.x, Bullet.position.y, Bullet.size.x, Bullet.size.y,
+					A_Zero, { A_Origin, A_Origin, A_Origin, A_Third });
 	}
 }
 
@@ -125,8 +129,8 @@ void Laser_Draw()
 	{
 		if (!Bullet.isEnable)	continue;
 
-		Sprite_Draw(Laser_TexID, Bullet.position.x, Bullet.position.y, Bullet.size.x, Bullet.size.y,
-			0.f, { A_Origin, A_Origin, A_Origin, A_Third });
+		Sprite_Draw(Bullet_Laser, Bullet.position.x, Bullet.position.y, Bullet.size.x, Bullet.size.y,
+					A_Zero, { A_Origin, A_Origin, A_Origin, A_Third });
 	}
 }
 

@@ -19,8 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ascii_texture_generator.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="DirectXTex_Debug.lib" />
+    <Library Include="DirectXTex_Release.lib" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Program_Files\Debug_Resource\Debug_Collision.cpp" />
-    <ClCompile Include="Program_Files\Debug_Resource\debug_ostream.cpp" />
+    <ClCompile Include="Program_Files\Debug_Resource\Debug_Ostream.cpp" />
     <ClCompile Include="Program_Files\Debug_Resource\debug_text.cpp" />
     <ClCompile Include="Program_Files\DirectX\direct3d.cpp" />
     <ClCompile Include="Program_Files\DirectX\WICTextureLoader11.cpp" />
@@ -32,10 +39,10 @@
     <ClCompile Include="Program_Files\Draw_Resource\Game_Back.cpp" />
     <ClCompile Include="Program_Files\Draw_Resource\Item.cpp" />
     <ClCompile Include="Program_Files\Draw_Resource\Player.cpp" />
-    <ClCompile Include="Program_Files\Draw_Set\shader.cpp" />
+    <ClCompile Include="Program_Files\Draw_Set\Shader_Manager.cpp" />
     <ClCompile Include="Program_Files\Draw_Set\Sprite.cpp" />
     <ClCompile Include="Program_Files\Draw_Set\Sprite_Animation.cpp" />
-    <ClCompile Include="Program_Files\Draw_Set\Texture.cpp" />
+    <ClCompile Include="Program_Files\Draw_Set\Texture_Manager.cpp" />
     <ClCompile Include="Program_Files\Game_Draw\Ending.cpp" />
     <ClCompile Include="Program_Files\Game_Draw\Game_Menu.cpp" />
     <ClCompile Include="Program_Files\Game_Draw\Game_Select.cpp" />
@@ -47,7 +54,6 @@
     <ClCompile Include="Program_Files\Game_Settings\Boss_Manager.cpp" />
     <ClCompile Include="Program_Files\Game_Settings\Boss_Pattern.cpp" />
     <ClCompile Include="Program_Files\Game_Settings\Enemy_Pattern.cpp" />
-    <ClCompile Include="Program_Files\Game_Settings\Game_Audio.cpp" />
     <ClCompile Include="Program_Files\Game_Settings\Game_Intro_Manager.cpp" />
     <ClCompile Include="Program_Files\Game_Settings\Game_Logic.cpp" />
     <ClCompile Include="Program_Files\Game_Settings\Game_Screen_Manager.cpp" />
@@ -65,6 +71,8 @@
     <ClCompile Include="Program_Files\Programe_Settings\mouse.cpp" />
     <ClCompile Include="Program_Files\Programe_Settings\Save_Data.cpp" />
     <ClCompile Include="Program_Files\Programe_Settings\system_timer.cpp" />
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Audio.cpp" />
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Texture.cpp" />
     <ClCompile Include="Program_Files\Script\Script_Draw.cpp" />
     <ClCompile Include="Program_Files\Script\Story_Manager.cpp" />
     <ClCompile Include="Program_Files\Script\Story_Script.cpp" />
@@ -77,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Program_Files\Debug_Resource\Debug_Collision.h" />
-    <ClInclude Include="Program_Files\Debug_Resource\debug_ostream.h" />
+    <ClInclude Include="Program_Files\Debug_Resource\Debug_Ostream.h" />
     <ClInclude Include="Program_Files\Debug_Resource\debug_text.h" />
     <ClInclude Include="Program_Files\DirectX\direct3d.h" />
     <ClInclude Include="Program_Files\DirectX\DirectXTex.h" />
@@ -90,10 +98,10 @@
     <ClInclude Include="Program_Files\Draw_Resource\Game_Back.h" />
     <ClInclude Include="Program_Files\Draw_Resource\Item.h" />
     <ClInclude Include="Program_Files\Draw_Resource\Player.h" />
-    <ClInclude Include="Program_Files\Draw_Set\shader.h" />
+    <ClInclude Include="Program_Files\Draw_Set\Shader_Manager.h" />
     <ClInclude Include="Program_Files\Draw_Set\Sprite.h" />
     <ClInclude Include="Program_Files\Draw_Set\Sprite_Animation.h" />
-    <ClInclude Include="Program_Files\Draw_Set\Texture.h" />
+    <ClInclude Include="Program_Files\Draw_Set\Texture_Manager.h" />
     <ClInclude Include="Program_Files\Game_Draw\Ending.h" />
     <ClInclude Include="Program_Files\Game_Draw\Game_Menu.h" />
     <ClInclude Include="Program_Files\Game_Draw\Game_Select.h" />
@@ -105,7 +113,6 @@
     <ClInclude Include="Program_Files\Game_Settings\Boss_Manager.h" />
     <ClInclude Include="Program_Files\Game_Settings\Boss_Pattern.h" />
     <ClInclude Include="Program_Files\Game_Settings\Enemy_Pattern.h" />
-    <ClInclude Include="Program_Files\Game_Settings\Game_Audio.h" />
     <ClInclude Include="Program_Files\Game_Settings\Game_Intro_Manager.h" />
     <ClInclude Include="Program_Files\Game_Settings\Game_Logic.h" />
     <ClInclude Include="Program_Files\Game_Settings\Game_Screen_Manager.h" />
@@ -122,6 +129,8 @@
     <ClInclude Include="Program_Files\Programe_Settings\mouse.h" />
     <ClInclude Include="Program_Files\Programe_Settings\Save_Data.h" />
     <ClInclude Include="Program_Files\Programe_Settings\system_timer.h" />
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Audio.h" />
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Texture.h" />
     <ClInclude Include="Program_Files\Script\Script_Draw.h" />
     <ClInclude Include="Program_Files\Script\Story_Manager.h" />
     <ClInclude Include="Program_Files\Script\Story_Script.h" />
@@ -135,14 +144,6 @@
     <ClInclude Include="Program_Files\Tools\Saver_And_Re_Create.h" />
     <ClInclude Include="Program_Files\Tools\System_Logic_Manager.h" />
     <ClInclude Include="Program_Files\Tools\Window_Re_Creator.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ascii_texture_generator.py" />
-    <None Include="Program_Files\DirectX\DirectXTex.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="DirectXTex_Debug.lib" />
-    <Library Include="DirectXTex_Release.lib" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader_pixel_2d.hlsl">
@@ -242,7 +243,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)program_Files\Tools;$(ProjectDir)program_Files\Script;$(ProjectDir)program_Files\Programe_Settings;$(ProjectDir)program_Files\Game_Settings;$(ProjectDir)program_Files\Game_Draw;$(ProjectDir)program_Files\Draw_Set;$(ProjectDir)program_Files\Draw_Resource;$(ProjectDir)program_Files\DirectX;$(ProjectDir)Program_Files\Debug_Resource;$(ProjectDir)Program_Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)program_Files\Tools;$(ProjectDir)program_Files\Script;$(ProjectDir)program_Files\Programe_Settings;$(ProjectDir)program_Files\Game_Settings;$(ProjectDir)program_Files\Game_Draw;$(ProjectDir)program_Files\Draw_Set;$(ProjectDir)program_Files\Draw_Resource;$(ProjectDir)Program_Files\Debug_Resource;$(ProjectDir)program_Files\Resource_Setting;$(ProjectDir)program_Files\DirectX;$(ProjectDir)Program_Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -263,7 +264,7 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)program_Files\Tools;$(ProjectDir)program_Files\Script;$(ProjectDir)program_Files\Programe_Settings;$(ProjectDir)program_Files\Game_Settings;$(ProjectDir)program_Files\Game_Draw;$(ProjectDir)program_Files\Draw_Set;$(ProjectDir)program_Files\Draw_Resource;$(ProjectDir)program_Files\DirectX;$(ProjectDir)Program_Files\Debug_Resource;$(ProjectDir)Program_Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)program_Files\Tools;$(ProjectDir)program_Files\Script;$(ProjectDir)program_Files\Programe_Settings;$(ProjectDir)program_Files\Game_Settings;$(ProjectDir)program_Files\Game_Draw;$(ProjectDir)program_Files\Draw_Set;$(ProjectDir)program_Files\Draw_Resource;$(ProjectDir)Program_Files\Debug_Resource;$(ProjectDir)program_Files\Resource_Setting;$(ProjectDir)program_Files\DirectX;$(ProjectDir)Program_Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

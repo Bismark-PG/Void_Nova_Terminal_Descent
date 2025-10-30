@@ -12,4 +12,6 @@
 void System_Initialize(HWND hWnd);
 void System_Finalize();
 
+void System_Reset_For_Ending();
+
 #endif // SYSTEM_LOGIC_MANAGER

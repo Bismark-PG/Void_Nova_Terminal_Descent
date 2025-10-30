@@ -22,7 +22,7 @@ void Window_Re_Create(ScreenMode Mode)
 	System_Finalize();
 	Debug << " - System finalized.\n";
 
-	WM.Game_Window_Re_Create(Mode, Handle_Instance);
+	Window_M.Game_Window_Re_Create(Mode, Handle_Instance);
 	if (Game_Window && IsWindow(Game_Window))
 		Debug << " - Window re-created successfully.\n";
 	else

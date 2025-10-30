@@ -202,6 +202,7 @@ enum Enemy_Give_Score : int
 	Enemy_Type_Final_P_1_Boss_Score = 30000,
 	Enemy_Type_Final_P_2_Boss_Score = 50000,
 	Enemy_Type_Final_Boss_Phase_Change_Score = 1000,
+	Enemy_Type_Final_Boss_Phase_2_Change_Score = 1000,
 };
 
 enum class Patrol_Direction
@@ -250,13 +251,10 @@ struct Enemy
 	XMFLOAT2 Position;
 	XMFLOAT2 Size;
 
-	XMFLOAT2 Velocity; // Input In Enemy_Type, Can Make Speed which Enemy
+	XMFLOAT2 Velocity;
 	float Speed;
 	float Angle;
 	float HP;
-
-	int Current_Phase;
-	int Max_Phase;
 
 	bool isEnable;
 	bool isDamage;
@@ -267,7 +265,6 @@ struct Enemy
 
 	double State_Timer;
 	double Fire_Timer;
-	double Phase_Change_Timer;
 
 	int Now_Fire_Count;
 	float Now_Patrol_Time;
@@ -288,10 +285,6 @@ void Enemy_Draw();
 
 int Enemy_Create(Enemy_Type_ID ID, const DirectX::XMFLOAT2& Position, Enemy_Move_Pattern Pattern, const PATTERN_DATA& data, const XMFLOAT2& targetPos = { 0.0f, 0.0f });
 
-void Enemy_Create_Destruction_Shell(int Index);
-bool Enemy_Go_To_Next_Phase(int Boss_Index);
-int Enemy_Get_Current_Phase(int Boss_Index);
-
 // True : Width, False : Height
 float Enemy_Get_Width(Enemy_Type_ID ID, bool Is_Width);
 void Enemy_Give_Score(int Index);
@@ -300,6 +293,7 @@ bool Enemy_IsEnable(int Index);
 Circle Enemy_GetCollision(int Index);
 
 const Enemy* Enemy_Get(int Index);
+Enemy* Enemy_Get_Editable(int Index);
 
 // Make Damage
 void Enemy_Damage(int Index);
@@ -308,5 +302,7 @@ void Enemy_Destroy(int Index);
 void Enemy_Destroy_All_Normal_Enemies();
 
 Enemy_Type Get_Enemy_Info(int Type_ID);
+
+void Enemy_Texture();
 
 #	endif  //ENEMY_H

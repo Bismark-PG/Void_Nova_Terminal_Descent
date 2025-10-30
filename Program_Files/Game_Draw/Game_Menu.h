@@ -67,6 +67,7 @@ void Menu_Finalize();
 void Menu_Update();
 
 void Menu_UI_Draw();
+void Menu_Reset_For_Ending();
 
 void Update_Main_Buffer(UI_STATE UI_Buffer);
 UI_STATE Get_Main_Draw_State();
@@ -78,5 +79,7 @@ void Set_Wait_For_Release(bool Release_State);
 bool Get_Wait_For_Release();
 
 bool IF_IS_Game_Done();
+
+void Game_Menu_Texture();
 
 #endif // GAME_MENU

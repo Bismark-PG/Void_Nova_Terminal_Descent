@@ -13,7 +13,7 @@ void Main_Game_Screen_Update()
 {
 	std::stringstream Debug;
 
-	switch (GM.Get_Current_Main_Screen())
+	switch (Game_M.Get_Current_Main_Screen())
 	{
 	case Main_Screen::M_WAIT:
 		Logo_Draw();
@@ -49,10 +49,10 @@ void Main_Game_Screen_Update()
 
 void Sub_Game_Screen_Update()
 {
-	switch (GM.Get_Current_Sub_Screen())
+	switch (Game_M.Get_Current_Sub_Screen())
 	{
 	case Sub_Screen::S_WAIT:
-		if (GM.Get_Current_Main_Screen() == Main_Screen::SELECT_SETTINGS)
+		if (Game_M.Get_Current_Main_Screen() == Main_Screen::SELECT_SETTINGS)
 			Update_Sub_Screen(Sub_Screen::SETTINGS);
 		break;
 
@@ -67,10 +67,10 @@ void Sub_Game_Screen_Update()
 
 void Game_Select_Screen_Update()
 {
-	switch (GM.Get_Current_Game_Select_Screen())
+	switch (Game_M.Get_Current_Game_Select_Screen())
 	{
 	case Game_Select_Screen::G_WAIT:
-		if (GM.Get_Current_Main_Screen() == Main_Screen::SELECT_GAME)
+		if (Game_M.Get_Current_Main_Screen() == Main_Screen::SELECT_GAME)
 			Update_Game_Select_Screen(Game_Select_Screen::GAME_MENU_SELECT);
 		break;
 

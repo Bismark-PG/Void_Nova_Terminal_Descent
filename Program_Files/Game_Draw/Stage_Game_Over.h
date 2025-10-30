@@ -100,4 +100,6 @@ GAME_OVER_MENU_BUFFER Get_Game_Over_Input();
 void Set_Game_Over_Menu_Selected(GAME_OVER_MENU_SELCETED Selected);
 GAME_OVER_MENU_SELCETED Get_Game_Over_Menu_Selected();
 
+void Game_Over_Texture();
+
 #endif // GAME_OVER_H

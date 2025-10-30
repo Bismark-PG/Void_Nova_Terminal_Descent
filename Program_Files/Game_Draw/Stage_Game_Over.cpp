@@ -6,7 +6,6 @@
 
 ==============================================================================*/
 #include "Stage_Game_Over.h"
-
 #include "Stage_Select.h"
 #include "Game_Window.h"
 #include "Sprite_Animation.h"
@@ -17,20 +16,19 @@
 
 using namespace PALETTE;
 
-static int Game_Over_BG_TexID = -1;
+//----------------Game Over UI----------------//
+static int UI_Over_Alpha_BG = -1;
 
-static int Operation_TexID = -1;
-static int Failed_TexID = -1;
-static int Game_Over_JP_TexID = -1;
+static int UI_Return = -1;
+static int UI_Return_JP = -1;
+static int UI_Abort = -1;
+static int UI_Abort_JP = -1;
 
-static int Retry_TexID = -1;
-static int Retry_JP_TexID = -1;
-
-static int Go_To_Main_TexID = -1;
-static int Go_To_Main_JP_TexID = -1;
-
-static int Complete_TexID = -1;
-static int Complete_JP_TexID = -1;
+static int UI_Operation = -1;
+static int UI_Complete = -1;
+static int UI_Complete_JP = -1;
+static int UI_Failed = -1;
+static int UI_Failed_JP = -1;
 
 static float BG_Alpha = 0.0f;
 static float UI_Alpha = 0.0f;
@@ -51,20 +49,7 @@ GAME_OVER_MENU_SELCETED Game_Over_Selected = GAME_OVER_MENU_SELCETED::NONE;
 
 void Game_Over_Initialize()
 {
-	Game_Over_BG_TexID	= Texture_Load(L"Resource/Texture/Other/B_Pixel.png");
-
-	Operation_TexID		= Texture_Load(L"Resource/Texture/UI/UI_Operation.png");
-	Failed_TexID		= Texture_Load(L"Resource/Texture/UI/UI_Failed.png");
-	Game_Over_JP_TexID	= Texture_Load(L"Resource/Texture/UI/UI_Failed_JP.png");
-
-	Retry_TexID			= Texture_Load(L"Resource/Texture/UI/Menu_Return.png");
-	Retry_JP_TexID		= Texture_Load(L"Resource/Texture/UI/Menu_Return_JP.png");
-
-	Go_To_Main_TexID	= Texture_Load(L"Resource/Texture/UI/Menu_Abort.png");
-	Go_To_Main_JP_TexID = Texture_Load(L"Resource/Texture/UI/Menu_Abort_JP.png");
-
-	Complete_TexID	    = Texture_Load(L"Resource/Texture/UI/UI_Complete.png");
-	Complete_JP_TexID   = Texture_Load(L"Resource/Texture/UI/UI_Complete_JP.png");
+	Game_Over_Texture();
 
 	Stage_Over_Draw_Reset();
 
@@ -149,7 +134,7 @@ void Game_Over_Update()
 {
 	if (Is_Failed_Sound_Played)
 	{
-		SM->Play_SFX("Stage_Failed");
+		Sound_M->Play_SFX("Stage_Failed");
 		Is_Failed_Sound_Played = false;
 	}
 
@@ -161,12 +146,12 @@ void Game_Over_Update()
 			if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 			{
 				Set_Game_Over_Input(GAME_OVER_MENU_BUFFER::GO_MAIN);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			else if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 			{
 				Set_Game_Over_Input(GAME_OVER_MENU_BUFFER::RETRY);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -175,13 +160,13 @@ void Game_Over_Update()
 			{
 				Set_Game_Over_Menu_Selected(GAME_OVER_MENU_SELCETED::RE_START);
 				Set_Game_Over_Input(GAME_OVER_MENU_BUFFER::DONE);
-				SM->Play_SFX("Buffer_Select");
+				Sound_M->Play_SFX("Buffer_Select");
 			}
 
 			if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 			{
 				Set_Game_Over_Input(GAME_OVER_MENU_BUFFER::GO_MAIN);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -190,13 +175,13 @@ void Game_Over_Update()
 			{
 				Set_Game_Over_Menu_Selected(GAME_OVER_MENU_SELCETED::GO_TO_MAIN);
 				Set_Game_Over_Input(GAME_OVER_MENU_BUFFER::DONE);
-				SM->Play_SFX("Buffer_Back");
+				Sound_M->Play_SFX("Buffer_Back");
 			}
 
 			if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 			{
 				Set_Game_Over_Input(GAME_OVER_MENU_BUFFER::RETRY);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -224,10 +209,10 @@ void Game_Over_Draw()
 		{
 			if (Game_Over_Menu_Alpha < A_Half)
 			{
-				Sprite_Draw(Retry_JP_TexID, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
-				Sprite_Draw(Go_To_Main_JP_TexID, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
-				Sprite_Draw(Retry_TexID, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
-				Sprite_Draw(Go_To_Main_TexID, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
+				Sprite_Draw(UI_Return, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
+				Sprite_Draw(UI_Return_JP, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
+				Sprite_Draw(UI_Abort, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
+				Sprite_Draw(UI_Abort_JP, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, Game_Over_Menu_Alpha });
 
 				Game_Over_Menu_Alpha += Menu_Alpha_Increase;
 
@@ -238,24 +223,24 @@ void Game_Over_Draw()
 			{
 				if (Get_Game_Over_Input() == GAME_OVER_MENU_BUFFER::RETRY)
 				{
-					Sprite_Draw(Retry_JP_TexID, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
-					Sprite_Draw(Retry_TexID, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+					Sprite_Draw(UI_Return_JP, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+					Sprite_Draw(UI_Return, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
 				}
 				else
 				{
-					Sprite_Draw(Retry_JP_TexID, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
-					Sprite_Draw(Retry_TexID, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+					Sprite_Draw(UI_Return_JP, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+					Sprite_Draw(UI_Return, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 				}
 
 				if (Get_Game_Over_Input() == GAME_OVER_MENU_BUFFER::GO_MAIN)
 				{
-					Sprite_Draw(Go_To_Main_JP_TexID, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
-					Sprite_Draw(Go_To_Main_TexID, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+					Sprite_Draw(UI_Abort_JP, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+					Sprite_Draw(UI_Abort, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
 				}
 				else
 				{
-					Sprite_Draw(Go_To_Main_JP_TexID, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
-					Sprite_Draw(Go_To_Main_TexID, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+					Sprite_Draw(UI_Abort_JP, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+					Sprite_Draw(UI_Abort, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 
 				}
 			}
@@ -281,28 +266,28 @@ void Stage_Over_Draw_Reset()
 
 void Game_Paused_Draw()
 {
-	Sprite_Draw(Game_Over_BG_TexID, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+	Sprite_Draw(UI_Over_Alpha_BG, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 
 	if (Get_Game_Over_Input() == GAME_OVER_MENU_BUFFER::RETRY)
 	{
-		Sprite_Draw(Retry_JP_TexID, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
-		Sprite_Draw(Retry_TexID, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+		Sprite_Draw(UI_Return_JP, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+		Sprite_Draw(UI_Return, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
 	}
 	else
 	{
-		Sprite_Draw(Retry_JP_TexID, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
-		Sprite_Draw(Retry_TexID, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Return_JP, Game_Over_UI_JP_X, Retry_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Return, Game_Over_UI_X, Retry_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 	}
 
 	if (Get_Game_Over_Input() == GAME_OVER_MENU_BUFFER::GO_MAIN)
 	{
-		Sprite_Draw(Go_To_Main_JP_TexID, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
-		Sprite_Draw(Go_To_Main_TexID, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+		Sprite_Draw(UI_Abort_JP, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
+		Sprite_Draw(UI_Abort, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f);
 	}
 	else
 	{
-		Sprite_Draw(Go_To_Main_JP_TexID, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
-		Sprite_Draw(Go_To_Main_TexID, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Abort_JP, Game_Over_UI_JP_X, Go_To_Main_JP_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Abort, Game_Over_UI_X, Go_To_Main_Y, Game_Over_UI_Width, Game_Over_UI_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 
 	}
 }
@@ -345,7 +330,7 @@ void Stage_Outro_Update(double elapsed_time)
 		if (BG_Alpha >= A_Half)
 		{
 			BG_Alpha = A_Half;
-			SM->Play_SFX("Stage_Show_Score");
+			Sound_M->Play_SFX("Stage_Show_Score");
 			Outro_State = STAGE_OUTRO_STATE::UI_FADE_IN;
 		}
 		break;
@@ -356,7 +341,7 @@ void Stage_Outro_Update(double elapsed_time)
 		if (UI_Alpha >= A_Origin)
 		{
 			UI_Alpha = A_Origin;
-			SM->Play_SFX("Stage_Score_Up");
+			Sound_M->Play_SFX("Stage_Score_Up");
 			Outro_State = STAGE_OUTRO_STATE::SCORE_COUNT;
 		}
 		break;
@@ -399,15 +384,15 @@ void Stage_Outro_Draw()
 {
 	if (Outro_State == STAGE_OUTRO_STATE::IN_ACTIVE) return;
 
-	Sprite_Draw(Game_Over_BG_TexID, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, BG_Alpha });
+	Sprite_Draw(UI_Over_Alpha_BG, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, {A_Origin, A_Origin, A_Origin, BG_Alpha});
 
 	if (Outro_State >= STAGE_OUTRO_STATE::UI_FADE_IN)
 	{
 		float Current_UI_Alpha = (Outro_State == STAGE_OUTRO_STATE::ALL_FADE_OUT) ? Stage_Clear_Alpha : UI_Alpha;
 
-		Sprite_Draw(Operation_TexID, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f, { A_Origin, A_Origin, A_Origin, Current_UI_Alpha });
-		Sprite_Draw(Complete_TexID, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f, { A_Origin, A_Origin, A_Origin, Current_UI_Alpha });
-		Sprite_Draw(Complete_JP_TexID, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f, { A_Origin, A_Origin, A_Origin, Current_UI_Alpha });
+		Sprite_Draw(UI_Operation, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f, {A_Origin, A_Origin, A_Origin, Current_UI_Alpha});
+		Sprite_Draw(UI_Complete, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f, {A_Origin, A_Origin, A_Origin, Current_UI_Alpha});
+		Sprite_Draw(UI_Complete_JP, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f, { A_Origin, A_Origin, A_Origin, Current_UI_Alpha });
 	}
 
 	if (Outro_State >= STAGE_OUTRO_STATE::SCORE_COUNT)
@@ -434,7 +419,7 @@ void Stage_Done_BG_Draw()
 {
 	if (BG_Alpha < A_Half)
 	{
-		Sprite_Draw(Game_Over_BG_TexID, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, BG_Alpha });
+		Sprite_Draw(UI_Over_Alpha_BG, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, BG_Alpha });
 		BG_Alpha += BG_Alpha_Increase;
 
 		if (BG_Alpha >= A_Half)
@@ -442,7 +427,7 @@ void Stage_Done_BG_Draw()
 	}
 	else
 	{
-		Sprite_Draw(Game_Over_BG_TexID, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Over_Alpha_BG, 0.f, 0.f, BG_A_Width, BG_A_Height, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 		Is_BG_Fade_In_Done = true;
 	}
 }
@@ -451,9 +436,9 @@ void Stage_Failed_UI_Draw()
 {
 	if (UI_Alpha < A_Origin)
 	{
-		Sprite_Draw(Operation_TexID, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
-		Sprite_Draw(Failed_TexID, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
-		Sprite_Draw(Game_Over_JP_TexID, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
+		Sprite_Draw(UI_Operation, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
+		Sprite_Draw(UI_Failed, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
+		Sprite_Draw(UI_Failed_JP, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
 		UI_Alpha += UI_Alpha_Increase;
 
 		if (UI_Alpha >= A_Origin)
@@ -464,9 +449,9 @@ void Stage_Failed_UI_Draw()
 	}
 	else
 	{
-		Sprite_Draw(Operation_TexID, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f);
-		Sprite_Draw(Failed_TexID, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f);
-		Sprite_Draw(Game_Over_JP_TexID, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f);
+		Sprite_Draw(UI_Operation, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f);
+		Sprite_Draw(UI_Failed, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f);
+		Sprite_Draw(UI_Failed_JP, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f);
 		Is_Title_Anime_Done = true;
 	}
 }
@@ -475,9 +460,9 @@ void Stage_Clear_UI_Draw()
 {
 	if (UI_Alpha < A_Origin)
 	{
-		Sprite_Draw(Operation_TexID, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
-		Sprite_Draw(Complete_TexID, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
-		Sprite_Draw(Complete_JP_TexID, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
+		Sprite_Draw(UI_Operation, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
+		Sprite_Draw(UI_Complete, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
+		Sprite_Draw(UI_Complete_JP, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f, { A_Origin, A_Origin, A_Origin, UI_Alpha });
 		UI_Alpha += UI_Alpha_Increase;
 
 		if (UI_Alpha >= A_Origin)
@@ -485,9 +470,9 @@ void Stage_Clear_UI_Draw()
 	}
 	else
 	{
-		Sprite_Draw(Operation_TexID, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f);
-		Sprite_Draw(Complete_TexID, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f);
-		Sprite_Draw(Complete_JP_TexID, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f);
+		Sprite_Draw(UI_Operation, Game_Over_Title_X, Game_Over_Title_Y, Game_Over_Title_Width, Game_Over_Title_Height, 0.f);
+		Sprite_Draw(UI_Complete, Game_Over_Status_X, Game_Over_Status_Y, Game_Over_Status_Width, Game_Over_Status_Height, 0.f);
+		Sprite_Draw(UI_Complete_JP, Game_Over_JP_X, Game_Over_JP_Y, Game_Over_JP_Width, Game_Over_JP_Height, 0.f);
 		Is_Title_Anime_Done = true;
 	}
 }
@@ -510,4 +495,20 @@ void Set_Game_Over_Menu_Selected(GAME_OVER_MENU_SELCETED Selected)
 GAME_OVER_MENU_SELCETED Get_Game_Over_Menu_Selected()
 {
 	return Game_Over_Selected;
+}
+
+void Game_Over_Texture()
+{
+	UI_Over_Alpha_BG = Texture_M->GetID("Pixel_Black");
+
+	UI_Return = Texture_M->GetID("UI_Return");
+	UI_Return_JP = Texture_M->GetID("UI_Return_JP");
+	UI_Abort = Texture_M->GetID("UI_Abort");
+	UI_Abort_JP = Texture_M->GetID("UI_Abort_JP");
+
+	UI_Operation = Texture_M->GetID("UI_Operation");
+	UI_Complete = Texture_M->GetID("UI_Complete");
+	UI_Complete_JP = Texture_M->GetID("UI_Complete_JP");
+	UI_Failed = Texture_M->GetID("UI_Failed");
+	UI_Failed_JP = Texture_M->GetID("UI_Failed_JP");
 }

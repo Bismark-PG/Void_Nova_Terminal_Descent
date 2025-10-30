@@ -6,58 +6,11 @@
 
 ==============================================================================*/
 #include "Script_Draw.h"
-#include "Sprite_Animation.h"
+#include "Sprite.h"
 #include "Game_Window.h"
 #include "Palette.h"
+#include <Texture_Manager.h>
 using namespace PALETTE;
-
-static int Story_Stage_1_1 = -1;
-static int Story_Stage_1_2 = -1;
-static int Story_Stage_1_3 = -1;
-static int Story_Stage_1_4 = -1;
-static int Story_Stage_1_5 = -1;
-
-static int Story_Stage_2_1 = -1;
-static int Story_Stage_2_2 = -1;
-static int Story_Stage_2_3 = -1;
-static int Story_Stage_2_4 = -1;
-static int Story_Stage_2_5 = -1;
-static int Story_Stage_2_6 = -1;
-static int Story_Stage_2_7 = -1;
-
-static int Story_Stage_3_1 = -1;
-static int Story_Stage_3_2 = -1;
-static int Story_Stage_3_3 = -1;
-static int Story_Stage_3_4 = -1;
-static int Story_Stage_3_5 = -1;
-static int Story_Stage_3_6 = -1;
-
-static int Story_Stage_3_Boss_1 = -1;
-static int Story_Stage_3_Boss_2 = -1;
-static int Story_Stage_3_Boss_3 = -1;
-static int Story_Stage_3_Boss_4 = -1;
-
-static int Story_Stage_4_1 = -1;
-static int Story_Stage_4_2 = -1;
-static int Story_Stage_4_3 = -1;
-
-static int Story_Stage_4_Boss_1 = -1;
-static int Story_Stage_4_Boss_2 = -1;
-static int Story_Stage_4_Boss_3 = -1;
-static int Story_Stage_4_Boss_4 = -1;
-static int Story_Stage_4_Boss_5 = -1;
-
-static int Story_Stage_5_1 = -1;
-static int Story_Stage_5_2 = -1;
-
-static int Story_Stage_5_Boss_1 = -1;
-static int Story_Stage_5_Boss_2 = -1;
-static int Story_Stage_5_Boss_3 = -1;
-static int Story_Stage_5_Boss_4 = -1;
-static int Story_Stage_5_Boss_5 = -1;
-
-static float X;
-static float Y;
 
 static bool Is_Page_Draw_Complete;
 
@@ -73,54 +26,74 @@ void Set_Position(float X, float Y, float E_Y, float W, float H)
 void Script_Draw_Initialize()
 {
 	Is_Page_Draw_Complete = false;
+}
 
-	Story_Stage_1_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_1_1.png");
-	Story_Stage_1_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_1_2.png");
-	Story_Stage_1_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_1_3.png");
-	Story_Stage_1_4 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_1_4.png");
-	Story_Stage_1_5 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_1_5.png");
+void Script_Stage_1_Draw(int Now_Page, STORY_TYPE Type)
+{
+	switch (Type)
+	{
+	case STORY_TYPE::INTRO_STAGE:
+		Script_Stage_1(Now_Page);
+		break;
+	case STORY_TYPE::OUTRO_STAGE:
+		// Outro?
+		break;
+	}
+}
 
-	Story_Stage_2_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_1.png");
-	Story_Stage_2_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_2.png");
-	Story_Stage_2_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_3.png");
-	Story_Stage_2_4 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_4.png");
-	Story_Stage_2_5 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_5.png");
-	Story_Stage_2_6 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_6.png");
-	Story_Stage_2_7 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_2_7.png");
+void Script_Stage_2_Draw(int Now_Page, STORY_TYPE Type)
+{
+	switch (Type)
+	{
+	case STORY_TYPE::INTRO_STAGE:
+		Script_Stage_2(Now_Page);
+		break;
+	case STORY_TYPE::OUTRO_STAGE:
+		// Outro?
+		break;
+	}
+}
 
-	Story_Stage_3_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_1.png");
-	Story_Stage_3_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_2.png");
-	Story_Stage_3_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_3.png");
-	Story_Stage_3_4 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_4.png");
-	Story_Stage_3_5 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_5.png");
-	Story_Stage_3_6 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_6.png");
+void Script_Stage_3_Draw(int Now_Page, STORY_TYPE Type)
+{
+	switch (Type)
+	{
+	case STORY_TYPE::INTRO_STAGE:
+		Script_Stage_3(Now_Page);
+		break;
+	case STORY_TYPE::INTRO_BOSS:
+		Script_Stage_3_BOSS(Now_Page);
+		break;
+	}
+}
 
-	Story_Stage_3_Boss_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_Boss_1.png");
-	Story_Stage_3_Boss_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_Boss_2.png");
-	Story_Stage_3_Boss_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_Boss_3.png");
-	Story_Stage_3_Boss_4 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_3_Boss_4.png");
+void Script_Stage_4_Draw(int Now_Page, STORY_TYPE Type)
+{
+	switch (Type)
+	{
+	case STORY_TYPE::INTRO_STAGE:
+		Script_Stage_4(Now_Page);
+		break;
+	case STORY_TYPE::INTRO_BOSS:
+		Script_Stage_4_BOSS(Now_Page);
+		break;
+	}
+}
 
-	Story_Stage_4_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_1.png");
-	Story_Stage_4_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_2.png");
-	Story_Stage_4_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_3.png");
-
-	Story_Stage_4_Boss_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_Boss_1.png");
-	Story_Stage_4_Boss_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_Boss_2.png");
-	Story_Stage_4_Boss_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_Boss_3.png");
-	Story_Stage_4_Boss_4 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_Boss_4.png");
-	Story_Stage_4_Boss_5 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_4_Boss_5.png");
-
-	Story_Stage_5_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_1.png");
-	Story_Stage_5_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_2.png");
-
-	Story_Stage_5_Boss_1 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_Boss_1.png");
-	Story_Stage_5_Boss_2 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_Boss_2.png");
-	Story_Stage_5_Boss_3 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_Boss_3.png");
-	Story_Stage_5_Boss_4 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_Boss_4.png");
-	Story_Stage_5_Boss_5 = Texture_Load(L"Resource/Texture/Story/Script/Story_Stage_5_Boss_5.png");
-
-	X = SCREEN_WIDTH  * A_Half;
-	Y = SCREEN_HEIGHT * A_Half;
+void Script_Stage_5_Draw(int Now_Page, STORY_TYPE Type)
+{
+	switch (Type)
+	{
+	case STORY_TYPE::INTRO_STAGE:
+		Script_Stage_5(Now_Page);
+		break;
+	case STORY_TYPE::INTRO_BOSS:
+		Script_Stage_5_BOSS_Phase_1(Now_Page);
+		break;
+	case STORY_TYPE::OUTRO_FINAL_BOSS_LIE: // Or any other specific type
+		Script_Stage_5_BOSS_Phase_2(Now_Page);
+		break;
+	}
 }
 
 bool Is_Current_Script_Done()
@@ -135,194 +108,246 @@ void Is_Page_Complete()
 
 void Script_Stage_1(int Now_Page)
 {
+	int Stage_1 = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_1_1, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_1 = Texture_M->GetID("Stage_1_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_1_2, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_1 = Texture_M->GetID("Stage_1_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_1_3, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_1 = Texture_M->GetID("Stage_1_3");
 		break;
 	case 3:
-		Sprite_Draw(Story_Stage_1_4, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_1 = Texture_M->GetID("Stage_1_4");
 		break;
 	case 4:
-		Sprite_Draw(Story_Stage_1_5, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_1 = Texture_M->GetID("Stage_1_5");
 		break;
 	}
+
+	Sprite_Draw(Stage_1, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_2(int Now_Page)
 {
+	int Stage_2 = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_2_1, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_2_2, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_2_3, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_3");
 		break;
 	case 3:
-		Sprite_Draw(Story_Stage_2_4, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_4");
 		break;
 	case 4:
-		Sprite_Draw(Story_Stage_2_5, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_5");
 		break;
 	case 5:
-		Sprite_Draw(Story_Stage_2_6, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_6");
 		break;
 	case 6:
-		Sprite_Draw(Story_Stage_2_7, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_2 = Texture_M->GetID("Stage_2_7");
 		break;
 	}
+
+	Sprite_Draw(Stage_2, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_3(int Now_Page)
 {
+	int Stage_3 = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_3_1, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3 = Texture_M->GetID("Stage_3_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_3_2, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3 = Texture_M->GetID("Stage_3_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_3_3, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3 = Texture_M->GetID("Stage_3_3");
 		break;
 	case 3:
-		Sprite_Draw(Story_Stage_3_4, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3 = Texture_M->GetID("Stage_3_4");
 		break;
 	case 4:
-		Sprite_Draw(Story_Stage_3_5, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3 = Texture_M->GetID("Stage_3_5");
 		break;
 	case 5:
-		Sprite_Draw(Story_Stage_3_6, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3 = Texture_M->GetID("Stage_3_6");
 		break;
 	}
+
+	Sprite_Draw(Stage_3, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_3_BOSS(int Now_Page)
 {
+	int Stage_3_Boss = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_3_Boss_1, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3_Boss = Texture_M->GetID("Stage_3_Boss_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_3_Boss_2, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3_Boss = Texture_M->GetID("Stage_3_Boss_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_3_Boss_3, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3_Boss = Texture_M->GetID("Stage_3_Boss_3");
 		break;
 	case 3:
-		Sprite_Draw(Story_Stage_3_Boss_4, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_3_Boss = Texture_M->GetID("Stage_3_Boss_4");
 		break;
 	}
+
+	Sprite_Draw(Stage_3_Boss, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_4(int Now_Page)
 {
+	int Stage_4 = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_4_1, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4 = Texture_M->GetID("Stage_4_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_4_2, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4 = Texture_M->GetID("Stage_4_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_4_3, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4 = Texture_M->GetID("Stage_4_3");
 		break;
 	}
+
+	Sprite_Draw(Stage_4, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_4_BOSS(int Now_Page)
 {
+	int Stage_4_Boss = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_4_Boss_1, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4_Boss = Texture_M->GetID("Stage_4_Boss_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_4_Boss_2, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4_Boss = Texture_M->GetID("Stage_4_Boss_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_4_Boss_3, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4_Boss = Texture_M->GetID("Stage_4_Boss_3");
 		break;
 	case 3:
-		Sprite_Draw(Story_Stage_4_Boss_4, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4_Boss = Texture_M->GetID("Stage_4_Boss_4");
 		break;
 	case 4:
-		Sprite_Draw(Story_Stage_4_Boss_5, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_4_Boss = Texture_M->GetID("Stage_4_Boss_5");
 		break;
 	}
+
+	Sprite_Draw(Stage_4_Boss, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_5(int Now_Page)
 {
+	int Stage_5 = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_5_1, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5 = Texture_M->GetID("Stage_5_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_5_2, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5 = Texture_M->GetID("Stage_5_2");
 		break;
 	}
+
+	Sprite_Draw(Stage_5, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_5_BOSS_Phase_1(int Now_Page)
 {
+	int Stage_5_Boss = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
-		Sprite_Draw(Story_Stage_5_Boss_1, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5_Boss = Texture_M->GetID("Stage_5_Boss_1");
 		break;
 	case 1:
-		Sprite_Draw(Story_Stage_5_Boss_2, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5_Boss = Texture_M->GetID("Stage_5_Boss_2");
 		break;
 	case 2:
-		Sprite_Draw(Story_Stage_5_Boss_3, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5_Boss = Texture_M->GetID("Story_Monologue");
 		break;
 	case 3:
-		Sprite_Draw(Story_Stage_5_Boss_4, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5_Boss = Texture_M->GetID("Stage_5_Boss_3");
 		break;
 	case 4:
-		Sprite_Draw(Story_Stage_5_Boss_5, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
+		Stage_5_Boss = Texture_M->GetID("Stage_5_Boss_4");
 		break;
 	}
+
+	Sprite_Draw(Stage_5_Boss, Draw_X, Draw_Enemy_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }
 
 void Script_Stage_5_BOSS_Phase_2(int Now_Page)
 {
+	int Stage_Final_Boss = -1;
+
 	switch (Now_Page)
 	{
 	case 0:
+		Stage_Final_Boss = Texture_M->GetID("Stage_Final_1");
+		break;
+	case 1:
+		Stage_Final_Boss = Texture_M->GetID("Story_Monologue");
+		break;
+	case 2:
+		Stage_Final_Boss = Texture_M->GetID("Stage_Final_2");
+		break;
+	case 3:
+		Stage_Final_Boss = Texture_M->GetID("Story_Monologue");
+		break;
+	case 4:
+		Stage_Final_Boss = Texture_M->GetID("Stage_Final_3");
+		break;
+	case 5:
+		Stage_Final_Boss = Texture_M->GetID("Stage_Final_4");
 		break;
 	}
+
+	Sprite_Draw(Stage_Final_Boss, Draw_X, Draw_Y, Draw_Width, Draw_Height, 0.f);
 
 	Is_Page_Draw_Complete = true;
 }

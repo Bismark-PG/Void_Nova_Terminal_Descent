@@ -99,7 +99,7 @@ void Status_Add_Power(float amount)
 	int Power_After = static_cast<int>(Player_Power);
 
 	if (Power_After > Power_Before && Power_After == static_cast<int>(PLAYER_POWER_MAX))
-		SM->Play_SFX("Player_Get_Power_Max");
+		Sound_M->Play_SFX("Player_Get_Power_Max");
 }
 
 void Status_Reset_Power()

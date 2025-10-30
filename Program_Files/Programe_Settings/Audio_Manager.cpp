@@ -71,9 +71,10 @@ Audio_Manager* Audio_Manager::Get_Audio_Instance()
 // Creator / Extinction
 Audio_Manager::Audio_Manager()
     : X_Audio(nullptr), m_pMasteringVoice(nullptr),
-    BGM_Volume(SOUND_SCALE_BUFFER::SOUND_MAX), SFX_Volume(SOUND_SCALE_BUFFER::SOUND_MAX), Voice_Call_back(nullptr),
-    Now_Playing_BGM_Name("")
+	Current_BGM_Volume(0.5f), Target_BGM_Volume(0.5f), Target_SFX_Volume(0.5f), // Default Volume : 50%
+    Voice_Call_back(nullptr), Now_Playing_BGM_Name("")
 {
+
 
 }
 
@@ -247,7 +248,7 @@ void Audio_Manager::Play_BGM(const std::string& name, bool bLoop)
     }
 
     BGM_Data.Source->SubmitSourceBuffer(&Buffer, NULL);
-    BGM_Data.Source->SetVolume(BGM_Volume / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX));
+    BGM_Data.Source->SetVolume(Current_BGM_Volume);
     BGM_Data.Source->Start();
 
     Now_Playing_BGM_Name = name;
@@ -296,7 +297,7 @@ void Audio_Manager::Play_SFX(const std::string& name)
     Buffer.pContext = Source_Voice; // Deliver Voice Pointers to Callback
 
     Source_Voice->SubmitSourceBuffer(&Buffer, NULL);
-    Source_Voice->SetVolume(SFX_Volume / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX));
+    Source_Voice->SetVolume(Target_SFX_Volume);
 
     {
         std::lock_guard<std::mutex> lock(Voice_Mutex);
@@ -319,32 +320,41 @@ void Audio_Manager::Stop_All_SFX()
 }
 
 // Manage Volume
-void Audio_Manager::Set_BGM_Volume(int volume)
+void Audio_Manager::Set_Target_BGM_Volume(float volume)
 {
-    BGM_Volume = std::max(0, std::min(static_cast<int>(SOUND_SCALE_BUFFER::SOUND_MAX), volume));
+    Target_BGM_Volume = std::max(0.0f, std::min(1.0f, volume));
+    Update_Current_BGM_Volume(Target_BGM_Volume);
+}
 
-    // Updates the Volume of All BGM
-    for (auto const& Find : BGMs)
+void Audio_Manager::Set_Target_SFX_Volume(float volume)
+{
+    Target_SFX_Volume = std::max(0.0f, std::min(1.0f, volume));
+}
+
+void Audio_Manager::Update_Current_BGM_Volume(float volume)
+{
+    Current_BGM_Volume = std::max(0.0f, std::min(1.0f, volume));
+
+    for (auto const& pair : BGMs)
     {
-        if (Find.second.Source)
-            Find.second.Source->SetVolume(BGM_Volume / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX));
+        if (pair.second.Source)
+            pair.second.Source->SetVolume(Current_BGM_Volume);
     }
-
 }
 
-void Audio_Manager::Set_SFX_Volume(int volume)
+float Audio_Manager::Get_Target_BGM_Volume() const
 {
-    SFX_Volume = std::max(0, std::min(static_cast<int>(SOUND_SCALE_BUFFER::SOUND_MAX), volume));
+    return Target_BGM_Volume;
 }
 
-int Audio_Manager::Get_BGM_Volume() const
+float Audio_Manager::Get_Current_BGM_Volume() const
 {
-    return BGM_Volume;
+    return Current_BGM_Volume;
 }
 
-int Audio_Manager::Get_SFX_Volume() const
+float Audio_Manager::Get_Target_SFX_Volume() const
 {
-    return SFX_Volume;
+    return Target_SFX_Volume;
 }
 
 std::string Audio_Manager::Get_Playing_BGM_Name() const

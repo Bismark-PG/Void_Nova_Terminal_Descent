@@ -15,6 +15,7 @@
 #include "Stage_Update.h"
 #include "Boss_Manager.h"
 #include "Story_Script.h"
+#include <Item.h>
 
 using namespace PALETTE;
 using namespace DirectX;
@@ -25,20 +26,21 @@ static STAGE_FLOW_STATE	Stage_Flow  = STAGE_FLOW_STATE::IDLE;
 static double Prepare_Game_Timer = 0.0;
 static double State_Timer = 0.0;
 
+static bool Is_Prepare_Sequence_Started = false;
 static bool Is_Battle_Start_Sound_Played = false;
+static bool Is_Blackout_Active = false;
+static bool Is_Final_BGM_Active = false;
 
 static bool Is_Player_Moving_By_Script = false;
 static XMFLOAT2 Player_Move_Target;
 static float Player_Move_Speed;
 
-static int Current_Volume = 0;
+static float Current_Volume = 0.0f;
 static double BGM_Fade_Timer = 0.0;
 constexpr double BGM_FADE_TIME = 3.0;
 static bool Is_BGM_Fading_In = false;
+static bool Is_Stage_Start = false;
 static bool Is_Fading = false;
-
-static bool Is_Boss_Story = false;
-static bool Is_Boss_Spawned = false;
 
 void Stage_Initialize()
 {
@@ -57,11 +59,14 @@ void Stage_Initialize()
 	Player_Spawn_Y = static_cast<float>(SCREEN_HEIGHT) - (PLAYER_HEIGHT * A_One_And_Half);
 	Player_Spawn_Speed *= Game_Scale;
 
-	Current_Volume = 0;
+	Current_Volume = 0.0f;
 	BGM_Fade_Timer = 0.0;
 	Is_BGM_Fading_In = false;
+	Is_Stage_Start = false;
 	Is_Fading = false;
-	Is_Boss_Spawned = false;
+
+	Is_Blackout_Active = false;
+	Is_Final_BGM_Active = false;
 }
 
 void Stage_Finalize()
@@ -73,8 +78,14 @@ void Stage_Finalize()
 	Player_Spawn_Y = 0;
 	Player_Spawn_Speed = 150.f;
 
-	Current_Volume = 0;
+	Current_Volume = 0.0f;
 	BGM_Fade_Timer = 0.0;
+	Is_BGM_Fading_In = false;
+	Is_Stage_Start = false;
+	Is_Fading = false;
+
+	Is_Blackout_Active = false;
+	Is_Final_BGM_Active = false;
 
 	Score_Finalize();
 	Stage_Update_Reset();
@@ -88,12 +99,13 @@ void Stage_Update(double elapsed_time)
 	if (Is_BGM_Fading_In && BGM_Fade_Timer < BGM_FADE_TIME)
 	{
 		BGM_Fade_Timer += elapsed_time;
-		Current_Volume = static_cast<int>(SOUND_MAX * (BGM_Fade_Timer / BGM_FADE_TIME));
+        float Target_Volume = Sound_M->Get_Target_BGM_Volume();
+		Current_Volume = Target_Volume * static_cast<float>(BGM_Fade_Timer / BGM_FADE_TIME);
 
-		if (Current_Volume > SOUND_MAX)
-			Current_Volume = SOUND_MAX;
+		if (Current_Volume > Target_Volume)
+			Current_Volume = Target_Volume;
 
-		SM->Set_BGM_Volume(Current_Volume);
+		Sound_M->Update_Current_BGM_Volume(Current_Volume);
 
 		if (BGM_Fade_Timer >= BGM_FADE_TIME)
 			Is_BGM_Fading_In = false;
@@ -102,9 +114,7 @@ void Stage_Update(double elapsed_time)
 	if (Now_Playing_Stage == NOW_PLAYING_STAGE::STAGE_NONE) return;
 
 	Status_Update(elapsed_time);
-	Stage_Update_Player_Movement(elapsed_time);
-
-	GameMode Now_Mode = Get_Game_Mode();
+	Story_Update(elapsed_time);
 
 	switch (Stage_Flow)
 	{
@@ -112,128 +122,37 @@ void Stage_Update(double elapsed_time)
 		// Do nothing, Wait for stage selection
 		break;
 
-	case STAGE_FLOW_STATE::STORY_PLAYING:
-		if (Fade_GetState() == FADE_STATE::FINISHED_IN)
+	case STAGE_FLOW_STATE::STAGE_SETUP:
+		Stage_Update_Player_Movement(elapsed_time);
+		switch (Now_Playing_Stage)
 		{
-			Story_Update(elapsed_time);
+		case NOW_PLAYING_STAGE::STAGE_ONE:
+			Stage_One_Update(elapsed_time);
+			break;
+		case NOW_PLAYING_STAGE::STAGE_TWO:
+			Stage_Two_Update(elapsed_time);
 
-			if (Story_Is_Finished())
-			{
-				switch (Now_Playing_Stage)
-				{
-				case NOW_PLAYING_STAGE::STAGE_FOUR:
-					Stage_Command_Player_Move(Stage_4_Boss_Start_Pos, Player_Spawn_Speed * A_Double);
-					Set_Now_Stage_Flow(STAGE_FLOW_STATE::BOSS_ENTERING);
-					Is_Boss_Spawned = false;
-					break;
-				case NOW_PLAYING_STAGE::STAGE_FIVE:
-					Stage_Command_Player_Move(Stage_5_Boss_Start_Pos, Player_Spawn_Speed * A_Double);
-					Set_Now_Stage_Flow(STAGE_FLOW_STATE::BOSS_ENTERING);
-					Is_Boss_Spawned = false;
-					break;
+			break;
+		case NOW_PLAYING_STAGE::STAGE_THREE:
+			Stage_Three_Update(elapsed_time);
 
-				default:
-					Stage_Ready_Reset();
-					Set_Now_Stage_Flow(STAGE_FLOW_STATE::PREPARE_GAME);
-					Prepare_Game_Timer = 0.0;
-					break;
-				}
-			}
-		}
-		break;
+			break;
+		case NOW_PLAYING_STAGE::STAGE_FOUR:
+			Stage_Four_Update(elapsed_time);
+			break;
 
-	case STAGE_FLOW_STATE::BOSS_ENTERING:
-		if (!(Stage_Is_Player_Moving_By_Script()))
-			Game_Logic_Playing_Story_Update(elapsed_time);
-
-		if (!Is_Boss_Spawned)
-		{
-			int Boss_Index = 0;
-
-			switch (Now_Playing_Stage)
-			{
-			case NOW_PLAYING_STAGE::STAGE_THREE:
-			{
-				XMFLOAT2 Boss_Target_POS = { (Game_Offset.x + (Game_Screen_Width * A_Half) - (Enemy_Get_Width(Enemy_Type_Special_Boss_Stage_3, true) * A_Half)),
-							Game_Offset.y + (Enemy_Get_Width(Enemy_Type_Special_Boss_Stage_3, false) * A_Quarter) };
-
-				Boss_Index = Enemy_Create(Enemy_Type_Special_Boss_Stage_3, { Boss_Target_POS.x, -Enemy_Get_Width(Enemy_Type_Special_Boss_Stage_3, false) },
-					Enemy_Move_Pattern::NONE, {}, Boss_Target_POS);
-				break;
-			}
-			case NOW_PLAYING_STAGE::STAGE_FOUR:
-			{
-				XMFLOAT2 Boss_Target_POS = { (Game_Offset.x + (Game_Screen_Width * A_Half) - (Enemy_Get_Width(Enemy_Type_Middle_Boss_Stage_4, true) * A_Half)),
-							Game_Offset.y + (Enemy_Get_Width(Enemy_Type_Middle_Boss_Stage_4, false) * A_Point_Fifteen) };
-					
-				Boss_Index = Enemy_Create(Enemy_Type_Middle_Boss_Stage_4, { Boss_Target_POS.x, -Enemy_Get_Width(Enemy_Type_Middle_Boss_Stage_4, false) },
-					Enemy_Move_Pattern::NONE, {}, Boss_Target_POS);
-				break;
-			}
-			case NOW_PLAYING_STAGE::STAGE_FIVE:
-				XMFLOAT2 Boss_Target_POS = { (Game_Offset.x + (Game_Screen_Width * A_Half) - (Enemy_Get_Width(Enemy_Type_Final_Phase_1_Boss, true) * A_Half)),
-							Game_Offset.y + (Enemy_Get_Width(Enemy_Type_Final_Phase_1_Boss, false) * A_One_Tenth) };
-
-				Boss_Index = Enemy_Create(Enemy_Type_Final_Phase_1_Boss, { Boss_Target_POS.x, -Enemy_Get_Width(Enemy_Type_Final_Phase_1_Boss, false) },
-					Enemy_Move_Pattern::NONE, {}, Boss_Target_POS);
-				break;
-			}
-
-
-			if (Boss_Index != -1)
-			{
-				Set_Active_Boss_Index(Boss_Index);
-				Boss_Activate(Now_Playing_Stage);
-
-				SM->Stop_BGM();
-
-				switch (Now_Playing_Stage)
-				{
-				case NOW_PLAYING_STAGE::STAGE_THREE:
-					SM->Play_BGM("Stage_3_Boss_BGM");
-					break;
-
-				case NOW_PLAYING_STAGE::STAGE_FOUR:
-					SM->Play_BGM("Stage_4_Boss_BGM");
-					break;
-
-				case NOW_PLAYING_STAGE::STAGE_FIVE:
-					SM->Play_BGM("Stage_5_BGM");
-					break;
-				}
-
-				SM->Set_BGM_Volume(0);
-				BGM_Fade_Timer = 0.0;
-				Is_BGM_Fading_In = true;
-
-				Is_Boss_Story = true;
-				Set_Story_State(Story_Manager_State::IN_ACTIVE);
-				Story_Start(Now_Playing_Stage);
-			}
-			Is_Boss_Spawned = true;
-		}
-
-		Story_Update(elapsed_time);
-		Boss_Update(elapsed_time);
-
-		if (Story_Is_Finished())
-		{
-			Set_Boss_State(BOSS_STATE::BATTLE);
-			Stage_Ready_Reset();
-			Set_Now_Stage_Flow(STAGE_FLOW_STATE::PREPARE_GAME);
-			Prepare_Game_Timer = 0.0;
+		case NOW_PLAYING_STAGE::STAGE_FIVE:
+			Stage_Five_Update(elapsed_time);
+			break;
 		}
 		break;
 
 	case STAGE_FLOW_STATE::PREPARE_GAME:
-		if (Get_Boss_State() != BOSS_STATE::INACTIVE)
-			Boss_Update(elapsed_time);
-
-		Is_Player_Moving_By_Script = false;
+		Stage_Set_Is_Player_Moving_By_Script(false);
 
 		if (!Is_Battle_Start_Sound_Played)
 		{
-			SM->Play_SFX("Stage_Battle_Start");
+			Sound_M->Play_SFX("Stage_Battle_Start");
 			Is_Battle_Start_Sound_Played = true;
 		}
 
@@ -241,24 +160,120 @@ void Stage_Update(double elapsed_time)
 
 		if (Prepare_Game_Timer > 1.0)
 		{
+			if (Is_Ready_To_Logic_Draw())
+			{
+				Set_Now_Stage_Flow(STAGE_FLOW_STATE::GAMEPLAY_ACTIVE);
+				Stage_Timer_Reset();
+			}
+			Game_Logic_Update(elapsed_time);
+		}
+		break;
+
+	case STAGE_FLOW_STATE::FAKE_BOSS_FADE_WAIT:
+	{
+		if (Fade_GetState() == FADE_STATE::FINISHED_OUT)
+			Set_Blackout_Overlay(true);
+		BGM_Fade_Timer += elapsed_time;
+
+		if (BGM_Fade_Timer > BGM_FADE_TIME)
+		{
+			Sound_M->Stop_BGM();
+			Sound_M->Update_Current_BGM_Volume(Sound_M->Get_Target_BGM_Volume());
+
+			Set_Stage_5_State(STAGE_5_STATE::BOSS_SWAP);
+			Set_Now_Stage_Flow(STAGE_FLOW_STATE::FAKE_BOSS_ENTERING);
+			Set_Now_Anime_Flow(FINAL_BOSS_ANIME::FADE_START);
+
+			State_Timer = 0.0;
+		}
+
+		float Target_Volume = Sound_M->Get_Target_BGM_Volume();
+		Current_Volume = Target_Volume * (1.0f - static_cast<float>(BGM_Fade_Timer / BGM_FADE_TIME));
+
+		if (Current_Volume < 0.0f)
+			Current_Volume = 0.0f;
+
+		Sound_M->Update_Current_BGM_Volume(Current_Volume);
+	}
+		break;
+
+	case STAGE_FLOW_STATE::FAKE_BOSS_ENTERING:
+		Stage_Five_Update(elapsed_time);
+		Stage_BOSS_Ready_Update(elapsed_time);
+
+		if (!Is_Final_BGM_Active)
+		{
+			if (Get_Now_Anime_Flow() == FINAL_BOSS_ANIME::ANIME_1_DONE)
+			{
+				Sound_M->Stop_BGM();
+				float User_Set_Volume = Sound_M->Get_Target_BGM_Volume();
+				Sound_M->Update_Current_BGM_Volume(User_Set_Volume);
+				Set_BGM_For_Boss(Now_Playing_Stage);
+				Is_Final_BGM_Active = true;
+			}
+		}
+
+		if (Is_Ready_To_Final_Battle())
+		{
+			State_Timer = 0.0;
 			Set_Now_Stage_Flow(STAGE_FLOW_STATE::GAMEPLAY_ACTIVE);
 			Stage_Timer_Reset();
-			BGM_Fade_Timer = 0.0;
-			Current_Volume = 0;
+		}
+		break;
+
+	case STAGE_FLOW_STATE::BOSS_ENTERING:
+		Stage_Update_Player_Movement(elapsed_time);
+
+		Game_Logic_Playing_Story_Update(elapsed_time);
+		Boss_Update(elapsed_time);
+
+		switch (Now_Playing_Stage)
+		{
+		case NOW_PLAYING_STAGE::STAGE_THREE:
+			Stage_Three_Update(elapsed_time);
+			break;
+
+		case NOW_PLAYING_STAGE::STAGE_FOUR:
+			Stage_Four_Update(elapsed_time);
+			break;
+
+		case NOW_PLAYING_STAGE::STAGE_FIVE:
+			Stage_Five_Update(elapsed_time);
+			break;
 		}
 		break;
 
 	case STAGE_FLOW_STATE::GAMEPLAY_ACTIVE:
 		Is_Stage_Paused();
-
+		Stage_Update_Player_Movement(elapsed_time);
 		Game_Logic_Update(elapsed_time);
+		Boss_Update(elapsed_time);
 
-		if (Get_Boss_State() != BOSS_STATE::INACTIVE)
-			Boss_Update(elapsed_time);
+		switch (Now_Playing_Stage)
+		{
+		case NOW_PLAYING_STAGE::STAGE_ONE:
+			Stage_One_Update(elapsed_time);
+			break;
+
+		case NOW_PLAYING_STAGE::STAGE_TWO:
+			Stage_Two_Update(elapsed_time);
+			break;
+
+		case NOW_PLAYING_STAGE::STAGE_THREE:
+			Stage_Three_Update(elapsed_time);
+
+			break;
+		case NOW_PLAYING_STAGE::STAGE_FOUR:
+			Stage_Four_Update(elapsed_time);
+			break;
+
+		case NOW_PLAYING_STAGE::STAGE_FIVE:
+			Stage_Five_Update(elapsed_time);
+			break;
+		}
 
 		if (!Player_Is_Alive())
 		{
-
 			if (Status_Is_Game_Over())
 			{
 				Set_Is_Paused_Menu(false);
@@ -270,44 +285,6 @@ void Stage_Update(double elapsed_time)
 			State_Timer = 0.0;
 			return;
 		}
-
-		if (Is_Boss_Defeated())
-		{
-			Set_Now_Stage_Flow(STAGE_FLOW_STATE::BOSS_DEAD);
-			State_Timer = 0.0;
-			break;
-		}
-
-		if (Is_Ready_To_Logic_Draw())
-		{
-			switch (Now_Playing_Stage)
-			{
-			case NOW_PLAYING_STAGE::STAGE_NONE:
-				break;
-
-			case NOW_PLAYING_STAGE::STAGE_ONE:
-				Stage_One_Update(elapsed_time);
-				break;
-
-			case NOW_PLAYING_STAGE::STAGE_TWO:
-				Stage_Two_Update(elapsed_time);
-				break;
-
-			case NOW_PLAYING_STAGE::STAGE_THREE:
-				if (Get_Boss_State() == BOSS_STATE::INACTIVE)
-					Stage_Three_Update(elapsed_time);
-				break;
-			}
-		}
-		break;
-
-	case STAGE_FLOW_STATE::BOSS_DEAD:
-		Game_Logic_Update(elapsed_time);
-		BGM_Fade_Timer = 0.0;
-
-		State_Timer += elapsed_time;
-		if (State_Timer > 3.0f)
-			Set_Now_Stage_Flow(STAGE_FLOW_STATE::STAGE_DONE);
 		break;
 
 	case STAGE_FLOW_STATE::PLAYER_DEAD:
@@ -318,7 +295,7 @@ void Stage_Update(double elapsed_time)
 		State_Timer += elapsed_time;
 		if (State_Timer > 1.5)
 		{
-			Player_Set_State(PLAYER_STATE::NONE);
+			Player_Status_Reset();
 			Set_Now_Stage_Flow(STAGE_FLOW_STATE::PLAYER_RESPAWNING);
 			State_Timer = 0.0;
 			Player_Spawn({ Player_Spawn_X, static_cast<float>(SCREEN_HEIGHT) });
@@ -328,7 +305,7 @@ void Stage_Update(double elapsed_time)
 
 	case STAGE_FLOW_STATE::PLAYER_RESPAWNING:
 		Is_Stage_Paused();
-
+		Stage_Update_Player_Movement(elapsed_time);
 		Game_Logic_Player_Respawn_Update(elapsed_time);
 
 		if (!Stage_Is_Player_Moving_By_Script())
@@ -336,11 +313,11 @@ void Stage_Update(double elapsed_time)
 		break;
 
 	case STAGE_FLOW_STATE::STAGE_DONE:
+		BGM_Fade_Timer = 0.0f;
 		Is_Stage_Paused();
 
 		Game_Logic_Player_Respawn_Update(elapsed_time);
-		Player_Set_State(PLAYER_STATE::NONE);
-		Player_Set_Avoid_State(false);
+		Player_Status_Reset();
 		
 		State_Timer += elapsed_time;
 		if (State_Timer > 3.0f)
@@ -351,36 +328,34 @@ void Stage_Update(double elapsed_time)
 		break;
 
 	case STAGE_FLOW_STATE::CHECK_REMAINING:
+	{
 		Game_Logic_Player_Respawn_Update(elapsed_time);
 
 		BGM_Fade_Timer += elapsed_time;
 
 		if (BGM_Fade_Timer > BGM_FADE_TIME)
 		{
-			SM->Stop_BGM();
-			SM->Set_BGM_Volume(SOUND_MAX);
+			Sound_M->Stop_BGM();
+			Sound_M->Update_Current_BGM_Volume(Sound_M->Get_Target_BGM_Volume());
 
 			if (Player_Is_Alive())
-			{
-				GameMode Now_Mode = Get_Game_Mode();
-				if (Now_Mode == GameMode::NEW_GAME || Now_Mode == GameMode::CONTINUE)
-					Save_Data_Update_Stage(static_cast<int>(Now_Playing_Stage));
 				Set_Now_Stage_Flow(STAGE_FLOW_STATE::STAGE_CLEAR);
-			}
 			else
 				Set_Now_Stage_Flow(STAGE_FLOW_STATE::STAGE_FAIL);
 
 			State_Timer = 0.0;
 		}
 
-		Current_Volume = static_cast<int>(SOUND_MAX * (A_Origin - (BGM_Fade_Timer / BGM_FADE_TIME)));
+		float Target_Volume = Sound_M->Get_Target_BGM_Volume();
+		Current_Volume = Target_Volume * (1.0f - static_cast<float>(BGM_Fade_Timer / BGM_FADE_TIME));
 
-		if (Current_Volume < 0)
-			Current_Volume = 0;
+		if (Current_Volume < 0.0f)
+			Current_Volume = 0.0f;
 
-		SM->Set_BGM_Volume(Current_Volume);
+		Sound_M->Update_Current_BGM_Volume(Current_Volume);
 
 		break;
+	}
 
 	case STAGE_FLOW_STATE::STAGE_CLEAR:
 		Stage_Outro_Start();
@@ -395,7 +370,17 @@ void Stage_Update(double elapsed_time)
 		Stage_Outro_Update(elapsed_time);
 
 		if (Is_Stage_Outro_Finished())
-			Set_Now_Stage_Flow(STAGE_FLOW_STATE::PLAYER_EXIT);
+		{
+			Fade_Start(2.0, true);
+
+			if (Now_Playing_Stage == NOW_PLAYING_STAGE::STAGE_FIVE && Get_Stage_5_State() == STAGE_5_STATE::FAKE_CLEAR_SEQUENCE)
+			{
+				BGM_Fade_Timer = 0.0f;
+				Set_Now_Stage_Flow(STAGE_FLOW_STATE::FAKE_BOSS_FADE_WAIT);
+			}
+			else
+				Set_Now_Stage_Flow(STAGE_FLOW_STATE::PLAYER_EXIT);
+		}
 		break;
 
 	case STAGE_FLOW_STATE::STAGE_FAIL:
@@ -406,10 +391,11 @@ void Stage_Update(double elapsed_time)
 		break;
 	
 	case STAGE_FLOW_STATE::GAME_OVER:
-			Game_Logic_Player_Respawn_Update(elapsed_time);
+		Game_Logic_Player_Respawn_Update(elapsed_time);
 	case STAGE_FLOW_STATE::GAME_PAUSED:
-			Game_Over_Update();
-	
+	{
+		Game_Over_Update();
+
 		if (Stage_Flow == STAGE_FLOW_STATE::GAME_PAUSED)
 		{
 			if (KeyLogger_IsTrigger(KK_BACK) || KeyLogger_IsTrigger(KK_ESCAPE) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_B) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_BACK))
@@ -420,9 +406,9 @@ void Stage_Update(double elapsed_time)
 		{
 			if (Get_Game_Over_Menu_Selected() == GAME_OVER_MENU_SELCETED::RE_START)
 			{
-				SM->Stop_BGM();
+				Sound_M->Stop_BGM();
 
-				Stage_Reset_For_Retry();
+				Stage_Reset_For_Restart();
 				Score_Reset_Current_Stage_Score();
 				Set_BGM_Current_Stage(Now_Playing_Stage);
 				Set_Power_Current_Stage(Now_Playing_Stage);
@@ -439,7 +425,7 @@ void Stage_Update(double elapsed_time)
 
 				if (Fade_GetState() == FADE_STATE::FINISHED_OUT)
 				{
-					Stage_Reset_For_Retry();
+					Stage_Reset_For_ALL();
 					Score_Reset_Current_Stage_Score();
 
 					Update_Main_Screen(Main_Screen::SELECT_GAME);
@@ -447,19 +433,22 @@ void Stage_Update(double elapsed_time)
 					Update_Game_Select_Screen(Game_Select_Screen::GAME_MENU_SELECT);
 					Update_Game_Select_Buffer(SELECT_GAME::SELECT_WAIT);
 
-					SM->Stop_BGM();
-					SM->Play_BGM("Title");
-					SM->Set_BGM_Volume(SOUND_MAX);
+					Sound_M->Stop_BGM();
+					float User_Set_Volume = Sound_M->Get_Target_BGM_Volume();
+					Sound_M->Update_Current_BGM_Volume(User_Set_Volume);
+					Sound_M->Play_BGM("Title");
 
-					Now_Playing_Stage = NOW_PLAYING_STAGE::STAGE_NONE; 
+					Now_Playing_Stage = NOW_PLAYING_STAGE::STAGE_NONE;
 					Set_Now_Stage_Flow(STAGE_FLOW_STATE::IDLE);
-		
+					Set_Now_Anime_Flow(FINAL_BOSS_ANIME::NONE);
+
 					Fade_Start(0.5, false);
 					Is_Fading = false;
 				}
 			}
 		}
 		break;
+	}
 
 	case STAGE_FLOW_STATE::PLAYER_EXIT:
 		if (Player_Is_Alive())
@@ -473,21 +462,24 @@ void Stage_Update(double elapsed_time)
 
 		if (Fade_GetState() == FADE_STATE::FINISHED_OUT)
 		{
-			if (Now_Mode == GameMode::STAGE_SELECT)
+			float User_Set_Volume = Sound_M->Get_Target_BGM_Volume();
+			Sound_M->Update_Current_BGM_Volume(User_Set_Volume);
+
+			if (Get_Game_Mode() == GameMode::STAGE_SELECT)
 			{
-				Stage_Reset_For_Retry();
+				Stage_Reset_For_ALL();
 
 				Update_Main_Screen(Main_Screen::SELECT_GAME);
 				Update_Sub_Screen(Sub_Screen::S_DONE);
 				Update_Game_Select_Screen(Game_Select_Screen::GAME_MENU_SELECT);
 				Update_Game_Select_Buffer(SELECT_GAME::SELECT_WAIT);
 
-				SM->Play_BGM("Title");
-				SM->Set_BGM_Volume(SOUND_MAX);
+				Sound_M->Play_BGM("Title");
 
 				Now_Playing_Stage = NOW_PLAYING_STAGE::STAGE_NONE;
 				Set_Now_Stage_Flow(STAGE_FLOW_STATE::IDLE);
-
+				Set_Now_Anime_Flow(FINAL_BOSS_ANIME::NONE);
+			
 				Fade_Start(1.5, false);
 				Is_Fading = false;
 				break;
@@ -500,14 +492,16 @@ void Stage_Update(double elapsed_time)
 
 			if (Now_Playing_Stage == NOW_PLAYING_STAGE::STAGE_FIVE)
 			{
-				Stage_Reset_For_Retry();
+				Stage_Reset_For_ALL();
 				Update_Game_Select_Screen(Game_Select_Screen::GAME_ENDING);
+				Set_Ending_Status(ENDING_SEQUENCE::ENDING_START);
 				Set_Now_Stage_Flow(STAGE_FLOW_STATE::STAGE_PLAYING_DONE);
 			}
 			else if (Next_Stage_Num == static_cast<int>(NOW_PLAYING_STAGE::STAGE_MAX)) // Defencive Code
 			{
-				Stage_Reset_For_Retry();
+				Stage_Reset_For_ALL();
 				Update_Game_Select_Screen(Game_Select_Screen::GAME_ENDING);
+				Set_Ending_Status(ENDING_SEQUENCE::ENDING_START);
 				Set_Now_Stage_Flow(STAGE_FLOW_STATE::STAGE_PLAYING_DONE);
 			}
 			else
@@ -551,29 +545,32 @@ void Stage_Draw()
 		break;
 
 	case NOW_PLAYING_STAGE::STAGE_FIVE:
-		Stage_5_Background_Draw();
+		if (Is_Final_Boss_Entered())
+			Stage_BOSS_Background_Draw();
+		else
+			Stage_5_Background_Draw();
 		break;
 	}
 	STAGE_FLOW_STATE Stage_Flow = Get_Now_Stage_Flow();
-
-	if (Stage_Flow == STAGE_FLOW_STATE::STORY_PLAYING)
-	{
-		Player_Draw();
-		Story_Draw();
-	}
-	else if (Stage_Flow == STAGE_FLOW_STATE::BOSS_ENTERING)
+	
+	if (Stage_Flow != STAGE_FLOW_STATE::IDLE)
 	{
 		Game_Logic_Draw();
-		Story_Draw();
-	}
-	else if (Stage_Flow != STAGE_FLOW_STATE::IDLE)
-		Game_Logic_Draw();
+		
+		if (Is_Blackout_Active)
+			Stage_5_BlackOut_Draw();
 
-	if (Stage_Flow == STAGE_FLOW_STATE::PREPARE_GAME || Stage_Flow == STAGE_FLOW_STATE::GAMEPLAY_ACTIVE)
+		Story_Draw();
+
+		if (!Is_Blackout_Active)
+			Game_UI_And_Logo_Draw();
+	}
+
+	if (Stage_Flow == STAGE_FLOW_STATE::PREPARE_GAME)
 		Stage_Ready_Draw();
-
-	if (!(Get_Stage_5_State() == STAGE_5_STATE::BOSS_PHASE_2_BATTLE))
-		Game_UI_And_Logo_Draw();
+	
+	if (Stage_Flow == STAGE_FLOW_STATE::FAKE_BOSS_ENTERING)
+		Stage_BOSS_Ready_Draw();
 
 	if (Stage_Flow == STAGE_FLOW_STATE::STAGE_CLEAR_ANIME)
 		Stage_Outro_Draw();
@@ -582,80 +579,96 @@ void Stage_Draw()
 		Game_Over_Draw();
 }
 
+void Set_Blackout_Overlay(bool Is_Blackout)
+{
+	Is_Blackout_Active = Is_Blackout;
+}
+
+bool Is_BlackOut_Overlay()
+{
+	return Is_Blackout_Active;
+}
+
+bool Is_Final_Boss_Active()
+{
+	return Is_Final_BGM_Active;
+}
+
 void Set_Now_Playing_Stage(NOW_PLAYING_STAGE Stage)
 {
-	Stage_Reset_For_Retry();
+	Stage_Reset_For_ALL();
 
-	GameMode Now_Mode = Get_Game_Mode();
 	Now_Playing_Stage = Stage;
 
-	Player_Reset_For_Story();
-	Set_BGM_Current_Stage(Now_Playing_Stage);
-
-	Is_Boss_Story = false;
-
-	Set_Power_Current_Stage(Now_Playing_Stage);
-
-	if (Now_Playing_Stage == NOW_PLAYING_STAGE::STAGE_THREE)
-		Status_Add_Power(A_Origin); // Give Power 1.0
-
-
-	if (Now_Mode == GameMode::NEW_GAME || Now_Mode == GameMode::CONTINUE)
-	{
-		// If New Game OR Continue Mode, Play Story
-		Set_Now_Stage_Flow(STAGE_FLOW_STATE::STORY_PLAYING);
-		Set_Story_State(Story_Manager_State::IN_ACTIVE);
-		Story_Start(Now_Playing_Stage);
-	}
-	else // If STAGE_SELECT Mode
-	{
-		// Skip Story
-		Score_Reset_Current_Stage_Score();
+	GameMode Now_Game_Mode = Get_Game_Mode();
+	if (Now_Game_Mode == GameMode::NEW_GAME || Now_Game_Mode == GameMode::CONTINUE)
+		Player_Reset_For_Story();
+	else
 		Player_Spawn({ Player_Spawn_X, Player_Spawn_Y });
 
-		switch (Now_Playing_Stage)
-		{
-		case NOW_PLAYING_STAGE::STAGE_FOUR:
-		case NOW_PLAYING_STAGE::STAGE_FIVE:
-			Set_Now_Stage_Flow(STAGE_FLOW_STATE::BOSS_ENTERING);
-			break;
-		default:
-			Set_Now_Stage_Flow(STAGE_FLOW_STATE::PREPARE_GAME);
-			break;
-		}
-		Prepare_Game_Timer = 0.0;
-		Status_Start_Respawn_Invincibility();
-	}
+	Set_BGM_Current_Stage(Now_Playing_Stage);
+	Set_Power_Current_Stage(Now_Playing_Stage);
+
+	Set_Now_Stage_Flow(STAGE_FLOW_STATE::STAGE_SETUP);
 }
 
 void Set_BGM_Current_Stage(NOW_PLAYING_STAGE Stage)
 {
-	SM->Play_SFX("Stage_Start");
+	Sound_M->Stop_BGM();
+	Sound_M->Play_SFX("Stage_Start");
 
 	switch (Stage)
 	{
 	case NOW_PLAYING_STAGE::STAGE_ONE:
-		SM->Play_BGM("Stage_1_BGM");
+		Sound_M->Play_BGM("Stage_1_BGM");
 		break;
 
 	case NOW_PLAYING_STAGE::STAGE_TWO:
-		SM->Play_BGM("Stage_2_BGM");
+		Sound_M->Play_BGM("Stage_2_BGM");
 		break;
 
 	case NOW_PLAYING_STAGE::STAGE_THREE:
-		SM->Play_BGM("Stage_3_BGM");
+		Sound_M->Play_BGM("Stage_3_BGM");
 		break;
 
 	case NOW_PLAYING_STAGE::STAGE_FOUR:
-		SM->Play_BGM("Stage_4_BGM");
+		Sound_M->Play_BGM("Stage_4_BGM");
 		break;
 
 	case NOW_PLAYING_STAGE::STAGE_FIVE:
-		SM->Play_BGM("Stage_5_BGM");
+		Sound_M->Play_BGM("Stage_5_BGM");
 		break;
 	}
 
-	SM->Set_BGM_Volume(0);
+	Sound_M->Update_Current_BGM_Volume(0.0f);
+	BGM_Fade_Timer = 0.0;
+	Is_BGM_Fading_In = true;
+}
+
+void Set_BGM_For_Boss(NOW_PLAYING_STAGE Stage)
+{
+	Sound_M->Stop_BGM();
+	
+	switch (Stage)
+	{
+	case NOW_PLAYING_STAGE::STAGE_THREE:
+		Sound_M->Play_BGM("Stage_3_Boss_BGM");
+		break;
+		
+	case NOW_PLAYING_STAGE::STAGE_FOUR:
+		Sound_M->Play_BGM("Stage_4_Boss_BGM");
+		break;
+		
+	case NOW_PLAYING_STAGE::STAGE_FIVE:
+		if (Get_Stage_5_State() == STAGE_5_STATE::BOSS_APPEARANCE)
+			Sound_M->Play_BGM("Stage_5_Boss_Phase_1_BGM");
+
+		if (Stage_Flow == STAGE_FLOW_STATE::FAKE_BOSS_ENTERING)
+			Sound_M->Play_BGM("Stage_5_Boss_Phase_2_BGM");
+		break;
+	}
+
+	Sound_M->Update_Current_BGM_Volume(0.0f);
 	BGM_Fade_Timer = 0.0;
 	Is_BGM_Fading_In = true;
 }
@@ -685,15 +698,6 @@ NOW_PLAYING_STAGE Get_Now_Playing_Stage()
 
 void Set_Now_Stage_Flow(STAGE_FLOW_STATE State)
 {
-	if (State == STAGE_FLOW_STATE::STORY_PLAYING && Get_Boss_State() == BOSS_STATE::STORY)
-	{
-		Is_Boss_Story = true;
-		Set_Story_State(Story_Manager_State::IN_ACTIVE);
-		Story_Start(Get_Now_Playing_Stage());
-	}
-	else
-		Is_Boss_Story = false;
-
 	Stage_Flow = State;
 }
 
@@ -702,13 +706,10 @@ STAGE_FLOW_STATE Get_Now_Stage_Flow()
 	return Stage_Flow;
 }
 
-bool Is_Boss_Story_Time()
-{
-	return Is_Boss_Story;
-}
-
 void Stage_Command_Player_Move(const DirectX::XMFLOAT2& targetPos, float speed)
 {
+	Player_Status_Reset();
+
 	Is_Player_Moving_By_Script = true;
 	Player_Move_Target = targetPos;
 	Player_Move_Speed = speed;
@@ -764,33 +765,67 @@ bool Are_All_Enemies_Cleared()
 	return true; 
 }
 
-
-void Stage_Reset_For_Retry()
+void Stage_Reset_For_ALL()
 {
-	Enemy_Spawner_Reset();
-
-	Boss_Initialize();
-
-	Status_Initialize();
-
 	Game_Logic_Finalize();
 	Game_Logic_Initialize();
+
+	Score_Reset_All_Score();
+	Boss_Initialize();
+	Story_Reset();
+	Stage_Update_Reset();
 
 	Stage_Ready_Reset();
 	Stage_Over_Draw_Reset();
 
 	Prepare_Game_Timer = 0.0;
 	State_Timer = 0.0;
-
 	Stage_Timer_Reset();
-	Stage_Update_Reset();
 
 	Is_Battle_Start_Sound_Played = false;
 	Is_Fading = false;
 	BGM_Fade_Timer = 0.0;
 	Is_BGM_Fading_In = false;
-	Is_Boss_Spawned = false;
+	Is_Stage_Start = false;
 
+	Is_Blackout_Active = false;
+	Is_Final_BGM_Active = false;
+
+	Player_Spawn({ Player_Spawn_X, Player_Spawn_Y });
+	Status_Start_Respawn_Invincibility();
+}
+
+void Stage_Reset_For_Restart()
+{
+	Story_Trigger_Saver();
+
+	Status_Initialize();
+	Score_Reset_Current_Stage_Score();
+
+	Enemy_Spawner_Reset();
+	Boss_Initialize();
+	Item_Initialize();
+	Bullet_Initialize();
+	Enemy_Initialize();
+	Enemy_Bullet_Initialize();
+	Effect_Initialize();
+
+	Stage_Update_Reset();
+	Stage_Ready_Reset();
+
+	Story_Trigger_Loader();
+
+	Prepare_Game_Timer = 0.0;
+	State_Timer = 0.0;
+	Stage_Timer_Reset();
+
+	Is_Battle_Start_Sound_Played = false;
+	Is_Fading = false;
+
+	Is_Blackout_Active = false;
+	Is_Final_BGM_Active = false;
+
+	Player_Status_Reset();
 	Player_Spawn({ Player_Spawn_X, Player_Spawn_Y });
 	Status_Start_Respawn_Invincibility();
 }

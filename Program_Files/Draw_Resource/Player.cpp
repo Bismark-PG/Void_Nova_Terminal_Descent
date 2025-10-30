@@ -22,20 +22,14 @@ static XMFLOAT2 PlayerPosition{};
 static XMFLOAT2 PlayerVelocity{};
 static XMFLOAT2 PlayerSize{};
 
-static int Bomb = -1;
-static int Avoid = -1;
-
-static int Straight_Player_TexID = -1;
-static int Left_Rotate_Player_TexID = -1;
-static int Right_Rotate_Player_TexID = -1;
-
 static int Anime_Straight = -1;
 static int Anime_Left = -1;
 static int Anime_Right = -1;
-
 static int Play_Straight = -1;
 static int Play_Left = -1;
 static int Play_Right = -1;
+
+static int P_Avoid_Text = -1;
 
 static Circle PlayerCollision{};
 static bool Player_Enable = false;
@@ -51,19 +45,7 @@ static double Boom_Cooldown_Timer = 0.0;
 
 void Player_Initialize()
 {
-	Avoid = Texture_Load(L"Resource/Texture/Player/Player_Avoid_Collision.png");
-
-	Straight_Player_TexID	  = Texture_Load(L"Resource/Texture/Player/Player_Mk_3_Fixed_Animation_Fixed.png");
-	Left_Rotate_Player_TexID  = Texture_Load(L"Resource/Texture/Player/Player_Mk_3_Rotate_L_Animation_Fixed.png");
-	Right_Rotate_Player_TexID = Texture_Load(L"Resource/Texture/Player/Player_Mk_3_Rotate_R_Animation_Fixed.png");
-	
-	Anime_Straight = SpriteAni_Get_Pattern_Info(Straight_Player_TexID,	   4, 4, 0.25, { 838, 1019 }, { 838 * 0, 1019 * 0 }, true);
-	Anime_Left	   = SpriteAni_Get_Pattern_Info(Left_Rotate_Player_TexID,  4, 4, 0.25, { 839, 1019 }, { 838 * 0, 1019 * 0 }, true);
-	Anime_Right	   = SpriteAni_Get_Pattern_Info(Right_Rotate_Player_TexID, 4, 4, 0.25, { 839, 1019 }, { 838 * 0, 1019 * 0 }, true);
-	
-	Play_Straight = SpriteAni_CreatePlayer(Anime_Straight);
-	Play_Left	  = SpriteAni_CreatePlayer(Anime_Left);
-	Play_Right	  = SpriteAni_CreatePlayer(Anime_Right);
+	Player_Texture();
 
 	Player_Width  = PLAYER_WIDTH  * Game_Scale;
 	Player_Height = PLAYER_HEIGHT * Game_Scale;
@@ -128,12 +110,12 @@ void Player_Update(double elapsed_time)
 	XMVECTOR Velocity = XMLoadFloat2(&PlayerVelocity);
 
 	XMVECTOR Direction{};
-	bool L_Pressed = KeyLogger_IsPressed(KK_A) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_LEFT);
-	bool R_Pressed = KeyLogger_IsPressed(KK_D) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_RIGHT);
+	bool L_Pressed = KeyLogger_IsPressed(KK_A) || KeyLogger_IsPressed(KK_LEFT) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_LEFT);
+	bool R_Pressed = KeyLogger_IsPressed(KK_D) || KeyLogger_IsPressed(KK_RIGHT) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_RIGHT);
 
-	if (KeyLogger_IsPressed(KK_W) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_UP))
+	if (KeyLogger_IsPressed(KK_W) || KeyLogger_IsPressed(KK_UP) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_UP))
 		Direction += { 0.f, -1.f };
-	if (KeyLogger_IsPressed(KK_S) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_DOWN))
+	if (KeyLogger_IsPressed(KK_S) || KeyLogger_IsPressed(KK_DOWN)|| XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_DPAD_DOWN))
 		Direction += { 0.f, 1.f };
 
 	if (L_Pressed && !R_Pressed)
@@ -171,10 +153,20 @@ void Player_Update(double elapsed_time)
 	XMStoreFloat2(&PlayerPosition, Position);
 	XMStoreFloat2(&PlayerVelocity, Velocity);
 
-	if (PlayerPosition.x <= Game_Offset.x)
-		PlayerPosition.x = Game_Offset.x;
-	if (PlayerPosition.x >= (Game_Offset.x + Game_Screen_Width) - PlayerSize.x)
-		PlayerPosition.x = (Game_Offset.x + Game_Screen_Width) - PlayerSize.x;
+	if (Is_Final_Boss_Active())
+	{
+		if (PlayerPosition.x <= 0)
+			PlayerPosition.x = 0;
+		if (PlayerPosition.x >= SCREEN_WIDTH - PlayerSize.x)
+			PlayerPosition.x = SCREEN_WIDTH - PlayerSize.x;
+	}
+	else
+	{
+		if (PlayerPosition.x <= Game_Offset.x)
+			PlayerPosition.x = Game_Offset.x;
+		if (PlayerPosition.x >= (Game_Offset.x + Game_Screen_Width) - PlayerSize.x)
+			PlayerPosition.x = (Game_Offset.x + Game_Screen_Width) - PlayerSize.x;
+	}
 	if (PlayerPosition.y <= 0)
 		PlayerPosition.y = 0;
 	if (PlayerPosition.y >= Game_Screen_Height - PlayerSize.y)
@@ -195,7 +187,12 @@ void Player_Update(double elapsed_time)
 		Player_Item_Radius = (Player_Width + PLAYER_HEIGHT) * A_Quarter;
 	}
 
-	if (KeyLogger_IsPressed(KK_SPACE) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_A))
+	if (KeyLogger_IsTrigger(KK_R) || KeyLogger_IsTrigger(KK_X) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_B))
+	{
+		Player_Used_Bomb = true;
+	}
+
+	if (KeyLogger_IsPressed(KK_SPACE) || KeyLogger_IsPressed(KK_Z) || XKeyLogger_IsPadPressed(XINPUT_GAMEPAD_A))
 	{
 		if (Bullet_Cooldown_Timer <= 0.0)
 		{
@@ -245,7 +242,7 @@ void Player_Update(double elapsed_time)
 				Bullet_Cooldown_Timer = POWER_MAX_BULLET_FIRE_INTERVAL;
 				break;
 			}
-			SM->Play_SFX("Bullet_Shoot");
+			Sound_M->Play_SFX("Bullet_Shoot");
 		}
 
 		if (static_cast<int>(Status_Get_Power()) == 4 && Laser_Cooldown_Timer <= 0.0)
@@ -258,24 +255,20 @@ void Player_Update(double elapsed_time)
 		}
 	}
 
-	if (KeyLogger_IsTrigger(KK_R) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_B)) {
-		Player_Used_Bomb = true;
-	}
-
 	if (Player_Used_Bomb)
 	{
 		if (Boom_Cooldown_Timer <= 0.0)
 		{
 			if (Status_Use_Bomb())
 			{
-				SM->Play_SFX("Player_Bomb");
+				Sound_M->Play_SFX("Player_Bomb");
 
 				Game_UI_Start_Bomb_Effect();
 
 				Bullet_Destroy_All_Enemy_Bullets();
 				Enemy_Destroy_All_Normal_Enemies();
 
-				SM->Play_SFX("Enemy_Dead_Bomb");
+				Sound_M->Play_SFX("Enemy_Dead_Bomb");
 
 				Boom_Cooldown_Timer = BOMB_COOLDOWN_TIME;
 			}
@@ -295,7 +288,7 @@ void Player_Reset_For_Story()
 	Player_Set_Position({ Game_Offset.x + (Game_Screen_Width * A_Half) - (PLAYER_WIDTH * A_Half),
 		static_cast<float>(SCREEN_HEIGHT) + PLAYER_HEIGHT });
 	PlayerVelocity = { 0.0f, 0.0f };
-	P_State = PLAYER_STATE::NONE;
+	Player_Status_Reset();
 	Player_Set_Enable(true);
 }
 
@@ -308,7 +301,7 @@ void Player_Draw()
 	float Current_Player_Y = PlayerPosition.y + (PlayerSize.y * A_Half);
 	Game_Draw_Bomb_Effect(Current_Player_X, Current_Player_Y);
 
-	if (Status_Is_Player_Invincible() && (!(Get_Now_Stage_Flow()  == STAGE_FLOW_STATE::STORY_PLAYING)))
+	if (Status_Is_Player_Invincible())
 	{
 		if (Status_Is_Bomb_Invincible())
 			Player_Alpha = PLAYER_ALPHA_RE_SPAWN;
@@ -351,7 +344,7 @@ void Player_Draw()
 		float Draw_x = Player_Center_X - Player_Avoid_Radius;
 		float Draw_y = Player_Center_Y - Player_Avoid_Radius;
 
-		Sprite_Draw(Avoid, Draw_x, Draw_y, Diameter, Diameter, A_Zero);
+		Sprite_Draw(P_Avoid_Text, Draw_x, Draw_y, Diameter, Diameter, A_Zero);
 	}
 }
 
@@ -365,7 +358,7 @@ void Player_Set_Avoid_State(bool State)
 	Player_Avoid = State;
 }
 
-Circle Player_Get_Collision()
+Circle Player_Get_Collision() 
 {
 	float Cx = PlayerPosition.x + PlayerCollision.Center.x;
 	float Cy = PlayerPosition.y + PlayerCollision.Center.y;
@@ -390,7 +383,7 @@ void Player_Destroy()
 {
 	if (Player_Enable) // Defense Multiple Destroy
 	{
-		SM->Play_SFX("Player_Dead");
+		Sound_M->Play_SFX("Player_Dead");
 		Effect_Create(Effect_Type::PLAYER_EXPLOSION, PlayerPosition, { PlayerSize.x * A_One_And_Half, PlayerSize.x * A_One_And_Half });
 		Power_Create_On_Player_Death(PlayerPosition);
 
@@ -419,7 +412,30 @@ void Player_Set_Enable(bool is_enable)
 	Player_Enable = is_enable;
 }
 
+void Player_Status_Reset()
+{
+	Player_Set_State(PLAYER_STATE::NONE);
+	Player_Set_Avoid_State(false);
+}
+
 double Get_Bomb_Timer()
 {
 	return Boom_Cooldown_Timer;
+}
+
+void Player_Texture()
+{
+	int Straight = Texture_M->GetID("Player_Straight");
+	int Left = Texture_M->GetID("Player_Left");
+	int Right = Texture_M->GetID("Player_Right");
+
+	Anime_Straight = SpriteAni_Get_Pattern_Info(Straight, 4, 4, 0.25, { 838, 1019 }, { 838 * 0, 1019 * 0 }, true);
+	Anime_Left = SpriteAni_Get_Pattern_Info(Left, 4, 4, 0.25, { 839, 1019 }, { 838 * 0, 1019 * 0 }, true);
+	Anime_Right = SpriteAni_Get_Pattern_Info(Right, 4, 4, 0.25, { 839, 1019 }, { 838 * 0, 1019 * 0 }, true);
+
+	Play_Straight = SpriteAni_CreatePlayer(Anime_Straight);
+	Play_Left = SpriteAni_CreatePlayer(Anime_Left);
+	Play_Right = SpriteAni_CreatePlayer(Anime_Right);
+		
+	P_Avoid_Text = Texture_M->GetID("Player_Avoid_Mode");
 }

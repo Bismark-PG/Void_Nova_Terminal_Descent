@@ -8,12 +8,13 @@
 #include "Fade.h"
 #include <iostream>
 
+static int Fade_Texture = -1;
+
 double FadeTime = 0.0;
 double FadeStartTime = 0.0;
 double AccumulatedTime = 0.0;
 
 FADE_STATE State = FADE_STATE::NONE;
-static int FadeTexId = -1;
 
 static float Fade_Alpha = 0.0f;
 static Palette Color = Black;
@@ -22,14 +23,14 @@ static bool IsDoneFadeOut = false;
 
 void Fade_Initialize(void)
 {
-   FadeTime = 1.0;
-   FadeStartTime = 0.0;
-   AccumulatedTime = 0.0;
-   Color = Black;
-   Fade_Alpha = 0.0f;
-   State = FADE_STATE::NONE;
+	Fade_Texture = Texture_M->GetID("W");
 
-   FadeTexId = Texture_Load(L"Resource/Texture/BG/RGBCMYK/White.png");
+    FadeTime = 1.0;
+    FadeStartTime = 0.0;
+    AccumulatedTime = 0.0;
+    Color = Black;
+    Fade_Alpha = 0.0f;
+    State = FADE_STATE::NONE;
 }
 
 void Fade_Finalize(void)
@@ -81,7 +82,7 @@ void Fade_Draw(void)
         {
             Palette F_Color = Color;
             F_Color.w = Fade_Alpha;
-            Sprite_Draw(FadeTexId, 0.0f, 0.0f, (float)Direct3D_GetBackBufferWidth(), (float)Direct3D_GetBackBufferHeight(), 0.0f, F_Color);
+            Sprite_Draw(Fade_Texture, 0.0f, 0.0f, (float)Direct3D_GetBackBufferWidth(), (float)Direct3D_GetBackBufferHeight(), 0.0f, F_Color);
             IsDoneFadeOut = true;
         }
         return;
@@ -89,7 +90,7 @@ void Fade_Draw(void)
 
     Palette F_Color = Color;
     F_Color.w = Fade_Alpha;
-    Sprite_Draw(FadeTexId, 0.0f, 0.0f, (float)Direct3D_GetBackBufferWidth(), (float)Direct3D_GetBackBufferHeight(), 0.0f, F_Color);
+    Sprite_Draw(Fade_Texture, 0.0f, 0.0f, (float)Direct3D_GetBackBufferWidth(), (float)Direct3D_GetBackBufferHeight(), 0.0f, F_Color);
 }
 
 // True = Fade Out, False = Fade In
@@ -105,4 +106,9 @@ void Fade_Start(double Duration, bool IsFadeOut, Palette color)
 FADE_STATE Fade_GetState(void)
 {
 	return State;
+}
+
+void Fade_SetState(FADE_STATE Fade)
+{
+    State = Fade;
 }

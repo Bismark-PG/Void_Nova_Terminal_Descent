@@ -1,6 +1,6 @@
 /*==============================================================================
 
-	Make Debug Ostream [debug_ostream.h]
+	Make Debug Ostream [Debug_Ostream.h]
 
 	Author : Choi HyungJoon
 
@@ -31,14 +31,14 @@ namespace Debug
 		}
 	};
 
-	class debug_ostream : public basic_ostream<char, char_traits<char>>
+	class Debug_Ostream : public basic_ostream<char, char_traits<char>>
 	{
 	public:
-		debug_ostream()
+		Debug_Ostream()
 			: basic_ostream<char, char_traits<char>>(new Debug_Buf()) {}
-		~debug_ostream() { delete rdbuf(); }
+		~Debug_Ostream() { delete rdbuf(); }
 	};
 
-	extern debug_ostream D_Out;
+	extern Debug_Ostream D_Out;
 }
 #endif // BASIC_DEBUG_OSTREAM_H

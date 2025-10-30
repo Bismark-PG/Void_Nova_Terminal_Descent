@@ -10,7 +10,7 @@
 #include "Game_Screen_Manager.h"
 #include <iostream>
 
-extern Game_Manager GM;
+extern Game_Manager Game_M;
 
 void Game_Screen_Manager_Initialize();
 void Game_Screen_Manager_Finalize();

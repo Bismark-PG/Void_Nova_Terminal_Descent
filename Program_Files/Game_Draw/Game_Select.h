@@ -112,8 +112,8 @@ static float Stage_Up_Y;
 static float Stage_Down_Y;
 static float Stage_Num_Width;
 static float Stage_Num_Height;
-constexpr float Stage_Num_Up_Angle = PALETTE::R_Half_Pie * (DirectX::XM_PI / PALETTE::R_One_Pie);
-constexpr float Stage_Num_Down_Angle = PALETTE::R_One_And_Half_Pie * (DirectX::XM_PI / PALETTE::R_One_Pie);
+constexpr float Stage_Num_Up_Angle = PALETTE::R_Half_Pie;
+constexpr float Stage_Num_Down_Angle = PALETTE::R_One_And_Half_Pie;
 
 void Game_Select_Initialize();
 void Game_Select_Finalize();
@@ -136,5 +136,7 @@ void Update_Stage_Select_Buffer_State(STAGE_NUM Stage_State);
 STAGE_NUM Get_Stage_Select_Buffer_State();
 
 void Stage_TexID(int Stage_State);
+
+void Game_Select_Texture();
 
 #endif // GAME_STAGE_SELECT

@@ -7,8 +7,6 @@
 ==============================================================================*/
 #ifndef SPRITE_ANIMATION_H
 #define SPRITE_ANIMATION_H
-#include "Sprite.h"
-#include "Texture.h"
 #include "DirectXMath.h"
 
 void SpriteAni_Initialize();

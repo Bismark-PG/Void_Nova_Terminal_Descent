@@ -11,7 +11,7 @@
 #include "Game_Window.h"
 #include <DirectXMath.h>
 #include "direct3d.h"
-#include "Texture.h"
+#include "Texture_Manager.h"
 #include "Sprite_Animation.h"
 #include "KeyLogger.h"
 #include "Bullet.h"
@@ -93,6 +93,10 @@ DirectX::XMFLOAT2 Player_Get_Position();
 void Player_Set_State(PLAYER_STATE State);
 void Player_Set_Enable(bool is_enable);
 
+void Player_Status_Reset();
+
 double Get_Bomb_Timer();
+
+void Player_Texture();
 
 #endif // PLAYER_H

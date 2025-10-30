@@ -12,10 +12,10 @@
 using namespace PALETTE;
 
 #include <algorithm>
-#include "debug_ostream.h"
+#include "Debug_ostream.h"
 #include "direct3d.h"
 #include "sprite.h"
-#include "texture.h"
+#include "Texture_Manager.h"
 
 enum class FADE_STATE
 {
@@ -36,5 +36,6 @@ void Fade_Draw(void);
 void Fade_Start(double duration, bool isFadeOut, Palette color = Black);
 
 FADE_STATE Fade_GetState(void);
+void Fade_SetState(FADE_STATE Fade);
 
 #endif // FADE_H

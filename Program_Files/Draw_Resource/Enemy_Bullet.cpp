@@ -7,29 +7,29 @@
 ==============================================================================*/
 #include "Enemy_Bullet.h"
 #include "sprite.h"
-#include "texture.h"
+#include "Texture_Manager.h"
 #include "Enemy.h"
 
 using namespace DirectX;
 using namespace PALETTE;
 
+static int E_Bullet_Normal = -1;
+static int E_Bullet_Long = -1;
+static int E_Bullet_Spire = -1;
+
 static Enemy_Bullet Enemy_Bullets[ENEMY_BULLET_MAX]{};
 static const std::vector<Circle> Empty_Collisions;
 
-static int Enemy_Bullet_Normal_TexID = -1;
-static int Enemy_Bullet_Long_TexID = -1;
-static int Enemy_Bullet_Spire_TexID = -1;
-
 void Enemy_Bullet_Initialize()
 {
+	E_Bullet_Normal = Texture_M->GetID("Enemy_Bullet_Normal");
+	E_Bullet_Long = Texture_M->GetID("Enemy_Bullet_Long");
+	E_Bullet_Spire = Texture_M->GetID("Enemy_Bullet_Spire");
+
 	for (Enemy_Bullet& bullet : Enemy_Bullets)
 	{
 		bullet.isEnable = false;
 	}
-
-	Enemy_Bullet_Normal_TexID = Texture_Load(L"Resource/Texture/Enemy/Bullet_Orange.png");
-	Enemy_Bullet_Long_TexID = Texture_Load(L"Resource/Texture/Enemy/Bullet_Straight.png");
-	Enemy_Bullet_Spire_TexID = Texture_Load(L"Resource/Texture/Enemy/Bullet_Spire.png");
 
 	Enemy_Bullet_Normal_Width  = ENEMY_BULLET_NORMAL_WIDTH  * Game_Scale;
 	Enemy_Bullet_Normal_Height = ENEMY_BULLET_NORMAL_HEIGHT * Game_Scale;
@@ -118,8 +118,8 @@ void Enemy_Bullet_Normal_Draw()
 		if (!bullet.isEnable || bullet.Type != Enemy_Bullet_Type::NORMAL)
 			continue;
 
-		Sprite_Draw(Enemy_Bullet_Normal_TexID, bullet.position.x, bullet.position.y,
-			bullet.size.x, bullet.size.y, 0.f, { A_Origin, A_Origin, A_Origin, A_F_Fifths });
+		Sprite_Draw(E_Bullet_Normal, bullet.position.x, bullet.position.y,
+			bullet.size.x, bullet.size.y, 0.0f, { A_Origin, A_Origin, A_Origin, A_F_Fifths });
 	}
 }
 
@@ -130,7 +130,7 @@ void Enemy_Bullet_Long_Draw()
 		if (!bullet.isEnable || bullet.Type != Enemy_Bullet_Type::LONG)
 			continue;
 
-		Sprite_Draw(Enemy_Bullet_Long_TexID, bullet.position.x, bullet.position.y,
+		Sprite_Draw(E_Bullet_Long, bullet.position.x, bullet.position.y,
 			bullet.size.x, bullet.size.y, bullet.Angle, { A_Origin, A_Origin, A_Origin, A_F_Fifths });
 	}
 }
@@ -142,7 +142,7 @@ void Enemy_Bullet_Spire_Draw()
 		if (!bullet.isEnable || bullet.Type != Enemy_Bullet_Type::SPIRE)
 			continue;
 
-		Sprite_Draw(Enemy_Bullet_Spire_TexID, bullet.position.x, bullet.position.y,
+		Sprite_Draw(E_Bullet_Spire, bullet.position.x, bullet.position.y,
 			bullet.size.x, bullet.size.y, bullet.Angle, { A_Origin, A_Origin, A_Origin, A_F_Fifths });
 	}
 }

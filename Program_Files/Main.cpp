@@ -6,31 +6,53 @@
 	Project Name : Void Nova
 
 	Author : Choi HyungJoon
-	Date : 2025. 09. 09
-	Version : 1.0.0
+	Date : 2025. 10. 26
+	Version : 1.1.0
+	Note : Alpha version complete
+
+	Version List :
+		Date : 2025. 09. 09
+		Version : 1.0.0
+		Note : Prototype Completed
+
+		Date : 2025. 10. 02
+		Version : 1.0.1
+		Note : Refactored shader logic into Singleton module
+
+		Date : 2025. 10. 04
+		Version : 1.0.2
+		Note : Refactored texture logic into Singleton module		
+		
+		Date : 2025. 10. 20
+		Version : 1.0.3
+		Note : Fixed Stage 5 boss bugs
+
+		Date : 2025. 10. 24
+		Version : 1.0.4
+		Note : Ending sequence debugging and refactoring complete
 
 ==============================================================================*/
 #include "Tools/Game_Header_Manager.h"
 #include "Tools/System_Logic_Manager.h"
 
-Audio_Manager* SM = nullptr;
-Window_Manager WM;
-Game_Manager GM;
+Audio_Manager*	 Sound_M = nullptr;
+Shader_Manager*  Shader_M = nullptr;
+Texture_Manager* Texture_M = nullptr;
+Window_Manager	 Window_M;
+Game_Manager	 Game_M;
 
 int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPSTR IpCmdline, _In_ int nCmdShow)
 {
-	SM = Audio_Manager::Get_Audio_Instance();
-
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
 	Handle_Instance = hInstance;
 	CmdShow = nCmdShow;
-	WM.Screen_Mode_Manager(WM.Get_Now_Screen_Mode());	
-	//WM.Screen_Mode_Manager(FullScreen_Mode);					// TEST
-	Game_Window = WM.Game_Window_Create(Handle_Instance);
+	Window_M.Screen_Mode_Manager(Window_M.Get_Now_Screen_Mode());
+	//Window_M.Screen_Mode_Manager(FullScreen_Mode);					// TEST
+	Game_Window = Window_M.Game_Window_Create(Handle_Instance);
 
 	System_Initialize(Game_Window);
 
@@ -40,10 +62,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	auto Create_DebugText = [&]() {
 		Debug_T = std::make_unique<Text::DebugText>(
 			Direct3D_GetDevice(), Direct3D_GetContext(),
-			L"Resource/Texture/Other/Console_ASCII_512.png",
-			Direct3D_GetBackBufferWidth(), Direct3D_GetBackBufferHeight(),
-			0.f, 0.f, 0, 0, 0.f, 0.f);
-		Debug_T->SetScale(0.75f);
+			Texture_M->GetID("Debug_Text"),
+			Direct3D_GetBackBufferWidth(), Direct3D_GetBackBufferHeight());
+		Debug_T->SetScale(0.5f);
+		Debug_T->SetOffset(10.0f, 10.0f);
 		};
 
 	Create_DebugText();
@@ -83,7 +105,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				Debug_T.reset();
 
 				Window_Re_Create(RequestedMode);
-				WM.Set_Now_Screen_Mode(RequestedMode);
+				Window_M.Set_Now_Screen_Mode(RequestedMode);
 
 				Create_DebugText();
 
@@ -93,7 +115,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				continue;
 			}
 
-			if (WM.Is_MessageBox_Active())
+			if (Window_M.Is_MessageBox_Active())
 				continue;
 
 			if (IF_IS_Game_Done())
@@ -129,7 +151,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				Controller_Set_Update();
 				IS_Controller_Set = Controller_Set_UP();
 
-				// Update Game Texture
+				// Update Game Texture	
 				if (IS_Controller_Set)
 				{
 					SpriteAni_Update(Elapsed_Time);
@@ -139,20 +161,19 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 					Main_UI_Update(Elapsed_Time);
 					SpriteAni_Update(Elapsed_Time);
 
-					if (GM.Get_Current_Game_Select_Screen() == Game_Select_Screen::GAME_PLAYING)
+					if (Game_M.Get_Current_Game_Select_Screen() == Game_Select_Screen::GAME_PLAYING)
 						Stage_Update(Elapsed_Time);
-					else if (GM.Get_Current_Game_Select_Screen() == Game_Select_Screen::GAME_ENDING)
+
+					if (Game_M.Get_Current_Game_Select_Screen() == Game_Select_Screen::GAME_ENDING)
 						Ending_Update(Elapsed_Time);
 				}
-				
+
 				// Draw Texture
 				Direct3D_Clear();
 				Sprite_Begin();
 
 				// Debug Test
-				//Debug_BG_Draw();
-				//Stage_5_Background_Draw();
-				//Game_UI_And_Logo_Draw();
+				//Ending_Draw();
 
 				// Real Draw Start
 				Game_Screen_Update();
@@ -160,9 +181,50 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				Controller_Set_Draw();
 
 				// Show FPS
+#if defined(DEBUG) || defined(_DEBUG)
+				std::stringstream Debug_FPS_State;
+				Debug_FPS_State << "FPS : " << FPS << std::endl;
+				Debug_FPS_State << "Screen  Mode : " << static_cast<int>(Window_M.Get_Now_Screen_Mode()) << "\n\n";
+				Debug_FPS_State << "- State" << "\n";
+				Debug_FPS_State << "Main : " << static_cast<int>(Game_M.Get_Current_Main_Screen()) << "\n";
+				Debug_FPS_State << "Sub  : " << static_cast<int>(Game_M.Get_Current_Sub_Screen()) << "\n";
+				Debug_FPS_State << "Game : " << static_cast<int>(Game_M.Get_Current_Game_Select_Screen()) << "\n\n";
+				Debug_FPS_State << "BGM	: " << static_cast<int>(Get_BGM_Scale_Buffer()) << "\n";
+				Debug_FPS_State << "SFX : " << static_cast<int>(Get_SFX_Scale_Buffer()) << "\n";
+				Debug_FPS_State << "Stage : " << static_cast<int>(Get_Stage_Select_Buffer_State()) << "\n\n";
+				Debug_FPS_State << "- Buffer : " << "\n";
+				Debug_FPS_State << "Main    : " << static_cast<int>(Get_Main_Select_Buffer()) << "\n";
+				Debug_FPS_State << "Setting : " << static_cast<int>(Get_Setting_Buffer()) << "\n";
+				Debug_FPS_State << "Sound	: " << static_cast<int>(Get_Setting_State()) << "\n";
+				Debug_FPS_State << "Select	: " << static_cast<int>(Get_Game_Select_Buffer()) << "\n";
+				Debug_FPS_State << "Stage	: " << static_cast<int>(Get_Now_Stage_Flow()) << "\n";
+				Debug_FPS_State << "Ending	: " << static_cast<int>(Get_Ending_Status()) << "\n\n";
+				Debug_FPS_State << "- In Game Timer" << "\n";
+				Debug_FPS_State << "State	: " << Get_In_Game_Timer() << "\n";
+				Debug_FPS_State << "Stage	: " << Stage_Get_Timer() << "\n";
+				Debug_FPS_State << "clear	: " << Stage_Get_Wait_Timer() << "\n";
+				Debug_FPS_State << "Bomb	: " << Get_Bomb_Timer() << "\n";
+				Debug_FPS_State << "Invincible	: " << Status_Get_Invincible_Time() << "\n\n";
+				Debug_FPS_State << "- In Game Status" << "\n";
+				Debug_FPS_State << "Live	: " << Status_Get_Lives() << "\n";
+				Debug_FPS_State << "Power	: " << Status_Get_Power() << "\n";
+				XMFLOAT2 POS = Player_Get_Position();
+				Debug_FPS_State << "POS.X	: " << POS.x << "\n";
+				Debug_FPS_State << "POS.Y	: " << POS.y << "\n";
+				Debug_FPS_State << "BOMB	: " << Status_Get_Bombs() << "\n\n";
+				Debug_FPS_State << "- Boss Phase" << "\n";
+				Debug_FPS_State << "Stage 1	: " << static_cast<int>(Get_Stage_1_State()) << "\n";
+				Debug_FPS_State << "Stage 2	: " << static_cast<int>(Get_Stage_2_State()) << "\n";
+				Debug_FPS_State << "Stage 3	: " << static_cast<int>(Get_Stage_3_State()) << "\n";
+				Debug_FPS_State << "Stage 4	: " << static_cast<int>(Get_Stage_4_State()) << "\n";
+				Debug_FPS_State << "Stage 5	: " << static_cast<int>(Get_Stage_5_State()) << "\n";
 
+				Debug_T->Print(Debug_FPS_State.str().c_str(), Light_Green);
+
+				Debug_T->Draw();
+				Debug_T->Clear();
+#endif	
 				Direct3D_Present();
-
 
 				Frame_Count++;
 			}	

@@ -35,11 +35,12 @@ enum class NOW_PLAYING_STAGE
 enum class STAGE_FLOW_STATE
 {
 	IDLE,
-	STORY_PLAYING,
-	BOSS_ENTERING,
+	STAGE_SETUP,
 	PREPARE_GAME,
+	FAKE_BOSS_FADE_WAIT,
+	FAKE_BOSS_ENTERING,
+	BOSS_ENTERING,
 	GAMEPLAY_ACTIVE,
-	BOSS_DEAD,
 	GAME_PAUSED,
 	PLAYER_DEAD,
 	PLAYER_RESPAWNING,
@@ -63,15 +64,18 @@ void Stage_Finalize();
 void Stage_Update(double elapsed_time);
 void Stage_Draw();
 
+void Set_Blackout_Overlay(bool Is_Blackout);
+bool Is_BlackOut_Overlay();
+bool Is_Final_Boss_Active();
+
 void Set_Now_Playing_Stage(NOW_PLAYING_STAGE Stage);
 void Set_BGM_Current_Stage(NOW_PLAYING_STAGE Stage);
+void Set_BGM_For_Boss(NOW_PLAYING_STAGE Stage);
 void Set_Power_Current_Stage(NOW_PLAYING_STAGE Stage);
 NOW_PLAYING_STAGE Get_Now_Playing_Stage();
 
 void  Set_Now_Stage_Flow(STAGE_FLOW_STATE State);
-STAGE_FLOW_STATE  Get_Now_Stage_Flow();
-
-bool Is_Boss_Story_Time();
+STAGE_FLOW_STATE Get_Now_Stage_Flow();
 
 void Stage_Command_Player_Move(const DirectX::XMFLOAT2& targetPos, float speed);
 void Stage_Update_Player_Movement(double elapsed_time);
@@ -82,7 +86,9 @@ void Stage_Set_Is_Player_Moving_By_Script(bool Is_Move);
 
 bool Are_All_Enemies_Cleared();
 
-void Stage_Reset_For_Retry();
+// --- Reset Functions ---
+void Stage_Reset_For_ALL();
+void Stage_Reset_For_Restart();
 
 double Get_In_Game_Timer();
 

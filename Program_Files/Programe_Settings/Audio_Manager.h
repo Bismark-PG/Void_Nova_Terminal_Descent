@@ -53,11 +53,14 @@ public:
     void Stop_All_SFX();
 
     // Manage Volume
-    void Set_BGM_Volume(int volume);
-    void Set_SFX_Volume(int volume);
+    void Set_Target_BGM_Volume(float volume);
+    void Set_Target_SFX_Volume(float volume);
 
-    int Get_BGM_Volume() const;
-    int Get_SFX_Volume() const;
+    void Update_Current_BGM_Volume(float volume);
+
+    float Get_Target_BGM_Volume() const;
+    float Get_Current_BGM_Volume() const;
+    float Get_Target_SFX_Volume() const;
 
     std::string Get_Playing_BGM_Name() const;
 
@@ -81,8 +84,10 @@ private:
     std::vector<IXAudio2SourceVoice*> Active_SFX_Voices;
     std::mutex                        Voice_Mutex;
 
-    int BGM_Volume;
-    int SFX_Volume;
+    float Current_BGM_Volume;
+    float Target_BGM_Volume;
+    
+    float Target_SFX_Volume;
 
     // Save Playing BGM Info
     std::string Now_Playing_BGM_Name;
@@ -92,7 +97,7 @@ private:
     Voice_Callback* Voice_Call_back;
 };
 
-extern Audio_Manager* SM;
+extern Audio_Manager* Sound_M;
 
 #endif // AUDIO_MANAGER_H
 

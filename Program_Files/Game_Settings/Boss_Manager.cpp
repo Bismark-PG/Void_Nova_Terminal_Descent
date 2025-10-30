@@ -14,35 +14,52 @@
 
 static BOSS_STATE Current_Boss_State;
 static NOW_PLAYING_STAGE Current_Stage;
+static BOSS_PATTERN_TYPE Current_Pattern;
 
 static int Active_Boss_Index = -1;
-static int Last_Known_Phase = 1;
+static bool Is_Phase_Complete = false;
+static bool Is_Entering_Finished = false;
 
 void Boss_Initialize()
 {
 	Current_Boss_State = BOSS_STATE::INACTIVE;
 	Current_Stage = NOW_PLAYING_STAGE::STAGE_NONE;
+	Current_Pattern = BOSS_PATTERN_TYPE::NONE;
 	Active_Boss_Index = -1;
-	Last_Known_Phase = 1;
+	Is_Phase_Complete = false;
+	Is_Entering_Finished = false;
 }
 
 void Boss_Finalize()
 {
+
 }
 
-void Boss_Activate(NOW_PLAYING_STAGE stage)
+void Boss_Activate(int bossIndex, NOW_PLAYING_STAGE stage)
 {
 	if (Current_Boss_State != BOSS_STATE::INACTIVE) return;
 
+	Active_Boss_Index = bossIndex;
 	Current_Stage = stage;
-	GameMode now_mode = Get_Game_Mode();
+	Current_Boss_State = BOSS_STATE::ENTERING;
+	Is_Phase_Complete = false;
+	Is_Entering_Finished = false;
+}
 
-	if (now_mode == GameMode::NEW_GAME || now_mode == GameMode::CONTINUE)
-		Current_Boss_State = BOSS_STATE::STORY;
-	else
-		Current_Boss_State = BOSS_STATE::BATTLE;
+void Boss_Start_Pattern(BOSS_PATTERN_TYPE pattern)
+{
+	if (Active_Boss_Index == -1) return;
+	
+	Enemy* Boss = Enemy_Get_Editable(Active_Boss_Index);
+	if (!Boss) return;
 
-	Last_Known_Phase = 1;
+	Current_Pattern = pattern;
+	Is_Phase_Complete = false;
+	Current_Boss_State = BOSS_STATE::BATTLE;
+
+	Boss->HP = Get_Enemy_Info(Boss->Type_ID).HP;
+	Boss->State = Enemy_State::Attack;
+	Boss_Pattern_Initialize(*Boss);
 }
 
 void Boss_Update(double elapsed_time)
@@ -50,70 +67,51 @@ void Boss_Update(double elapsed_time)
 	if (Current_Boss_State == BOSS_STATE::INACTIVE || Current_Boss_State == BOSS_STATE::DEFEATED)
 		return;
 
-	if (Active_Boss_Index != -1 && Enemy_IsEnable(Active_Boss_Index))
+	Enemy* Boss = Enemy_Get_Editable(Active_Boss_Index);
+	if (!Boss)
 	{
-		Enemy& BOSS = *const_cast<Enemy*>(Enemy_Get(Active_Boss_Index));
-
-		if (Current_Boss_State == BOSS_STATE::STORY)
-			Boss_Pattern_Enter(BOSS, elapsed_time);
-		else if (Current_Boss_State == BOSS_STATE::BATTLE)
+		if (Current_Boss_State != BOSS_STATE::INACTIVE)
 		{
-			switch (Current_Stage)
-			{
-			case NOW_PLAYING_STAGE::STAGE_THREE:
-				Boss_Pattern_Stage_3_Update(BOSS, elapsed_time);
-				break;
-
-			case NOW_PLAYING_STAGE::STAGE_FOUR:
-				Boss_Pattern_Stage_4_Update(BOSS, elapsed_time);
-				break;
-
-			case NOW_PLAYING_STAGE::STAGE_FIVE:
-				Boss_Pattern_Stage_5_Update(BOSS, elapsed_time);
-				break;
-			}
-
-			if (BOSS.Current_Phase > Last_Known_Phase)
-			{
-				XMFLOAT2 Boss_Center =
-				{
-					BOSS.Position.x + BOSS.Size.x * A_Half,
-					BOSS.Position.y + BOSS.Size.y * A_Half
-				};
-
-				SM->Play_SFX("Enemy_Mini_Boss_Dead");
-
-				switch (Current_Stage)
-				{
-				case NOW_PLAYING_STAGE::STAGE_THREE:
-					Item_Create(Boss_Center, BOSS.Size, Item_Type::POWER_UP, A_Quarter, 5);
-					Item_Create(Boss_Center, BOSS.Size, Item_Type::LIVE);
-					Item_Create(Boss_Center, BOSS.Size, Item_Type::BOMB);
-					Score_Create(Boss_Center, BOSS.Size, Item_Type::SCORE, Enemy_Type_Special_Boss_Phase_Change_Score, 15);
-					break;
-
-				case NOW_PLAYING_STAGE::STAGE_FOUR:
-					Item_Create(Boss_Center, BOSS.Size, Item_Type::POWER_UP, A_Quarter, 6);
-					Item_Create(Boss_Center, BOSS.Size, Item_Type::LIVE);
-					Item_Create(Boss_Center, BOSS.Size, Item_Type::BOMB, 0, 2);
-					Score_Create(Boss_Center, BOSS.Size, Item_Type::SCORE, Enemy_Type_Middle_Boss_Phase_Change_Score, 15);
-					break;
-				}
-
-				Last_Known_Phase = BOSS.Current_Phase;
-
-				Boss_Pattern_Initialize(BOSS);
-			}
-
-			if (BOSS.State == Enemy_State::DESTRUCTION)
-			{
-				Current_Boss_State = BOSS_STATE::DEFEATED;
-				SM->Play_SFX("Enemy_Boss_Dead");
-				Effect_Create(Effect_Type::REAL_EXPLOSION, BOSS.Position, { BOSS.Size.x, BOSS.Size.x });
-				Enemy_Destroy(Active_Boss_Index);
-				Active_Boss_Index = -1;
-			}
+			Current_Boss_State = BOSS_STATE::DEFEATED;
+			Is_Phase_Complete = true;
 		}
+		return;
+	}
+
+	switch (Current_Boss_State)
+	{
+	case BOSS_STATE::ENTERING:
+		if (Boss_Pattern_Enter(*Boss, elapsed_time))
+		{
+			Is_Entering_Finished = true;
+		}
+		break;
+
+	case BOSS_STATE::BATTLE:
+		switch (Current_Stage)
+		{
+		case NOW_PLAYING_STAGE::STAGE_THREE:
+			Boss_Pattern_Stage_3_Update(*Boss, elapsed_time, Current_Pattern);
+			break;
+		case NOW_PLAYING_STAGE::STAGE_FOUR:
+			Boss_Pattern_Stage_4_Update(*Boss, elapsed_time, Current_Pattern);
+			break;
+		case NOW_PLAYING_STAGE::STAGE_FIVE:
+			Boss_Pattern_Stage_5_Update(*Boss, elapsed_time, Current_Pattern);
+			break;
+		}
+
+		if (Boss->State == Enemy_State::DESTRUCTION)
+		{
+			Is_Phase_Complete = true;
+			Current_Boss_State = BOSS_STATE::PHASE_CHANGING;
+			Sound_M->Play_SFX("Enemy_Mini_Boss_Dead");
+		}
+		break;
+
+	case BOSS_STATE::PHASE_CHANGING:
+		// Do nothing and wait for the next command from Stage_Update
+		break;
 	}
 }
 
@@ -132,22 +130,37 @@ void Set_Boss_State(BOSS_STATE state)
 	Current_Boss_State = state;
 }
 
-bool Is_Boss_Defeated()
+bool Is_Current_Phase_Finished()
 {
-	return Current_Boss_State == BOSS_STATE::DEFEATED;
+	if (Is_Phase_Complete)
+	{
+		Is_Phase_Complete = false;
+		return true;
+	}
+	return false;
+}
+
+bool Is_Boss_Entering()
+{
+	return (Current_Boss_State == BOSS_STATE::ENTERING && !Is_Entering_Finished);
+}
+
+void Set_Boss_Entering_Done(bool Done)
+{
+	Is_Entering_Finished = Done;
+}
+
+bool Get_Boss_Entering_Done()
+{
+	return Is_Entering_Finished;
 }
 
 int Enemy_Get_Active_Boss_Index()
 {
-	if (Current_Boss_State == BOSS_STATE::BATTLE && Active_Boss_Index != -1)
-		return Active_Boss_Index;
-
-	if (Active_Boss_Index != -1)
-		return Active_Boss_Index;
-
-	return -1;
+	return Active_Boss_Index;
 }
-void Set_Active_Boss_Index(int index)
+
+BOSS_PATTERN_TYPE Boss_Get_Current_Pattern()
 {
-	Active_Boss_Index = index;
+	return Current_Pattern;
 }

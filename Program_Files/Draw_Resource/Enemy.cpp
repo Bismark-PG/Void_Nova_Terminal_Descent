@@ -8,7 +8,7 @@
 #include "Enemy.h"
 #include <DirectXMath.h>
 #include "direct3d.h"
-#include "texture.h"
+#include "Texture_Manager.h"
 #include "sprite.h"
 #include "Effect.h"
 #include "Player.h"
@@ -22,16 +22,16 @@
 using namespace DirectX;
 using namespace PALETTE;
 
-static Enemy Enemy_s[ENEMY_MAX]{};
+static int Enemy_Origin = -1;
+static int Enemy_Saber = -1;
+static int Enemy_Spear = -1;
+static int Enemy_Armor = -1;
+static int Enemy_Boss_Stage_3 = -1;
+static int Enemy_Boss_Stage_4 = -1;
+static int Enemy_Final_Boss_1 = -1;
+static int Enemy_Final_Boss_2 = -1;
 
-static int Type_Origin = -1;
-static int Type_Saber  = -1;
-static int Type_Spear  = -1;
-static int Type_Armor  = -1;
-static int Type_Stage_3_Boss = -1;
-static int Type_Stage_4_Boss = -1;
-static int Type_Final_Phase_1_Boss = -1;
-static int Type_Final_Phase_2_Boss = -1;
+static Enemy Enemy_s[ENEMY_MAX]{};
 
 static Enemy_Type EnemyType[Enemy_Type_MAX]
 {
@@ -44,15 +44,7 @@ static Enemy_Type EnemyType[Enemy_Type_MAX]
 void Enemy_Initialize()
 {
 	Enemy_Reset();
-
-	Type_Origin = Texture_Load(L"Resource/Texture/Enemy/Enemy_Original_Black_Fixed.png");
-	Type_Saber = Texture_Load(L"Resource/Texture/Enemy/Enemy_Saber_Black.png");
-	Type_Spear = Texture_Load(L"Resource/Texture/Enemy/Enemy_Spear_Origin.png");
-	Type_Armor = Texture_Load(L"Resource/Texture/Enemy/Enemy_Armor.png");
-	Type_Stage_3_Boss = Texture_Load(L"Resource/Texture/Enemy/Enemy_Middle_Original.png");
-	Type_Stage_4_Boss = Texture_Load(L"Resource/Texture/Enemy/Enemy_Middle_2_Black.png");
-	Type_Final_Phase_1_Boss = Texture_Load(L"Resource/Texture/Enemy/Enemy_Boss_W_Fixed.png");
-	Type_Final_Phase_2_Boss = Texture_Load(L"Resource/Texture/Enemy/Enemy_Boss_B_Fixed.png");
+	Enemy_Texture();
 
 	ENEMY_Original_Width  = ENEMY_ORIGIN_WIDTH * Game_Scale;
 	ENEMY_Original_Height = ENEMY_ORIGIN_HEIGHT * Game_Scale;
@@ -95,80 +87,83 @@ void Enemy_Initialize()
 	// Patrol_Time, TargetPOS, GetScore }
 
 	// Original
-	EnemyType[Enemy_Type_Origin] = { ENEMY_ORIGIN_HP, Type_Origin, 0, 0, 0, 0, { A_Zero, ENEMY_Original_Speed },
+	EnemyType[Enemy_Type_Origin] = { ENEMY_ORIGIN_HP, Enemy_Origin, 0, 0, 0, 0, {A_Zero, ENEMY_Original_Speed},
 	{ { ENEMY_Original_Width * A_Half, ENEMY_Original_Height * A_Half }, ENEMY_Original_Radius },
 		ENEMY_Original_Speed,  ENEMY_FIRE_RATE_NORMAL, ENEMY_ORIGIN_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_NORMAL, Enemy_Give_Score::Enemy_Type_Origin_Socre };
 	
-	EnemyType[Enemy_Type_Origin_ZAKO] = { ENEMY_ORIGIN_ZAKO_HP, Type_Origin, 0, 0, 0, 0, { A_Zero, ENEMY_Original_Speed },
+	EnemyType[Enemy_Type_Origin_ZAKO] = { ENEMY_ORIGIN_ZAKO_HP, Enemy_Origin, 0, 0, 0, 0, { A_Zero, ENEMY_Original_Speed },
 	{ { ENEMY_Original_Width * A_Half, ENEMY_Original_Height * A_Half }, ENEMY_Original_Radius },
 		ENEMY_Original_Speed,  ENEMY_FIRE_RATE_NORMAL, ENEMY_ORIGIN_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_NORMAL, Enemy_Give_Score::Enemy_Type_Origin_Zako_Socre };
 
-	EnemyType[Enemy_Type_Mini_Boss] = { ENEMY_MINI_BOSS_HP, Type_Origin, 0, 0, 0, 0, { A_Zero, ENEMY_Original_Speed },
+	EnemyType[Enemy_Type_Mini_Boss] = { ENEMY_MINI_BOSS_HP, Enemy_Origin, 0, 0, 0, 0, { A_Zero, ENEMY_Original_Speed },
 	{ { ENEMY_Armor_Width * A_Half, ENEMY_Armor_Height * A_Half }, ENEMY_Armor_Radius },
 		ENEMY_Armor_Speed,  ENEMY_FIRE_RATE_MINI_BOSS, ENEMY_ORIGIN_BOSS_FIRE_COUNT, Enemy_Bullet_Type::LONG,
 		ENEMY_PATROL_TIME_NORMAL, Enemy_Give_Score::Enemy_Mini_BOSS_Socre };
 
 	// Saber
-	EnemyType[Enemy_Type_Saber] = { ENEMY_SABER_HP, Type_Saber, 0, 0, 0, 0, { A_Zero, ENEMY_Saber_Speed },
+	EnemyType[Enemy_Type_Saber] = { ENEMY_SABER_HP, Enemy_Saber, 0, 0, 0, 0, { A_Zero, ENEMY_Saber_Speed },
 	{ { ENEMY_Saber_Width * A_Half, ENEMY_Saber_Height * A_Half }, ENEMY_Saber_Radius },
 		ENEMY_Saber_Speed,  ENEMY_FIRE_RATE_SABER, ENEMY_SABER_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_SABER, Enemy_Give_Score::Enemy_Type_Saber_Socre };
 
-	EnemyType[Enemy_Type_Saber_ZAKO] = { ENEMY_SABER_ZAKO_HP, Type_Saber, 0, 0, 0, 0, { A_Zero, ENEMY_Saber_Speed },
+	EnemyType[Enemy_Type_Saber_ZAKO] = { ENEMY_SABER_ZAKO_HP, Enemy_Saber, 0, 0, 0, 0, { A_Zero, ENEMY_Saber_Speed },
 	{ { ENEMY_Saber_Width * A_Half, ENEMY_Saber_Height * A_Half }, ENEMY_Saber_Radius },
 		ENEMY_Saber_Speed,  ENEMY_FIRE_RATE_SABER, ENEMY_SABER_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_SABER, Enemy_Give_Score::Enemy_Type_Saber_Socre };
 
 	// Spear
-	EnemyType[Enemy_Type_Spear] = { ENEMY_SPEAR_HP, Type_Spear, 0, 0, 0, 0, { A_Zero, ENEMY_SPEAR_SPEED },
+	EnemyType[Enemy_Type_Spear] = { ENEMY_SPEAR_HP, Enemy_Spear, 0, 0, 0, 0, { A_Zero, ENEMY_SPEAR_SPEED },
 	{ { ENEMY_Spear_Width * A_Half, ENEMY_Spear_Height * A_Half }, ENEMY_Spear_Radius },
 		ENEMY_SPEAR_SPEED,  ENEMY_FIRE_RATE_SPEAR, ENEMY_SPEAR_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_SPEAR, Enemy_Give_Score::Enemy_Type_Spear_Socre };
 
-	EnemyType[Enemy_Type_Spear_ZAKO] = { ENEMY_SPEAR_ZAKO_HP, Type_Spear, 0, 0, 0, 0, { A_Zero, ENEMY_SPEAR_SPEED },
+	EnemyType[Enemy_Type_Spear_ZAKO] = { ENEMY_SPEAR_ZAKO_HP, Enemy_Spear, 0, 0, 0, 0, { A_Zero, ENEMY_SPEAR_SPEED },
 	{ { ENEMY_Spear_Width * A_Half, ENEMY_Spear_Height * A_Half }, ENEMY_Spear_Radius },
 		ENEMY_SPEAR_SPEED,  ENEMY_FIRE_RATE_SPEAR, ENEMY_SPEAR_FIRE_COUNT, Enemy_Bullet_Type::SPIRE,
 		ENEMY_PATROL_TIME_SPEAR, Enemy_Give_Score::Enemy_Type_Spear_Socre };
 
-	EnemyType[Enemy_Type_Spear_ZAKO_ITEM] = { ENEMY_SPEAR_ZAKO_HP, Type_Spear, 0, 0, 0, 0, { A_Zero, ENEMY_Saber_Speed },
+	EnemyType[Enemy_Type_Spear_ZAKO_ITEM] = { ENEMY_SPEAR_ZAKO_HP, Enemy_Spear, 0, 0, 0, 0, { A_Zero, ENEMY_Saber_Speed },
 	{ { ENEMY_Saber_Width * A_Half, ENEMY_Saber_Height * A_Half }, ENEMY_Saber_Radius },
 		ENEMY_Saber_Speed,  ENEMY_FIRE_RATE_SABER, ENEMY_SABER_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_SABER, Enemy_Give_Score::Enemy_Type_Saber_Socre };
 
 	// Armor
-	EnemyType[Enemy_Type_Armor] = { ENEMY_ARMOR_HP, Type_Armor, 0, 0, 0, 0, { A_Zero, ENEMY_Armor_Speed },
+	EnemyType[Enemy_Type_Armor] = { ENEMY_ARMOR_HP, Enemy_Armor, 0, 0, 0, 0, { A_Zero, ENEMY_Armor_Speed },
 	{ { ENEMY_Armor_Width * A_Half, ENEMY_Armor_Height * A_Half }, ENEMY_Armor_Radius },
 		ENEMY_Armor_Speed,  ENEMY_FIRE_RATE_ARMOR, ENEMY_ARMOR_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		ENEMY_PATROL_TIME_ARMOR, Enemy_Give_Score::Enemy_Type_Armor_Socre };
 
-	EnemyType[Enemy_Type_Armor_Boss] = { ENEMY_ARMOR_BOSS_HP, Type_Armor, 0, 0, 0, 0, { A_Zero, ENEMY_Armor_Speed },
+	EnemyType[Enemy_Type_Armor_Boss] = { ENEMY_ARMOR_BOSS_HP, Enemy_Armor, 0, 0, 0, 0, { A_Zero, ENEMY_Armor_Speed },
 	{ { ENEMY_Armor_Width * A_Half, ENEMY_Armor_Height * A_Half }, ENEMY_Armor_Radius },
 		ENEMY_Armor_Speed,  ENEMY_FIRE_RATE_ARMOR_BOSS, ENEMY_ARMOR_BOSS_FIRE_COUNT, Enemy_Bullet_Type::LONG,
 		ENEMY_PATROL_TIME_ARMOR, Enemy_Give_Score::Enemy_Type_Armor_Socre };
 
-	EnemyType[Enemy_Type_Armor_Give_HP] = { ENEMY_ARMOR_HP, Type_Armor, 0, 0, 0, 0, { A_Zero, ENEMY_Armor_Speed },
+	EnemyType[Enemy_Type_Armor_Give_HP] = { ENEMY_ARMOR_HP, Enemy_Armor, 0, 0, 0, 0, { A_Zero, ENEMY_Armor_Speed },
 	{ { ENEMY_Armor_Width * A_Half, ENEMY_Armor_Height * A_Half }, ENEMY_Armor_Radius },
 		ENEMY_Armor_Speed,  ENEMY_FIRE_RATE_ARMOR, ENEMY_ARMOR_FIRE_COUNT, Enemy_Bullet_Type::LONG,
 		ENEMY_PATROL_TIME_ARMOR, Enemy_Give_Score::Enemy_Type_Armor_Socre };
 
-	EnemyType[Enemy_Type_Special_Boss_Stage_3] = { ENEMY_SPECAIL_HP, Type_Stage_3_Boss, 0, 0, 0, 0, { A_Zero, ENEMY_Special_BOSS_Speed },
+	// Boss 3
+	EnemyType[Enemy_Type_Special_Boss_Stage_3] = { ENEMY_SPECAIL_HP, Enemy_Boss_Stage_3, 0, 0, 0, 0, { A_Zero, ENEMY_Special_BOSS_Speed },
 	{ { ENEMY_Special_BOSS_Width * A_Half, ENEMY_Special_BOSS_Height * A_Half }, ENEMY_Special_BOSS_Radius },
 		ENEMY_Special_BOSS_Speed,  ENEMY_FIRE_RATE_SPECAIL_BOSS, ENEMY_SPECAIL_BOSS_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		0, Enemy_Give_Score::Enemy_Type_Special_Boss_Score };
 
-	EnemyType[Enemy_Type_Middle_Boss_Stage_4] = { ENEMY_MIDDLE_BOSS_HP, Type_Stage_4_Boss, 0, 0, 0, 0, { A_Zero, ENEMY_Middle_BOSS_Speed },
+	// Boss 4
+	EnemyType[Enemy_Type_Middle_Boss_Stage_4] = { ENEMY_MIDDLE_BOSS_HP, Enemy_Boss_Stage_4, 0, 0, 0, 0, { A_Zero, ENEMY_Middle_BOSS_Speed },
 	{ { ENEMY_Middle_BOSS_Width * A_Half, ENEMY_Middle_BOSS_Height * A_Half }, ENEMY_Middle_BOSS_Radius },
 		ENEMY_Middle_BOSS_Speed,  ENEMY_FIRE_RATE_MIDDLE_BOSS, ENEMY_MIDDLE_BOSS_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		0, Enemy_Give_Score::Enemy_Type_Middle_Boss_Score };
 
-	EnemyType[Enemy_Type_Final_Phase_1_Boss] = { ENEMY_FINAL_PHASE_1_HP, Type_Final_Phase_2_Boss, 0, 0, 0, 0, { A_Zero, ENEMY_Final_BOSS_Speed },
+	// Boss 5
+	EnemyType[Enemy_Type_Final_Phase_1_Boss] = { ENEMY_FINAL_PHASE_1_HP, Enemy_Final_Boss_1, 0, 0, 0, 0, { A_Zero, ENEMY_Final_BOSS_Speed },
 	{ { ENEMY_Final_BOSS_Width * A_Half, ENEMY_Final_BOSS_Height * A_Half }, ENEMY_Final_BOSS_Radius },
 		ENEMY_Final_BOSS_Speed,  ENEMY_FIRE_RATE_FINAL_BOSS, ENEMY_FINAL_BOSS_BOSS_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		0, Enemy_Give_Score::Enemy_Type_Final_P_1_Boss_Score };
 
-	EnemyType[Enemy_Type_Final_Phase_2_Boss] = { ENEMY_FINAL_PHASE_1_HP, Type_Final_Phase_2_Boss, 0, 0, 0, 0, { A_Zero, ENEMY_Final_BOSS_Speed },
+	EnemyType[Enemy_Type_Final_Phase_2_Boss] = { ENEMY_FINAL_PHASE_2_HP, Enemy_Final_Boss_2, 0, 0, 0, 0, { A_Zero, ENEMY_Final_BOSS_Speed },
 	{ { ENEMY_Final_BOSS_Width * A_Half, ENEMY_Final_BOSS_Height * A_Half }, ENEMY_Final_BOSS_Radius },
 		ENEMY_Final_BOSS_Speed,  ENEMY_FIRE_RATE_FINAL_BOSS, ENEMY_FINAL_BOSS_BOSS_FIRE_COUNT, Enemy_Bullet_Type::NORMAL,
 		0, Enemy_Give_Score::Enemy_Type_Final_P_2_Boss_Score };
@@ -228,7 +223,29 @@ void Enemy_Update(double elapsed_time)
 			continue;
 
 		if (Enemy_s[i].State == Enemy_State::DESTRUCTION)
+		{
+			switch (Enemy_s[i].Type_ID)
+			{
+			case Enemy_Type_Special_Boss_Stage_3:
+			case Enemy_Type_Middle_Boss_Stage_4:
+			case Enemy_Type_Final_Phase_1_Boss:
+			case Enemy_Type_Final_Phase_2_Boss:
+				break;
+
+			case Enemy_Type_Armor_Boss:
+				Sound_M->Play_SFX("Enemy_Mini_Boss_Dead");
+				Effect_Create(Effect_Type::ENEMY_EXPLOSION, Enemy_s[i].Position, { Enemy_s[i].Size.x, Enemy_s[i].Size.x });
+				Enemy_Destroy(i);
+				break;
+
+			default:
+				Sound_M->Play_SFX("Enemy_Dead");
+				Effect_Create(Effect_Type::ENEMY_EXPLOSION, Enemy_s[i].Position, { Enemy_s[i].Size.x, Enemy_s[i].Size.x });
+				Enemy_Destroy(i);
+				break;
+			}
 			continue;
+		}
 
 		switch (Enemy_s[i].Move_Pattern)
 		{
@@ -309,32 +326,6 @@ int Enemy_Create(Enemy_Type_ID ID, const DirectX::XMFLOAT2& Position, Enemy_Move
 		enemy.isEnable = true;
 		enemy.HP = EnemyType[ID].HP;
 
-		if (ID == Enemy_Type_Special_Boss_Stage_3)
-		{
-			enemy.Current_Phase = 1;
-			enemy.Max_Phase = 3;
-		}
-		else if (ID == Enemy_Type_Middle_Boss_Stage_4)
-		{
-			enemy.Current_Phase = 1;
-			enemy.Max_Phase = 5;
-		}
-		else if (ID == Enemy_Type_Final_Phase_1_Boss)
-		{
-			enemy.Current_Phase = 1;
-			enemy.Max_Phase = 4;
-		}
-		else if (ID == Enemy_Type_Final_Phase_2_Boss)
-		{
-			enemy.Current_Phase = 1;
-			enemy.Max_Phase = 2;
-		}
-		else
-		{
-			enemy.Current_Phase = 0;
-			enemy.Max_Phase = 0;
-		}
-
 		enemy.Type_ID = ID;
 		enemy.Position = Position;
 		enemy.Angle = 0.0f;
@@ -368,54 +359,6 @@ int Enemy_Create(Enemy_Type_ID ID, const DirectX::XMFLOAT2& Position, Enemy_Move
 	}
 
 	return -1;
-}
-
-void Enemy_Create_Destruction_Shell(int Index)
-{
-	const Enemy& source = Enemy_s[Index];
-	if (!source.isEnable) return;
-
-	for (int i = 0; i < ENEMY_MAX; i++)
-	{
-		if (Enemy_s[i].isEnable) continue;
-
-		Enemy& shell = Enemy_s[i];
-		shell = source;
-
-		shell.HP = 99999;
-		shell.Max_Phase = -1;
-		shell.Get_Score = 0;
-
-		break;
-	}
-}
-
-bool Enemy_Go_To_Next_Phase(int Boss_Index)
-{
-	if (Boss_Index < 0 || Boss_Index >= ENEMY_MAX)
-		return false;
-
-	Enemy& Boss = Enemy_s[Boss_Index];
-
-	if (!Boss.isEnable || Boss.Max_Phase == 0)
-		return false;
-
-	if (Boss.Current_Phase < Boss.Max_Phase)
-	{
-		Boss.Current_Phase++;
-		Boss.HP = Get_Enemy_Info(Boss.Type_ID).HP;
-		return false;
-	}
-	else
-		return true;
-}
-
-int Enemy_Get_Current_Phase(int Boss_Index)
-{
-	if (Boss_Index >= 0 && Boss_Index < ENEMY_MAX)
-		return Enemy_s[Boss_Index].Current_Phase;
-
-	return 0;
 }
 
 float Enemy_Get_Width(Enemy_Type_ID ID, bool Is_Width) 
@@ -503,66 +446,42 @@ const Enemy* Enemy_Get(int Index)
 	return nullptr;
 }
 
+Enemy* Enemy_Get_Editable(int Index)
+{
+	if (Index >= 0 && Index < ENEMY_MAX && Enemy_s[Index].isEnable)
+		return &Enemy_s[Index];
+
+	return nullptr;
+}
+
 void Enemy_Damage(int Index)
 {
+	if (Index < 0 || Index >= ENEMY_MAX || !Enemy_s[Index].isEnable) return;
+	
 	Enemy_s[Index].HP -= Bullet_Get_Now_Damage();
 	Enemy_s[Index].isDamage = true;
 
 	if (Enemy_s[Index].HP <= 0.0f)
 	{
-		if (Enemy_s[Index].Max_Phase > 0)
-		{
-			bool Is_Final_Phase_Done = Enemy_Go_To_Next_Phase(Index);
-			if (Is_Final_Phase_Done)
-			{
-				Enemy_s[Index].State = Enemy_State::DESTRUCTION;
-				Enemy_s[Index].HP = 0;
-			}
-		}
-		else
-		{
-			switch (Enemy_s[Index].Type_ID)
-			{
-			case Enemy_Type_Armor_Boss:
-				SM->Play_SFX("Enemy_Mini_Boss_Dead");
-				break;
-
-			default:
-				SM->Play_SFX("Enemy_Dead");
-				break;
-			}
-
-			Effect_Create(Effect_Type::ENEMY_EXPLOSION, Enemy_s[Index].Position, { Enemy_s[Index].Size.x, Enemy_s[Index].Size.x });
-
-			Enemy_Destroy(Index);
-		}
-		
+		Enemy_s[Index].State = Enemy_State::DESTRUCTION;
+		Enemy_s[Index].HP = 0;
 	}
 }
 
 void Enemy_Bomb_Damage(int Index, float Damage)
 {
+	if (Index < 0 || Index >= ENEMY_MAX || !Enemy_s[Index].isEnable) return;
+
 	Enemy_s[Index].HP -= Damage;
 	Enemy_s[Index].isDamage = true;
 
 	if (Enemy_s[Index].HP <= 0.0f)
 	{
-		if (Enemy_s[Index].Max_Phase > 0)
-		{
-			bool Is_Final_Phase_Done = Enemy_Go_To_Next_Phase(Index);
-			if (Is_Final_Phase_Done)
-			{
-				Enemy_s[Index].State = Enemy_State::DESTRUCTION;
-				Enemy_s[Index].HP = 0;
-			}
-		}
-		else
-		{
-			Effect_Create(Effect_Type::ENEMY_EXPLOSION, Enemy_s[Index].Position, { Enemy_s[Index].Size.x, Enemy_s[Index].Size.x });
-			Enemy_Destroy(Index);
-		}
+		Enemy_s[Index].State = Enemy_State::DESTRUCTION;
+		Enemy_s[Index].HP = 0;
 	}
 }
+
 
 void Enemy_Destroy(int Index)
 {
@@ -648,17 +567,27 @@ void Enemy_Destroy_All_Normal_Enemies()
 			case Enemy_Type_Armor:
 			case Enemy_Type_Armor_Boss:
 			case Enemy_Type_Armor_Give_HP:
-				Enemy_Bomb_Damage(i, BOMB_DAMAGE);
-				break;
-
 			case Enemy_Type_Mini_Boss:
+				Enemy_Bomb_Damage(i, (EnemyType[Enemy_s[i].Type_ID].HP * BOMB_DAMAGE));
+
+				if (Enemy_s[i].HP <= 0)
+					Enemy_s[i].HP = 1;
 				break;
 
 			case Enemy_Type_Special_Boss_Stage_3:
 			case Enemy_Type_Middle_Boss_Stage_4:
+				Enemy_Bomb_Damage(i, (EnemyType[Enemy_s[i].Type_ID].HP * BOMB_DAMAGE));
+
+				if (Enemy_s[i].HP <= 0)
+					Enemy_s[i].HP = 1;
+				break;
+
 			case Enemy_Type_Final_Phase_1_Boss:
 			case Enemy_Type_Final_Phase_2_Boss:
-				Enemy_Bomb_Damage(i, BOMB_DAMAGE);
+				Enemy_Bomb_Damage(i, (EnemyType[Enemy_s[i].Type_ID].HP * FINAL_BOMB_DAMAGE));
+
+				if (Enemy_s[i].HP <= 0)
+					Enemy_s[i].HP = 1;
 				break;
 
 			default:
@@ -676,4 +605,16 @@ void Enemy_Destroy_All_Normal_Enemies()
 Enemy_Type Get_Enemy_Info(int Type_ID)
 {
 	return EnemyType[Type_ID];
+}
+
+void Enemy_Texture()
+{
+	Enemy_Origin = Texture_M->GetID("Enemy_Origin");
+	Enemy_Saber	 = Texture_M->GetID("Enemy_Saber");
+	Enemy_Spear	 = Texture_M->GetID("Enemy_Spear");
+	Enemy_Armor	 = Texture_M->GetID("Enemy_Armor");
+	Enemy_Boss_Stage_3 = Texture_M->GetID("Enemy_Stage_3_Boss");
+	Enemy_Boss_Stage_4 = Texture_M->GetID("Enemy_Stage_4_Boss");
+	Enemy_Final_Boss_1 = Texture_M->GetID("Enemy_Final_Boss_Phase_1");
+	Enemy_Final_Boss_2 = Texture_M->GetID("Enemy_Final_Boss_Phase_2");
 }

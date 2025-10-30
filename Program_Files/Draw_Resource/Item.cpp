@@ -7,7 +7,7 @@
 ==============================================================================*/
 #include "Item.h"
 #include "Game_Window.h"
-#include "Texture.h"
+#include "Texture_Manager.h"
 #include "Sprite.h"
 #include "Player.h"      
 #include "Game_Status.h" 
@@ -22,11 +22,6 @@ using namespace DirectX;
 using namespace PALETTE;
 
 static Item Items[ITEM_MAX]{};
-
-static int Power_Up_TexID = -1;
-static int Score_Up_TexID = -1;
-static int Bomb_Up_TexID  = -1;
-static int Life_Up_TexID  = -1;
 
 static int Anime_Power = -1;
 static int Anime_Score = -1;
@@ -43,20 +38,20 @@ static std::mt19937 Get(RD());
 
 void Item_Initialize()
 {
-	Power_Up_TexID = Texture_Load(L"Resource/Texture/UI/UI_Item P_Animeition.png");
-	Score_Up_TexID = Texture_Load(L"Resource/Texture/UI/UI_Item S_Animeition.png");
-	Bomb_Up_TexID  = Texture_Load(L"Resource/Texture/UI/UI_Item B_Animeition.png");
-	Life_Up_TexID  = Texture_Load(L"Resource/Texture/UI/UI_Item L_Animeition.png");
+	int Power = Texture_M->GetID("Item_Power");
+	int Score = Texture_M->GetID("Item_Score");
+	int Bomb = Texture_M->GetID("Item_Bomb");
+	int Life = Texture_M->GetID("Item_Life");
 
-	Anime_Power = SpriteAni_Get_Pattern_Info(Power_Up_TexID, 2, 2, 1.0, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
-	Anime_Score = SpriteAni_Get_Pattern_Info(Score_Up_TexID, 2, 2, 0.75, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
-	Anime_Bomb  = SpriteAni_Get_Pattern_Info(Bomb_Up_TexID,  2, 2, 1.25, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
-	Anime_Life  = SpriteAni_Get_Pattern_Info(Life_Up_TexID,  2, 2, 1.25, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
+	Anime_Power = SpriteAni_Get_Pattern_Info(Power, 2, 2, 1.0, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
+	Anime_Score = SpriteAni_Get_Pattern_Info(Score, 2, 2, 0.75, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
+	Anime_Bomb = SpriteAni_Get_Pattern_Info(Bomb, 2, 2, 1.25, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
+	Anime_Life = SpriteAni_Get_Pattern_Info(Life, 2, 2, 1.25, { 454, 454 }, { 454 * 0, 454 * 0 }, true);
 
 	Play_Power = SpriteAni_CreatePlayer(Anime_Power);
 	Play_Score = SpriteAni_CreatePlayer(Anime_Score);
-	Play_Bomb  = SpriteAni_CreatePlayer(Anime_Bomb);
-	Play_Life  = SpriteAni_CreatePlayer(Anime_Life);
+	Play_Bomb = SpriteAni_CreatePlayer (Anime_Bomb);
+	Play_Life = SpriteAni_CreatePlayer (Anime_Life);
 
 	for (int i = 0; i < ITEM_MAX; i++)
 		Items[i].isEnable = false;
@@ -107,19 +102,19 @@ void Item_Update(double elapsed_time)
 			{
 			case Item_Type::POWER_UP:
 				Status_Add_Power(Items[i].Get_Power);
-				SM->Play_SFX("Player_Get_Power");
+				Sound_M->Play_SFX("Player_Get_Power");
 				break;
 			case Item_Type::SCORE:
 				Score_Increase(Items[i].Get_Score);
-				SM->Play_SFX("Player_Get_Score");
+				Sound_M->Play_SFX("Player_Get_Score");
 				break;
 			case Item_Type::BOMB:
 				Status_Add_Bomb(STATUS_UP);
-				SM->Play_SFX("Player_Ger_Bomb");
+				Sound_M->Play_SFX("Player_Ger_Bomb");
 				break;
 			case Item_Type::LIVE:
 				Status_Add_Lives(STATUS_UP);
-				SM->Play_SFX("Player_Get_Lives");
+				Sound_M->Play_SFX("Player_Get_Lives");
 				break;
 			}
 			Items[i].isEnable = false;
@@ -163,7 +158,7 @@ void Item_Draw()
 				Alpha = A_Half + A_Half * sinf(static_cast<float>(SystemTimer_GetTime()) * Frequency);
 			}
 
-			SpriteAni_Draw(ID, Items[i].Position.x, Items[i].Position.y, Items[i].Size.x, Items[i].Size.y, A_Zero, { 1.f, 1.f, 1.f, Alpha });
+			SpriteAni_Draw(ID, Items[i].Position.x, Items[i].Position.y, Items[i].Size.x, Items[i].Size.y, A_Zero, { A_Origin, A_Origin, A_Origin, Alpha });
 		}
 	}
 }

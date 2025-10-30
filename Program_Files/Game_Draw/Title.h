@@ -69,8 +69,11 @@ void Title_BG_Blur();
 void Title_Logo_Draw();
 
 void Title_Draw();
+void Title_Reset_For_Ending();
 
 void Menu_BG();
 void Menu_Select_Draw();
+
+void Title_Texture();
 
 #endif // TITLE_H

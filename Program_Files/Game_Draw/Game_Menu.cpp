@@ -13,14 +13,15 @@
 #include "system_timer.h"
 #include "Audio_Manager.h"
 
-static int Intro_Text_TexID = -1;
-static int Intro_Text_Controller_TexID = -1;
+//---------------Intro Texture----------------//
 static int Intro_Text_Draw_TexID = -1;
+static int Intro_Text_Keyboard_TexID = -1;
+static int Intro_Text_Controller_TexID = -1;
 
-static int Menu_Start_TexID = -1;
-static int Menu_Settings_TexID = -1;
-static int Menu_Exit_TexID = -1;
-static int Menu_Back_TexID = -1;
+//-------------Game Menu Texture--------------//
+static int Game_Menu_Start = -1;
+static int Game_Menu_Settings = -1;
+static int Game_Menu_Exit = -1;
 
 static float Alpha = 0.0f;
 
@@ -43,12 +44,7 @@ MENU_BUFFER Select_Buffer;
 
 void Menu_Initialize()
 {
-	Intro_Text_TexID			= Texture_Load(L"Resource/Texture/BG/Title_Menu.png");
-	Intro_Text_Controller_TexID = Texture_Load(L"Resource/Texture/BG/Title_Menu_Controller.png");
-	Menu_Start_TexID			= Texture_Load(L"Resource/Texture/UI/Menu_Start.png");
-	Menu_Settings_TexID			= Texture_Load(L"Resource/Texture/UI/Menu_Settings.png");
-	Menu_Exit_TexID				= Texture_Load(L"Resource/Texture/UI/Menu_Exit.png");
-	Menu_Back_TexID				= Texture_Load(L"Resource/Texture/UI/Menu_Back.png");
+	Game_Menu_Texture();
 
 	if (Get_Mode_Buffer() == Get_Mode_Pre_Buffer())
 	{
@@ -105,8 +101,6 @@ void Menu_Finalize()
 
 void Menu_Update()
 {
-
-
 	bool Controller_Alert_Now = Controller_Set_UP();
 
 	if (Controller_Alert_Now)
@@ -124,11 +118,11 @@ void Menu_Update()
 	}
 
 	Controller_Alert = false;
-
+	
 	if (XKeyLogger_IsControllerInput())
-		Intro_Text_Draw_TexID = Intro_Text_Controller_TexID;
+		Intro_Text_Draw_TexID = Intro_Text_Keyboard_TexID;
 	else
-		Intro_Text_Draw_TexID = Intro_Text_TexID;
+		Intro_Text_Draw_TexID = Intro_Text_Controller_TexID;
 
 	switch (State)
 	{
@@ -138,8 +132,6 @@ void Menu_Update()
 			Is_Intro_Glow = true;
 			Intro_Glow_Time = SystemTimer_GetTime();
 			Update_Main_Buffer(UI_STATE::GLOW);
-
-
 		}
 		break;
 
@@ -147,7 +139,7 @@ void Menu_Update()
 		if (KeyLogger_IsPressed(KK_ENTER) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_A))
 		{
 			Update_Main_Buffer(UI_STATE::MENU_UI);
-			SM->Play_SFX("Buffer_Select");
+			Sound_M->Play_SFX("Buffer_Select");
 		}
 
 		if ((int)(SystemTimer_GetTime() - Intro_Glow_Time) % 2 == 0)
@@ -162,12 +154,12 @@ void Menu_Update()
 			if (KeyLogger_IsTrigger(KK_A) || KeyLogger_IsTrigger(KK_LEFT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_LEFT))
 			{
 				Update_Main_Select_Buffer(MENU_BUFFER::EXIT);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			else if (KeyLogger_IsTrigger(KK_D) || KeyLogger_IsTrigger(KK_RIGHT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_RIGHT))
 			{
 				Update_Main_Select_Buffer(MENU_BUFFER::START);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -177,13 +169,13 @@ void Menu_Update()
 				Update_Main_Select_Buffer(MENU_BUFFER::DONE);
 				Update_Game_Select_Buffer(SELECT_GAME::INTRO_WAIT);
 				Set_Game_Intro_State(GAME_INTRO_STATE::G_INTRO_WAIT);
-				SM->Play_SFX("Buffer_Select");
+				Sound_M->Play_SFX("Buffer_Select");
 			}
 
 			if (KeyLogger_IsTrigger(KK_D) || KeyLogger_IsTrigger(KK_RIGHT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_RIGHT))
 			{
 				Update_Main_Select_Buffer(MENU_BUFFER::SETTINGS);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -193,18 +185,18 @@ void Menu_Update()
 				Update_Main_Select_Buffer(MENU_BUFFER::DONE);
 				Update_Main_Screen(Main_Screen::SELECT_SETTINGS);
 				Update_Setting_Buffer(SETTING_BUFFER::SETTING_WAIT);
-				SM->Play_SFX("Buffer_Select");
+				Sound_M->Play_SFX("Buffer_Select");
 			}
 
 			if (KeyLogger_IsTrigger(KK_A) || KeyLogger_IsTrigger(KK_LEFT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_LEFT))
 			{
 				Update_Main_Select_Buffer(MENU_BUFFER::START);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			else if (KeyLogger_IsTrigger(KK_D) || KeyLogger_IsTrigger(KK_RIGHT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_RIGHT))
 			{
 				Update_Main_Select_Buffer(MENU_BUFFER::EXIT);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -216,13 +208,13 @@ void Menu_Update()
 				EXIT_STATE = true;
 				Fade_Out_Timer = 0.0;
 
-				SM->Play_SFX("Buffer_Select");
+				Sound_M->Play_SFX("Buffer_Select");
 			}
 
 			if (KeyLogger_IsTrigger(KK_A) || KeyLogger_IsTrigger(KK_LEFT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_LEFT))
 			{
 				Update_Main_Select_Buffer(MENU_BUFFER::SETTINGS);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			break;
 
@@ -259,21 +251,41 @@ void Menu_UI_Draw()
 		break;
 	case UI_STATE::MENU_UI:
 		if (Get_Main_Select_Buffer() == MENU_BUFFER::START)
-			Sprite_Draw(Menu_Start_TexID, Start_X, UI_Y, UI_Width, UI_Height, A_Zero);
+			Sprite_Draw(Game_Menu_Start, Start_X, UI_Y, UI_Width, UI_Height, A_Zero);
 		else
-			Sprite_Draw(Menu_Start_TexID, Start_X, UI_Y, UI_Width, UI_Height, A_Zero, { A_Origin, A_Origin, A_Origin, A_Half });
+			Sprite_Draw(Game_Menu_Start, Start_X, UI_Y, UI_Width, UI_Height, A_Zero, {A_Origin, A_Origin, A_Origin, A_Half});
 
 		if (Get_Main_Select_Buffer() == MENU_BUFFER::SETTINGS)
-			Sprite_Draw(Menu_Settings_TexID, Settings_X, UI_Y, UI_Width, UI_Height, A_Zero);
+			Sprite_Draw(Game_Menu_Settings, Settings_X, UI_Y, UI_Width, UI_Height, A_Zero);
 		else
-			Sprite_Draw(Menu_Settings_TexID, Settings_X, UI_Y, UI_Width, UI_Height, A_Zero, { A_Origin, A_Origin, A_Origin, A_Half });
+			Sprite_Draw(Game_Menu_Settings, Settings_X, UI_Y, UI_Width, UI_Height, A_Zero, {A_Origin, A_Origin, A_Origin, A_Half});
 
 		if (Get_Main_Select_Buffer() == MENU_BUFFER::EXIT)
-			Sprite_Draw(Menu_Exit_TexID, Exit_X, UI_Y, UI_Width, UI_Height, A_Zero);
+			Sprite_Draw(Game_Menu_Exit, Exit_X, UI_Y, UI_Width, UI_Height, A_Zero);
 		else
-			Sprite_Draw(Menu_Exit_TexID, Exit_X, UI_Y, UI_Width, UI_Height, A_Zero, { A_Origin, A_Origin, A_Origin, A_Half });
+			Sprite_Draw(Game_Menu_Exit, Exit_X, UI_Y, UI_Width, UI_Height, A_Zero, {A_Origin, A_Origin, A_Origin, A_Half});
 		break;
 	}
+}
+
+void Menu_Reset_For_Ending()
+{
+	Alpha = 0.0f;
+	Fade_Out_Timer = 0.0;
+	Intro_Glow_Time = 0.0f;
+
+	Is_Expand_Done = false;
+	Intro_Alpha_Done = false;
+	Is_Intro_Glow = false;
+	Intro_Glow_Draw = false;
+
+	EXIT_STATE = false;
+	SELECT_STATE = false;
+	Controller_Alert = false;
+	Wait_For_Release = false;
+
+	State = UI_STATE::NONE;
+	Select_Buffer = MENU_BUFFER::NONE;
 }
 
 void Update_Main_Buffer(UI_STATE UI_Buffer)
@@ -312,4 +324,13 @@ bool Get_Wait_For_Release()
 bool IF_IS_Game_Done()
 {
 	return EXIT_STATE;
+}
+
+void Game_Menu_Texture()
+{
+	Intro_Text_Keyboard_TexID = Texture_M->GetID("UI_Intro_Text_Controller");
+	Intro_Text_Controller_TexID = Texture_M->GetID("UI_Intro_Text");
+	Game_Menu_Start = Texture_M->GetID("UI_Menu_Start");
+	Game_Menu_Settings = Texture_M->GetID("UI_Menu_Settings");
+	Game_Menu_Exit = Texture_M->GetID("UI_Menu_Exit");
 }

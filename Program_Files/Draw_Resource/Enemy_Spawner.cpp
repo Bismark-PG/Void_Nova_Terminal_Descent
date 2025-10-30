@@ -21,7 +21,7 @@ void Enemy_Spawner_Initialize()
 
 void Enemy_Spawner_Finalize()
 {
-
+	Enemy_Spawner_Reset();
 }
 
 void Enemy_Spawner_Update(double elapsed_time)

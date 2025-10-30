@@ -11,7 +11,7 @@
 #include "Game_Window.h"
 #include <DirectXMath.h>
 #include "direct3d.h"
-#include "texture.h"
+#include "Texture_Manager.h"
 #include "sprite.h"
 #include "Collision.h"
 #include "Palette.h"
@@ -53,7 +53,8 @@ static constexpr float BULLET_DAMAGE_Lv_3 = 0.3f;
 static constexpr float BULLET_DAMAGE_LV_4 = 0.2f;
 static constexpr float BULLET_DAMAGE_MAX = 0.25f;
 static constexpr float LASER_DAMAGE  = 0.5f;
-static constexpr float BOMB_DAMAGE   = 10.0f;
+static constexpr float BOMB_DAMAGE   = 0.2f;
+static constexpr float FINAL_BOMB_DAMAGE   = 0.25f;
 
 
 void Bullet_Initialize();

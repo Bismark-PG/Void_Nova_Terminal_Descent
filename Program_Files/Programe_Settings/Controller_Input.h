@@ -8,7 +8,7 @@
 #ifndef CONTROLLER_INPUT_H
 #define CONTROLLER_INPUT_H
 #include "Game_Window.h"
-#include "texture.h"
+#include "Texture_Manager.h"
 #include "Sprite.h"
 #include "Sprite_Animation.h"
 #include "KeyLogger.h"
@@ -42,5 +42,7 @@ void Controller_Set_Update();
 void Controller_Set_Draw();
 
 bool Controller_Set_UP();
+
+void Controller_Texture();
 
 #endif // CONTROLLER_INPUT_H

@@ -71,6 +71,6 @@ private:
 	DWORD WinStyle = 0;
 };
 
-extern Window_Manager WM;
+extern Window_Manager Window_M;
 
 #endif // GAME_WINDOW_H

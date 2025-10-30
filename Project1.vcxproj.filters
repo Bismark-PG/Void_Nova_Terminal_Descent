@@ -74,16 +74,38 @@
     <Filter Include="ソース ファイル\DirectX">
       <UniqueIdentifier>{d5d6551d-b6e4-4c5d-94fc-6a3a2dfae687}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Resource_Setting">
+      <UniqueIdentifier>{a156d3b8-3a04-449e-83e0-7efd8211ea3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Resource_Setting">
+      <UniqueIdentifier>{0db8c79a-8fc8-445c-b0d1-3fc052663abb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ascii_texture_generator.py">
+      <Filter>リソース ファイル</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="DirectXTex_Debug.lib">
+      <Filter>リソース ファイル\DirectX</Filter>
+    </Library>
+    <Library Include="DirectXTex_Release.lib">
+      <Filter>リソース ファイル\DirectX</Filter>
+    </Library>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program_Files\Main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Tools\Saver_And_Re_Create.cpp">
-      <Filter>ソース ファイル\Tools</Filter>
+    <ClCompile Include="Program_Files\Debug_Resource\Debug_Collision.cpp">
+      <Filter>ソース ファイル\Debug_Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Tools\System_Logic_Manager.cpp">
-      <Filter>ソース ファイル\Tools</Filter>
+    <ClCompile Include="Program_Files\Debug_Resource\Debug_Ostream.cpp">
+      <Filter>ソース ファイル\Debug_Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\debug_text.cpp">
+      <Filter>ソース ファイル\Debug_Resource</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Tools\Window_Re_Creator.cpp">
       <Filter>ソース ファイル\Tools</Filter>
@@ -97,8 +119,11 @@
     <ClCompile Include="Program_Files\Tools\Game_Mode_Manager.cpp">
       <Filter>ソース ファイル\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Script\Story_Manager.cpp">
-      <Filter>ソース ファイル\Script</Filter>
+    <ClCompile Include="Program_Files\Tools\Saver_And_Re_Create.cpp">
+      <Filter>ソース ファイル\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Tools\System_Logic_Manager.cpp">
+      <Filter>ソース ファイル\Tools</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Script\Story_Script.cpp">
       <Filter>ソース ファイル\Script</Filter>
@@ -106,11 +131,14 @@
     <ClCompile Include="Program_Files\Script\Script_Draw.cpp">
       <Filter>ソース ファイル\Script</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Programe_Settings\mouse.cpp">
-      <Filter>ソース ファイル\Programe Setting</Filter>
+    <ClCompile Include="Program_Files\Script\Story_Manager.cpp">
+      <Filter>ソース ファイル\Script</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Programe_Settings\Save_Data.cpp">
-      <Filter>ソース ファイル\Programe Setting</Filter>
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Texture.cpp">
+      <Filter>ソース ファイル\Resource_Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Audio.cpp">
+      <Filter>ソース ファイル\Resource_Setting</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Programe_Settings\system_timer.cpp">
       <Filter>ソース ファイル\Programe Setting</Filter>
@@ -130,13 +158,19 @@
     <ClCompile Include="Program_Files\Programe_Settings\KeyLogger.cpp">
       <Filter>ソース ファイル\Programe Setting</Filter>
     </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\mouse.cpp">
+      <Filter>ソース ファイル\Programe Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\Save_Data.cpp">
+      <Filter>ソース ファイル\Programe Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Game_Settings\Boss_Manager.cpp">
+      <Filter>ソース ファイル\Game Setting</Filter>
+    </ClCompile>
     <ClCompile Include="Program_Files\Game_Settings\Boss_Pattern.cpp">
       <Filter>ソース ファイル\Game Setting</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Game_Settings\Enemy_Pattern.cpp">
-      <Filter>ソース ファイル\Game Setting</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Game_Settings\Game_Audio.cpp">
       <Filter>ソース ファイル\Game Setting</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Game_Settings\Game_Intro_Manager.cpp">
@@ -163,18 +197,6 @@
     <ClCompile Include="Program_Files\Game_Settings\Update_Screen.cpp">
       <Filter>ソース ファイル\Game Setting</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Game_Settings\Boss_Manager.cpp">
-      <Filter>ソース ファイル\Game Setting</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Game_Draw\Stage_Select.cpp">
-      <Filter>ソース ファイル\Game Draw</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Game_Draw\Stage_Update.cpp">
-      <Filter>ソース ファイル\Game Draw</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Game_Draw\Title.cpp">
-      <Filter>ソース ファイル\Game Draw</Filter>
-    </ClCompile>
     <ClCompile Include="Program_Files\Game_Draw\Ending.cpp">
       <Filter>ソース ファイル\Game Draw</Filter>
     </ClCompile>
@@ -190,26 +212,26 @@
     <ClCompile Include="Program_Files\Game_Draw\Stage_Game_Over.cpp">
       <Filter>ソース ファイル\Game Draw</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Draw_Set\Sprite_Animation.cpp">
-      <Filter>ソース ファイル\Draw Set</Filter>
+    <ClCompile Include="Program_Files\Game_Draw\Stage_Select.cpp">
+      <Filter>ソース ファイル\Game Draw</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Draw_Set\Texture.cpp">
-      <Filter>ソース ファイル\Draw Set</Filter>
+    <ClCompile Include="Program_Files\Game_Draw\Stage_Update.cpp">
+      <Filter>ソース ファイル\Game Draw</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Draw_Set\shader.cpp">
+    <ClCompile Include="Program_Files\Game_Draw\Title.cpp">
+      <Filter>ソース ファイル\Game Draw</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Set\Shader_Manager.cpp">
       <Filter>ソース ファイル\Draw Set</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Draw_Set\Sprite.cpp">
       <Filter>ソース ファイル\Draw Set</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Draw_Resource\Game_Back.cpp">
-      <Filter>ソース ファイル\Draw Resource</Filter>
+    <ClCompile Include="Program_Files\Draw_Set\Sprite_Animation.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Draw_Resource\Item.cpp">
-      <Filter>ソース ファイル\Draw Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Draw_Resource\Player.cpp">
-      <Filter>ソース ファイル\Draw Resource</Filter>
+    <ClCompile Include="Program_Files\Draw_Set\Texture_Manager.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\Draw_Resource\Bullet.cpp">
       <Filter>ソース ファイル\Draw Resource</Filter>
@@ -226,23 +248,173 @@
     <ClCompile Include="Program_Files\Draw_Resource\Enemy_Spawner.cpp">
       <Filter>ソース ファイル\Draw Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Game_Back.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Item.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Player.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
     <ClCompile Include="Program_Files\DirectX\direct3d.cpp">
       <Filter>ソース ファイル\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Program_Files\DirectX\WICTextureLoader11.cpp">
       <Filter>ソース ファイル\DirectX</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Debug_Resource\debug_text.cpp">
-      <Filter>ソース ファイル\Debug_Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Debug_Resource\Debug_Collision.cpp">
-      <Filter>ソース ファイル\Debug_Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Program_Files\Debug_Resource\debug_ostream.cpp">
-      <Filter>ソース ファイル\Debug_Resource</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Program_Files\Debug_Resource\Debug_Collision.h">
+      <Filter>ヘッダー ファイル\Debug_Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\Debug_Ostream.h">
+      <Filter>ヘッダー ファイル\Debug_Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\debug_text.h">
+      <Filter>ヘッダー ファイル\Debug_Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\DirectX\direct3d.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\DirectX\DirectXTex.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\DirectX\WICTextureLoader11.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Player.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Bullet.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Effect.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Enemy.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Enemy_Bullet.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Enemy_Spawner.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Game_Back.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Item.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Texture_Manager.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Shader_Manager.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Sprite.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Sprite_Animation.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Title.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Ending.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Game_Menu.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Game_Select.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Setting.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Stage_Game_Over.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Stage_Select.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Draw\Stage_Update.h">
+      <Filter>ヘッダー ファイル\Game Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Update_Screen.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Boss_Manager.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Boss_Pattern.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Enemy_Pattern.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Game_Intro_Manager.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Game_Logic.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Game_Screen_Manager.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Game_Status.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Main_UI_Setting.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Score.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Update_Game.h">
+      <Filter>ヘッダー ファイル\Game Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\system_timer.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Audio_Manager.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Controller_Input.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Game_Window.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\keyboard.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\KeyLogger.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\mouse.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Save_Data.h">
+      <Filter>ヘッダー ファイル\Programe Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Texture.h">
+      <Filter>ヘッダー ファイル\Resource_Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Audio.h">
+      <Filter>ヘッダー ファイル\Resource_Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Script\Story_Script.h">
+      <Filter>ヘッダー ファイル\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Script\Script_Draw.h">
+      <Filter>ヘッダー ファイル\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Script\Story_Manager.h">
+      <Filter>ヘッダー ファイル\Script</Filter>
+    </ClInclude>
     <ClInclude Include="Program_Files\Tools\Window_Re_Creator.h">
       <Filter>ヘッダー ファイル\Tools</Filter>
     </ClInclude>
@@ -273,175 +445,12 @@
     <ClInclude Include="Program_Files\Tools\System_Logic_Manager.h">
       <Filter>ヘッダー ファイル\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="Program_Files\Script\Story_Script.h">
-      <Filter>ヘッダー ファイル\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Script\Script_Draw.h">
-      <Filter>ヘッダー ファイル\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Script\Story_Manager.h">
-      <Filter>ヘッダー ファイル\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\mouse.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\Save_Data.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\system_timer.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\Audio_Manager.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\Controller_Input.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\Game_Window.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\keyboard.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\KeyLogger.h">
-      <Filter>ヘッダー ファイル\Programe Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Boss_Manager.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Boss_Pattern.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Enemy_Pattern.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Game_Audio.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Game_Intro_Manager.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Game_Logic.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Game_Screen_Manager.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Game_Status.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Main_UI_Setting.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Score.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Update_Game.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Settings\Update_Screen.h">
-      <Filter>ヘッダー ファイル\Game Setting</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Stage_Select.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Stage_Update.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Title.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Ending.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Game_Menu.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Game_Select.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Setting.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Game_Draw\Stage_Game_Over.h">
-      <Filter>ヘッダー ファイル\Game Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Set\Texture.h">
-      <Filter>ヘッダー ファイル\Draw Set</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Set\shader.h">
-      <Filter>ヘッダー ファイル\Draw Set</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Set\Sprite.h">
-      <Filter>ヘッダー ファイル\Draw Set</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Set\Sprite_Animation.h">
-      <Filter>ヘッダー ファイル\Draw Set</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Item.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Player.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Bullet.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Effect.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Enemy.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Enemy_Bullet.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Enemy_Spawner.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Draw_Resource\Game_Back.h">
-      <Filter>ヘッダー ファイル\Draw Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\DirectX\WICTextureLoader11.h">
-      <Filter>ヘッダー ファイル\DirectX</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\DirectX\direct3d.h">
-      <Filter>ヘッダー ファイル\DirectX</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\DirectX\DirectXTex.h">
-      <Filter>ヘッダー ファイル\DirectX</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Debug_Resource\debug_text.h">
-      <Filter>ヘッダー ファイル\Debug_Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Debug_Resource\Debug_Collision.h">
-      <Filter>ヘッダー ファイル\Debug_Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Debug_Resource\debug_ostream.h">
-      <Filter>ヘッダー ファイル\Debug_Resource</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ascii_texture_generator.py">
-      <Filter>リソース ファイル</Filter>
-    </None>
-    <None Include="Program_Files\DirectX\DirectXTex.inl">
-      <Filter>ヘッダー ファイル\DirectX</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="DirectXTex_Debug.lib">
-      <Filter>リソース ファイル\DirectX</Filter>
-    </Library>
-    <Library Include="DirectXTex_Release.lib">
-      <Filter>リソース ファイル\DirectX</Filter>
-    </Library>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="shader_vertex_2d.hlsl">
+    <FxCompile Include="shader_pixel_2d.hlsl">
       <Filter>Shader File</Filter>
     </FxCompile>
-    <FxCompile Include="shader_pixel_2d.hlsl">
+    <FxCompile Include="shader_vertex_2d.hlsl">
       <Filter>Shader File</Filter>
     </FxCompile>
   </ItemGroup>

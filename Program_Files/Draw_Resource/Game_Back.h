@@ -7,9 +7,8 @@
 ==============================================================================*/
 #ifndef GAME_BACK_H
 #define GAME_BACK_H
-
 #include "Game_Window.h"
-#include "Texture.h"
+#include "Texture_Manager.h"
 #include "Sprite_Animation.h"
 #include "Palette.h"
 
@@ -26,6 +25,18 @@ enum class BOMB_EFFECT_STATE
 	IDLE,
 	ENTERING,
 	FADING_OUT
+};
+
+enum class FINAL_BOSS_ANIME
+{
+	NONE,
+	FADE_START,
+	IDLE,
+	ANIME_1_START,
+	ANIME_1_DONE,
+	ANIME_2_START,
+	ANIME_2_DONE,
+	ANIME_DONE
 };
 
 static constexpr float SCORE_DISPLAY_WIDTH = 296.0f;
@@ -102,6 +113,9 @@ static float Mission_BG_Y;
 static float Mission_BG_Width;
 static float Mission_BG_Height;
 
+static float Final_Ready_Width;
+static float Final_Ready_Height;
+
 static float Score_Num_X;
 static float Score_Num_Y;
 static float Score_Num_Width;
@@ -152,10 +166,24 @@ void Stage_2_Background_Draw();
 void Stage_3_Background_Draw();
 void Stage_4_Background_Draw();
 void Stage_5_Background_Draw();
+
+void Stage_5_BlackOut_Draw();
 void Stage_BOSS_Background_Draw();
 
+void Stage_BOSS_Ready_Update(double elapsed_time);
+void Stage_BOSS_Ready_Draw();
+void Stage_BOSS_Ready_Draw_Start();
+void Stage_Final_Ready_Reset();
+bool Is_Ready_To_Final_Battle();
+
+void Set_Now_Anime_Flow(FINAL_BOSS_ANIME State);
+FINAL_BOSS_ANIME Get_Now_Anime_Flow();
+
+void Game_BG_UI_Texture();
+
 #if defined(DEBUG) || defined(_DEBUG)
-void Debug_BG_Draw();
+void Debug_BG_Draw(const std::string& RGBCMYK);
+void Debug_BG_Draw(const std::string& RGBCMYK, const std::wstring& Overloading);
 #endif
 
 #endif // GAME_BACK_H

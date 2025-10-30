@@ -13,9 +13,9 @@ State_And_Buffer_Storage Saver = {};
 
 void Save_State_And_Buffer()
 {
-	Saver.Main_State = GM.Get_Current_Main_Screen();
-	Saver.Sub_State = GM.Get_Current_Sub_Screen();
-	Saver.Game_State = GM.Get_Current_Game_Select_Screen();
+	Saver.Main_State = Game_M.Get_Current_Main_Screen();
+	Saver.Sub_State = Game_M.Get_Current_Sub_Screen();
+	Saver.Game_State = Game_M.Get_Current_Game_Select_Screen();
 	Saver.Main_Draw_State = Get_Main_Draw_State();
 	Saver.Main_Select_Buffer = Get_Main_Select_Buffer();
 	Saver.Setting_Select_Buffer = Get_Setting_Buffer();
@@ -23,8 +23,8 @@ void Save_State_And_Buffer()
 	Saver.BGM_Scale_Buffer = Get_BGM_Scale_Buffer();
 	Saver.SFX_Scale_Buffer = Get_SFX_Scale_Buffer();
 
-	if (SM)
-		Saver.Last_Playing_BGM = SM->Get_Playing_BGM_Name();
+	if (Sound_M)
+		Saver.Last_Playing_BGM = Sound_M->Get_Playing_BGM_Name();
 }
 
 void Restore_State_And_Buffer()
@@ -39,6 +39,6 @@ void Restore_State_And_Buffer()
 	Update_BGM_Scale_Buffer(Saver.BGM_Scale_Buffer);
 	Update_SFX_Scale_Buffer(Saver.SFX_Scale_Buffer);
 
-	if (SM && !Saver.Last_Playing_BGM.empty())
-		SM->Play_BGM(Saver.Last_Playing_BGM);
+	if (Sound_M && !Saver.Last_Playing_BGM.empty())
+		Sound_M->Play_BGM(Saver.Last_Playing_BGM);
 }

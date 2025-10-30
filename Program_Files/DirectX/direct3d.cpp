@@ -1,30 +1,26 @@
 /*==============================================================================
 
-	Reset Direct3D [direct3d.cpp]
+   Reset Direct3D [direct3d.cpp]
 
 	Author : Choi HyungJoon
 
 ==============================================================================*/
 #include <d3d11.h>
 #include "direct3d.h"
-#include "debug_text.h"
-#include "debug_ostream.h"
+#include "Debug_ostream.h"
 
 #pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-
-#if defined(DEBUG) || defined(_DEBUG)
-	#pragma comment(lib, "DirectXTex_Debug.lib")
-#else
-	#pragma comment(lib, "DirectXTex_Release.lib")
-#endif
+#pragma comment(lib, "d3dcompiler.lib")
 
 /* 各種インターフェース */
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pDeviceContext = nullptr;
+
 static IDXGISwapChain* g_pSwapChain = nullptr;
 static ID3D11BlendState* g_pBlendStateMultiply = nullptr;
+static ID3D11DepthStencilState* g_pDepthStencilStateDepthEnable = nullptr;
 static ID3D11DepthStencilState* g_pDepthStencilStateDepthDisable = nullptr;
+static ID3D11RasterizerState* g_pRasterizerState = nullptr;
 
 /* バックバッファ関連 */
 static ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
@@ -95,21 +91,32 @@ bool Direct3D_Initialize(HWND hWnd)
         &feature_level,
         &g_pDeviceContext);
 
-	if (FAILED(hr)) {
-		Debug::D_Out << "Direct3D_Initialize : D3D11 Create Device And Swap Chain failed. hr = " << std::hex << hr << std::dec << "\n";
+#if defined(DEBUG) || defined(_DEBUG)
+	if (FAILED(hr))
+	{
+		MessageBox(hWnd, "Direct3Dの初期化に失敗しました", "エラー", MB_OK);
+		return false;
+	}
+
+	if (!configureBackBuffer())
+	{
+		MessageBox(hWnd, "バックバッファの設定に失敗しました", "エラー", MB_OK);
+		return false;
+	}
+#else
+	if (FAILED(hr))
+	{
 		MessageBox(hWnd, L"Direct3Dの初期化に失敗しました", L"エラー", MB_OK);
 		return false;
 	}
 
-	Debug::D_Out << "Direct3D_Initialize : Device/swapchain/context created\n";
-
-	if (!configureBackBuffer()) {
-		Debug::D_Out << "Direct3D_Initialize : Configure Back Buffer failed.\n";
+	if (!configureBackBuffer())
+	{
 		MessageBox(hWnd, L"バックバッファの設定に失敗しました", L"エラー", MB_OK);
 		return false;
 	}
+#endif
 
-	Debug::D_Out << "Direct3D_Initialize : Back buffer configured\n";
 
 	// aブレンド(Blend)
 	// RGBA A >> 好きに使っても良い
@@ -142,88 +149,67 @@ bool Direct3D_Initialize(HWND hWnd)
 	float blend_factor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	g_pDeviceContext->OMSetBlendState(g_pBlendStateMultiply, blend_factor, 0xffffffff);
 
-	// Depth Setting
-	// 深度ステンシルステート設定
 	D3D11_DEPTH_STENCIL_DESC dsd = {};
-	dsd.DepthFunc = D3D11_COMPARISON_LESS;
 	dsd.StencilEnable = FALSE;
-	dsd.DepthEnable = FALSE; // 無効にする
+	dsd.DepthFunc = D3D11_COMPARISON_LESS;
+
+	dsd.DepthEnable = TRUE;
+	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	g_pDevice->CreateDepthStencilState(&dsd, &g_pDepthStencilStateDepthEnable);
+
+	dsd.DepthEnable = FALSE;
 	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-
 	g_pDevice->CreateDepthStencilState(&dsd, &g_pDepthStencilStateDepthDisable);
-
-	// dsd.DepthEnable = TRUE;
-	// dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	// g_pDevice->CreateDepthStencilState(&dsd, &g_pDepthStencilStateDepthEnable);
 
 	g_pDeviceContext->OMSetDepthStencilState(g_pDepthStencilStateDepthDisable, NULL);
 
-    return true;
+	// ラスタライザステートの作成
+	D3D11_RASTERIZER_DESC rd = {};
+	rd.FillMode = D3D11_FILL_SOLID; // Draw Texture
+	//rd.FillMode = D3D11_FILL_WIREFRAME; // Draw Line
+	rd.CullMode = D3D11_CULL_BACK;
+	//rd.CullMode = D3D11_CULL_NONE;
+	rd.DepthClipEnable = TRUE;
+	rd.MultisampleEnable = FALSE;
+	g_pDevice->CreateRasterizerState(&rd, &g_pRasterizerState);
+
+	// デバイスコンテキストにラスタライザーステートを設定
+	g_pDeviceContext->RSSetState(g_pRasterizerState);
+
+	return true;
 }
 
 void Direct3D_Finalize()
 {
-	Debug::D_Out << "Direct3D_Finalize : Start\n";
-
-	if (g_pDeviceContext) {
-		// ensure render targets are unbound before releasing swapchain/backbuffers
-		ID3D11RenderTargetView* nullRTV[1] = { nullptr };
-		g_pDeviceContext->OMSetRenderTargets(0, nullRTV, nullptr);
-		g_pDeviceContext->Flush();
-		Debug::D_Out << "Direct3D_Finalize : Unbound render targets and flushed context\n";
-	}
-
 	releaseBackBuffer();
 
+	SAFE_RELEASE(g_pDepthStencilStateDepthEnable);
 	SAFE_RELEASE(g_pDepthStencilStateDepthDisable);
 	SAFE_RELEASE(g_pBlendStateMultiply);
+	SAFE_RELEASE(g_pRasterizerState);
 
 	SAFE_RELEASE(g_pSwapChain);
 	SAFE_RELEASE(g_pDeviceContext);
 	SAFE_RELEASE(g_pDevice);
-
-	Text::DebugText::ReleaseAllTextures();
-	Debug::D_Out << "Direct3D_Finalize : Released all static debug text textures.\n";
-
-	Debug::D_Out << "Direct3D_Finalize : Finished\n";
 }
 
 void Direct3D_Clear()
 {
-	// Defensive : Ensure device context exists
-	if (!g_pDeviceContext) {
-		Debug::D_Out << "Direct3D_Clear : Device context is null - skipping clear\n";
-		return;
-	}
-
-	// Defensive : If RTV or DSV missing, Set Log and Skip to avoid Draw without RTV
-	if (!g_pRenderTargetView || !g_pDepthStencilView) {
-		Debug::D_Out << "Direct3D_Clear : RTV or DSV is null (RTV = " << g_pRenderTargetView << ", DSV = " << g_pDepthStencilView << ") - skipping clear & binding\n";
-		return;
-	}
-
-	// Bind RTV/DSV (guarantee before Clear / Draw)
-	ID3D11RenderTargetView* rtvs[1] = { g_pRenderTargetView };
-	g_pDeviceContext->OMSetRenderTargets(1, rtvs, g_pDepthStencilView);
-	
-	// Set Default Window Color
+	//color change
 	float clear_color[4] = { 0.2f, 0.4f, 0.2f, 1.0f };
 	g_pDeviceContext->ClearRenderTargetView(g_pRenderTargetView, clear_color);
 	g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
+	// レンダーターゲットビューとデプスステンシルビューの設定
+	g_pDeviceContext->OMSetRenderTargets(1, &g_pRenderTargetView,g_pDepthStencilView);
 }
 
 void Direct3D_Present()
 {
-	if (!g_pSwapChain) {
-		Debug::D_Out << "Direct3D_Present : SwapChain is null - skipping Present\n";
-		return;
-	}
-
-	// Present; using VSync = 1
-	HRESULT hr = g_pSwapChain->Present(1, 0);
-	if (FAILED(hr)) {
-		Debug::D_Out << "Direct3D_Present : Present failed hr=" << std::hex << hr << std::dec << "\n";
-	}
+	// スワップチェーンの表示
+	// Present(1, 0) >> Present(0, 0)
+	// Skip Adaptive V-Sync (IF Want to Benchmark or Test etc...)
+	g_pSwapChain->Present(1, 0);
 }
 
 unsigned int Direct3D_GetBackBufferWidth()
@@ -246,6 +232,14 @@ ID3D11DeviceContext* Direct3D_GetContext()
 	return g_pDeviceContext;
 }
 
+void Direct3D_SetDepthEnable(bool enable)
+{
+	if (enable)
+		g_pDeviceContext->OMSetDepthStencilState(g_pDepthStencilStateDepthEnable, NULL);
+	else
+		g_pDeviceContext->OMSetDepthStencilState(g_pDepthStencilStateDepthDisable, NULL);
+}
+
 void Direct3D_Re_Size(UINT width, UINT height)
 {
 	if (!g_pSwapChain) return;
@@ -259,14 +253,16 @@ void Direct3D_Re_Size(UINT width, UINT height)
 		DXGI_FORMAT_UNKNOWN,
 		0);
 
-	if (FAILED(hr)) {
-		OutputDebugStringA("[Direct3D] ResizeBuffers failed!\n");
+	if (FAILED(hr))
+	{
+		Debug::D_Out << "Direct3D_Re_Size : ResizeBuffers failed! hr=" << std::hex << hr << std::dec << "\n";
 		return;
 	}
 
-	configureBackBuffer();
+	if (!configureBackBuffer())
+		Debug::D_Out << "Direct3D_Re_Size : configureBackBuffer failed after resize!\n";
 
-	OutputDebugStringA("[Direct3D] OnResize complete.\n");
+	Debug::D_Out << "Direct3D_Re_Size : OnResize complete.\n";
 }
 
 bool configureBackBuffer()
@@ -275,42 +271,29 @@ bool configureBackBuffer()
 
     ID3D11Texture2D* back_buffer_pointer = nullptr;
 
-	Debug::D_Out << "[Function] configureBackBuffer : start\n";
+	// バックバッファの取得
+	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&back_buffer_pointer);
 
-	if (!g_pSwapChain || !g_pDevice || !g_pDeviceContext) {
-		Debug::D_Out << "configureBackBuffer : SwapChain/device/context null (swap = " << g_pSwapChain << ", dev = " << g_pDevice << ", ctx = " << g_pDeviceContext << ")\n";
-		return false;
-	}
-
-    // Get Back Buffer
-    hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&back_buffer_pointer);
-
-    if (FAILED(hr) || back_buffer_pointer == nullptr) {
-        Debug::D_Out << "configureBackBuffer : GetBuffer failed hr = " << std::hex << hr << std::dec << "\n";
+    if (FAILED(hr)) {
+		Debug::D_Out << "バックバッファの取得に失敗しました" << std::endl;
         return false;
     }
 
-	// Create Render Target View
+	// バックバッファのレンダーターゲットビューの生成
 	hr = g_pDevice->CreateRenderTargetView(back_buffer_pointer, nullptr, &g_pRenderTargetView);
 
-	if (FAILED(hr) || g_pRenderTargetView == nullptr) {
-		Debug::D_Out << "configureBackBuffer : CreateRenderTargetView failed hr = " << std::hex << hr << std::dec << "\n";
-		if (back_buffer_pointer) back_buffer_pointer->Release();
-		return false;
-	}
+    if (FAILED(hr)) {
+        back_buffer_pointer->Release();
+		Debug::D_Out << "バックバッファのレンダーターゲットビューの生成に失敗しました" << std::endl;
+        return false;
+    }
 
-	// Save Back Buffer Information
+	// バックバッファの状態（情報）を取得
     back_buffer_pointer->GetDesc(&g_BackBufferDesc);
 
-	// Release Back Buffer Pointer
-	back_buffer_pointer->Release();
+	back_buffer_pointer->Release(); // バックバッファのポインタは不要なので解放
 
-	back_buffer_pointer = nullptr;
-	Debug::D_Out << "configureBackBuffer: created RTV (ptr = " << g_pRenderTargetView
-		<< "), BackBuffer size = " << g_BackBufferDesc.Width
-		<< " x " << g_BackBufferDesc.Height << "\n";
-
-	// Mack Depth Stencil Buffer 
+	// デプスステンシルバッファの生成
 	D3D11_TEXTURE2D_DESC depth_stencil_desc{};
 	depth_stencil_desc.Width = g_BackBufferDesc.Width;
 	depth_stencil_desc.Height = g_BackBufferDesc.Height;
@@ -321,65 +304,43 @@ bool configureBackBuffer()
 	depth_stencil_desc.SampleDesc.Quality = 0;
 	depth_stencil_desc.Usage = D3D11_USAGE_DEFAULT;
 	depth_stencil_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-	// Double Safety Device
 	depth_stencil_desc.CPUAccessFlags = 0;
 	depth_stencil_desc.MiscFlags = 0;
-
 	hr = g_pDevice->CreateTexture2D(&depth_stencil_desc, nullptr, &g_pDepthStencilBuffer);
 
-	if (FAILED(hr) || g_pDepthStencilBuffer == nullptr) {
-		Debug::D_Out << "configureBackBuffer : CreateTexture2D (depth) failed hr = " << std::hex << hr << std::dec << "\n";
-		SAFE_RELEASE(g_pRenderTargetView);
+	if (FAILED(hr)) {
+		Debug::D_Out << "デプスステンシルバッファの生成に失敗しました" << std::endl;
 		return false;
 	}
 
-	// Mack Depth Stencil View 
+	// デプスステンシルビューの生成
 	D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc{};
 	depth_stencil_view_desc.Format = depth_stencil_desc.Format;
 	depth_stencil_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-
-	// Double Safety Device
 	depth_stencil_view_desc.Texture2D.MipSlice = 0;
 	depth_stencil_view_desc.Flags = 0;
-
 	hr = g_pDevice->CreateDepthStencilView(g_pDepthStencilBuffer, &depth_stencil_view_desc, &g_pDepthStencilView);
 
-	if (FAILED(hr) || g_pDepthStencilView == nullptr) {
-		Debug::D_Out << "configureBackBuffer : CreateDepthStencilView failed hr = " << std::hex << hr << std::dec << "\n";
-		SAFE_RELEASE(g_pDepthStencilBuffer);
-		SAFE_RELEASE(g_pRenderTargetView);
+	if (FAILED(hr)) {
+		Debug::D_Out << "デプスステンシルビューの生成に失敗しました" << std::endl;
 		return false;
 	}
 
-	Debug::D_Out << "configureBackBuffer : created DSV (ptr = " << g_pDepthStencilView << ")\n";
-
-
-	// Set Viewport
+	// ビューポートの設定
 	g_Viewport.TopLeftX = 0.0f;
 	g_Viewport.TopLeftY = 0.0f;
 	g_Viewport.Width = static_cast<FLOAT>(g_BackBufferDesc.Width);
 	g_Viewport.Height = static_cast<FLOAT>(g_BackBufferDesc.Height);
 	g_Viewport.MinDepth = 0.0f;
 	g_Viewport.MaxDepth = 1.0f;
-	g_pDeviceContext->RSSetViewports(1, &g_Viewport);
+	g_pDeviceContext->RSSetViewports(1, &g_Viewport); // ビューポートの設定
 
-	ID3D11RenderTargetView* rtvs[1] = { g_pRenderTargetView };
-	g_pDeviceContext->OMSetRenderTargets(1, rtvs, g_pDepthStencilView);
-
-	Debug::D_Out << "configureBackBuffer : Bound RTV and DSV to OM\n";
-	return true;
+    return true;
 }
 
 void releaseBackBuffer()
 {
-	Debug::D_Out << "releaseBackBuffer : Releasing back buffer resources\n";
 	SAFE_RELEASE(g_pRenderTargetView);
 	SAFE_RELEASE(g_pDepthStencilBuffer);
 	SAFE_RELEASE(g_pDepthStencilView);
-
-	// Make sure pointers are null after release (defensive)
-	g_pRenderTargetView = nullptr;
-	g_pDepthStencilBuffer = nullptr;
-	g_pDepthStencilView = nullptr;
 }

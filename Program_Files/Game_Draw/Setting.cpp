@@ -12,28 +12,30 @@
 
 using namespace PALETTE;
 
-static int BGM_TexID = -1;
-static int SFX_TexID = -1;
-static int W_Mode_TexID = -1;
-static int FS_Mode_TexID = -1;
-static int Back_TexID = -1;
-static int L_Button_TexID = -1;
-static int R_Button_TexID = -1;
-
-static int Sound_MIN_TexID  = -1;
-static int Sound_1_TexID	= -1;
-static int Sound_2_TexID	= -1;
-static int Sound_3_TexID	= -1;
-static int Sound_4_TexID	= -1;
-static int Sound_5_TexID	= -1;
-static int Sound_6_TexID	= -1;
-static int Sound_7_TexID	= -1;
-static int Sound_8_TexID	= -1;
-static int Sound_9_TexID	= -1;
-static int Sound_MAX_TexID	= -1;
+//----------------Number Texture----------------//
+static int Num_Min	= -1;
+static int Num_1	= -1;
+static int Num_2	= -1;
+static int Num_3	= -1;
+static int Num_4	= -1;
+static int Num_5	= -1;
+static int Num_6	= -1;
+static int Num_7	= -1;
+static int Num_8	= -1;
+static int Num_9	= -1;
+static int Num_MAX	= -1;
 
 static int NOW_BGM_TexID	= -1;
 static int NOW_SFX_TexID	= -1;
+
+//------------------UI Texture------------------//
+static int UI_BGM = -1;
+static int UI_SFX = -1;
+static int UI_Button_L = -1;
+static int UI_Button_R = -1;
+static int UI_Window_Mode = -1;
+static int UI_Full_Screan_Mode = -1;
+static int UI_Back = -1;
 
 SOUND_SETTING_STATE Sound_State;
 SETTING_BUFFER Setting_Buffer;
@@ -55,36 +57,18 @@ static bool Setting_Done = false;
 
 void Setting_Initialize()
 {
+	Setting_Texture();
+
 	Update_Sub_Screen(Sub_Screen::S_WAIT);
-
-	BGM_TexID		= Texture_Load(L"Resource/Texture/UI/Settings_BGM.png");
-	SFX_TexID		= Texture_Load(L"Resource/Texture/UI/Settings_SFX.png");
-	W_Mode_TexID	= Texture_Load(L"Resource/Texture/UI/Settings_W_Mode_Fixed.png");
-	FS_Mode_TexID	= Texture_Load(L"Resource/Texture/UI/Settings_FS_Mode.png");
-	Back_TexID		= Texture_Load(L"Resource/Texture/UI/Menu_Back_Fixed.png");
-	L_Button_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Button_L.png");
-	R_Button_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Button_R.png");
-
-	Sound_MIN_TexID = Texture_Load(L"Resource/Texture/UI/Num/UI_Num_Min.png");
-	Sound_1_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_1.png");
-	Sound_2_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_2.png");
-	Sound_3_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_3.png");
-	Sound_4_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_4.png");
-	Sound_5_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_5.png");
-	Sound_6_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_6.png");
-	Sound_7_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_7.png");
-	Sound_8_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_8.png");
-	Sound_9_TexID	= Texture_Load(L"Resource/Texture/UI/Num/UI_Num_9.png");
-	Sound_MAX_TexID = Texture_Load(L"Resource/Texture/UI/Num/UI_Num_Max.png");
 
 	if (Get_Mode_Buffer() == Get_Mode_Pre_Buffer())
 	{
 		Setting_Buffer = SETTING_BUFFER::SETTING_NONE;
 		Sound_State = SOUND_SETTING_STATE::NONE;
-		BGM_Buffer = SOUND_SCALE_BUFFER::SOUND_MAX;
-		NOW_BGM_TexID = Sound_MAX_TexID;
-		SFX_Buffer = SOUND_SCALE_BUFFER::SOUND_MAX;
-		NOW_SFX_TexID = Sound_MAX_TexID;
+		BGM_Buffer = SOUND_SCALE_BUFFER::FIVE;
+		NOW_BGM_TexID = Num_5;
+		SFX_Buffer = SOUND_SCALE_BUFFER::FIVE;
+		NOW_SFX_TexID = Num_5;
 	}
 
 	SOUND_UI_WIDTH    *= SETTING_UI_SCALE;
@@ -178,7 +162,7 @@ void Setting_Finalize()
 
 void Setting_Update()
 {
-	Set_Mode_Buffer(WM.Get_Now_Screen_Mode());
+	Set_Mode_Buffer(Window_M.Get_Now_Screen_Mode());
 
 	if (Reset_KeyLogger)
 	{
@@ -201,7 +185,7 @@ void Setting_Update()
 			{
 				Update_Sound_Setting_State(SOUND_SETTING_STATE::SET_DONE);
 				Update_Setting_Buffer(SETTING_BUFFER::BGM);
-				SM->Play_SFX("Buffer_Back");
+				Sound_M->Play_SFX("Buffer_Back");
 
 				Sound_Setting_Done = true;
 				Reset_KeyLogger = true;
@@ -209,24 +193,22 @@ void Setting_Update()
 
 			if (KeyLogger_IsTrigger(KK_A) || KeyLogger_IsTrigger(KK_LEFT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_LEFT))
 			{
-				if (BGM_Buffer <= SOUND_SCALE_BUFFER::SOUND_MIN)
-					BGM_Buffer = SOUND_SCALE_BUFFER::SOUND_MIN;
-				else
+				if (BGM_Buffer > SOUND_SCALE_BUFFER::SOUND_MIN)
 				{
 					BGM_Buffer--;
-					SM->Set_BGM_Volume(BGM_Buffer);
-					SM->Play_SFX("Buffer_Move");
+                    float Volume = static_cast<float>(BGM_Buffer) / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX);
+                    Sound_M->Set_Target_BGM_Volume(Volume);
+					Sound_M->Play_SFX("Buffer_Move");
 				}
 			}
 			else if (KeyLogger_IsTrigger(KK_D) || KeyLogger_IsTrigger(KK_RIGHT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_RIGHT))
 			{
-				if (BGM_Buffer >= SOUND_SCALE_BUFFER::SOUND_MAX)
-					BGM_Buffer = SOUND_SCALE_BUFFER::SOUND_MAX;
-				else
+				if (BGM_Buffer < SOUND_SCALE_BUFFER::SOUND_MAX)
 				{
 					BGM_Buffer++;
-					SM->Set_BGM_Volume(BGM_Buffer);
-					SM->Play_SFX("Buffer_Move");
+                    float Volume = static_cast<float>(BGM_Buffer) / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX);
+                    Sound_M->Set_Target_BGM_Volume(Volume);
+					Sound_M->Play_SFX("Buffer_Move");
 				}
 			}
 
@@ -239,7 +221,7 @@ void Setting_Update()
 			{
 				Update_Setting_Buffer(SETTING_BUFFER::SFX);
 				Update_Sound_Setting_State(SOUND_SETTING_STATE::SET_DONE);
-				SM->Play_SFX("Buffer_Back");
+				Sound_M->Play_SFX("Buffer_Back");
 
 				Sound_Setting_Done = true;
 				Reset_KeyLogger = true;
@@ -247,24 +229,22 @@ void Setting_Update()
 
 			if (KeyLogger_IsTrigger(KK_A) || KeyLogger_IsTrigger(KK_LEFT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_LEFT))
 			{
-				if (SFX_Buffer <= SOUND_SCALE_BUFFER::SOUND_MIN)
-					SFX_Buffer = SOUND_SCALE_BUFFER::SOUND_MIN;
-				else
+				if (SFX_Buffer > SOUND_SCALE_BUFFER::SOUND_MIN)
 				{
 					SFX_Buffer--;
-					SM->Set_SFX_Volume(SFX_Buffer);
-					SM->Play_SFX("Buffer_Move");
+					float Volume = static_cast<float>(SFX_Buffer) / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX);
+					Sound_M->Set_Target_SFX_Volume(Volume);
+					Sound_M->Play_SFX("Buffer_Move");
 				}
 			}
 			else if (KeyLogger_IsTrigger(KK_D) || KeyLogger_IsTrigger(KK_RIGHT) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_RIGHT))
 			{
-				if (SFX_Buffer >= SOUND_SCALE_BUFFER::SOUND_MAX)
-					SFX_Buffer = SOUND_SCALE_BUFFER::SOUND_MAX;
-				else
+				if (SFX_Buffer < SOUND_SCALE_BUFFER::SOUND_MAX)
 				{
 					SFX_Buffer++;
-					SM->Set_SFX_Volume(SFX_Buffer);
-					SM->Play_SFX("Buffer_Move");
+					float Volume = static_cast<float>(SFX_Buffer) / static_cast<float>(SOUND_SCALE_BUFFER::SOUND_MAX);
+					Sound_M->Set_Target_SFX_Volume(Volume);
+					Sound_M->Play_SFX("Buffer_Move");
 				}
 			}
 
@@ -288,12 +268,12 @@ void Setting_Update()
 		if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::SETTING_BACK);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 		else if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::BGM);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 		break;
 
@@ -302,7 +282,7 @@ void Setting_Update()
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::SOUND_SETTING);
 			Update_Sound_Setting_State(SOUND_SETTING_STATE::BGM_SETTING);
-			SM->Play_SFX("Buffer_Select");
+			Sound_M->Play_SFX("Buffer_Select");
 
 			Sound_Setting_Now = true;
 			Reset_KeyLogger = true;
@@ -313,7 +293,7 @@ void Setting_Update()
 			if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 			{
 				Update_Setting_Buffer(SETTING_BUFFER::SFX);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 		}
 		break;
@@ -323,7 +303,7 @@ void Setting_Update()
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::SOUND_SETTING);
 			Update_Sound_Setting_State(SOUND_SETTING_STATE::SFX_SETTING);
-			SM->Play_SFX("Buffer_Select");
+			Sound_M->Play_SFX("Buffer_Select");
 
 			Sound_Setting_Now = true;
 			Reset_KeyLogger = true;
@@ -334,12 +314,12 @@ void Setting_Update()
 			if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 			{
 				Update_Setting_Buffer(SETTING_BUFFER::BGM);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 			else if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 			{
 				Update_Setting_Buffer(SETTING_BUFFER::WINDOW_MODE);
-				SM->Play_SFX("Buffer_Move");
+				Sound_M->Play_SFX("Buffer_Move");
 			}
 		}
 		break;
@@ -350,24 +330,24 @@ void Setting_Update()
 	case SETTING_BUFFER::WINDOW_MODE:
 		if (KeyLogger_IsTrigger(KK_ENTER) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_A))
 		{
-			Set_Mode_Buffer(WM.Get_Now_Screen_Mode());
+			Set_Mode_Buffer(Window_M.Get_Now_Screen_Mode());
 			Set_Mode_Pre_Buffer(Now_W_Mode_Buffer);
 			Set_Mode_Buffer(ScreenMode::Window_Mode);
 
-			if (WM.Get_Now_Screen_Mode() != Get_Mode_Buffer())
+			if (Window_M.Get_Now_Screen_Mode() != Get_Mode_Buffer())
 				Request_Screen_Mode_Change(Get_Mode_Buffer());
 			else 
-				SM->Play_SFX("Buffer_Denied");
+				Sound_M->Play_SFX("Buffer_Denied");
 		}
 		else if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::SFX);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 		else if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::FULL_SCREEN_MODE);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 
 		break;
@@ -378,20 +358,20 @@ void Setting_Update()
 			Set_Mode_Pre_Buffer(Now_W_Mode_Buffer);
 			Set_Mode_Buffer(ScreenMode::FullScreen_Mode);
 
-			if (WM.Get_Now_Screen_Mode() != Get_Mode_Buffer())
+			if (Window_M.Get_Now_Screen_Mode() != Get_Mode_Buffer())
 				Request_Screen_Mode_Change(Get_Mode_Buffer());
 			else
-				SM->Play_SFX("Buffer_Denied");
+				Sound_M->Play_SFX("Buffer_Denied");
 		}
 		else if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::WINDOW_MODE);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 		else if (KeyLogger_IsTrigger(KK_S) || KeyLogger_IsTrigger(KK_DOWN) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_DOWN))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::SETTING_BACK);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 
 		break;
@@ -407,7 +387,7 @@ void Setting_Update()
 			Update_Main_Screen(Main_Screen::MENU_SELECT);
 			Update_Sub_Screen(Sub_Screen::S_DONE);
 
-			SM->Play_SFX("Buffer_Back");
+			Sound_M->Play_SFX("Buffer_Back");
 
 			Back_Triggered = true;
 			Reset_KeyLogger = true;
@@ -415,7 +395,7 @@ void Setting_Update()
 		if (KeyLogger_IsTrigger(KK_W) || KeyLogger_IsTrigger(KK_UP) || XKeyLogger_IsPadTrigger(XINPUT_GAMEPAD_DPAD_UP))
 		{
 			Update_Setting_Buffer(SETTING_BUFFER::FULL_SCREEN_MODE);
-			SM->Play_SFX("Buffer_Move");
+			Sound_M->Play_SFX("Buffer_Move");
 		}
 		break;
 
@@ -446,18 +426,18 @@ void Setting_UI_Draw()
 	// BGM
 	if (Get_Setting_Buffer() == SETTING_BUFFER::BGM || Get_Setting_Buffer() == SETTING_BUFFER::SOUND_SETTING)
 	{
-		Sprite_Draw(BGM_TexID, SOUND_BGM_X, SOUND_BGM_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
+		Sprite_Draw(UI_BGM, SOUND_BGM_X, SOUND_BGM_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
 
-		if (NOW_BGM_TexID == Sound_MAX_TexID)
+		if (NOW_BGM_TexID == Num_MAX)
 			Sprite_Draw(NOW_BGM_TexID, NUM_MAX_X, BGM_NUM_Y, NUM_MAX_WIDTH, NUM_HEIGHT, 0.f);
 		else
 			Sprite_Draw(NOW_BGM_TexID, NUM_X, BGM_NUM_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
 	}
 	else
 	{
-		Sprite_Draw(BGM_TexID, SOUND_BGM_X, SOUND_BGM_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_BGM, SOUND_BGM_X, SOUND_BGM_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 
-		if (NOW_BGM_TexID == Sound_MAX_TexID)
+		if (NOW_BGM_TexID == Num_MAX)
 			Sprite_Draw(NOW_BGM_TexID, NUM_MAX_X, BGM_NUM_Y, NUM_MAX_WIDTH, NUM_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 		else
 			Sprite_Draw(NOW_BGM_TexID, NUM_X, BGM_NUM_Y, NUM_WIDTH, NUM_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
@@ -465,32 +445,32 @@ void Setting_UI_Draw()
 
 	if (Get_Setting_State() == SOUND_SETTING_STATE::BGM_SETTING)
 	{
-		if (NOW_BGM_TexID == Sound_MIN_TexID)
-			Sprite_Draw(R_Button_TexID, R_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
-		else if (NOW_BGM_TexID == Sound_MAX_TexID)
-			Sprite_Draw(L_Button_TexID, L_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+		if (NOW_BGM_TexID == Num_Min)
+			Sprite_Draw(UI_Button_R, R_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+		else if (NOW_BGM_TexID == Num_MAX)
+			Sprite_Draw(UI_Button_L, L_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
 		else
 		{
-			Sprite_Draw(L_Button_TexID, L_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
-			Sprite_Draw(R_Button_TexID, R_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+			Sprite_Draw(UI_Button_L, L_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+			Sprite_Draw(UI_Button_R, R_BUTTON_X, BGM_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
 		}
 	}
 
 	// SFX
 	if (Get_Setting_Buffer() == SETTING_BUFFER::SFX || Get_Setting_Buffer() == SETTING_BUFFER::SOUND_SETTING)
 	{
-		Sprite_Draw(SFX_TexID, SOUND_SFX_X, SOUND_SFX_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
+		Sprite_Draw(UI_SFX, SOUND_SFX_X, SOUND_SFX_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
 
-		if (NOW_SFX_TexID == Sound_MAX_TexID)
+		if (NOW_SFX_TexID == Num_MAX)
 			Sprite_Draw(NOW_SFX_TexID, NUM_MAX_X, SFX_NUM_Y, NUM_MAX_WIDTH, NUM_HEIGHT, 0.f);
 		else
 			Sprite_Draw(NOW_SFX_TexID, NUM_X, SFX_NUM_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
 	}
 	else
 	{
-		Sprite_Draw(SFX_TexID, SOUND_SFX_X, SOUND_SFX_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_SFX, SOUND_SFX_X, SOUND_SFX_Y, SOUND_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 
-		if (NOW_SFX_TexID == Sound_MAX_TexID)
+		if (NOW_SFX_TexID == Num_MAX)
 			Sprite_Draw(NOW_SFX_TexID, NUM_MAX_X, SFX_NUM_Y, NUM_MAX_WIDTH, NUM_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
 		else
 			Sprite_Draw(NOW_SFX_TexID, NUM_X, SFX_NUM_Y, NUM_WIDTH, NUM_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
@@ -498,33 +478,33 @@ void Setting_UI_Draw()
 
 	if (Get_Setting_State() == SOUND_SETTING_STATE::SFX_SETTING)
 	{
-		if (NOW_SFX_TexID == Sound_MIN_TexID)
-			Sprite_Draw(R_Button_TexID, R_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
-		else if (NOW_SFX_TexID == Sound_MAX_TexID)
-			Sprite_Draw(L_Button_TexID, L_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+		if (NOW_SFX_TexID == Num_Min)
+			Sprite_Draw(UI_Button_R, R_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+		else if (NOW_SFX_TexID == Num_MAX)
+			Sprite_Draw(UI_Button_L, L_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
 		else
 		{
-			Sprite_Draw(L_Button_TexID, L_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
-			Sprite_Draw(R_Button_TexID, R_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+			Sprite_Draw(UI_Button_L, L_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
+			Sprite_Draw(UI_Button_R, R_BUTTON_X, SFX_BUTTON_Y, NUM_WIDTH, NUM_HEIGHT, 0.f);
 		}
 	}
 
 	// Mode
 	if (Get_Setting_Buffer() == SETTING_BUFFER::WINDOW_MODE)
-		Sprite_Draw(W_Mode_TexID, S_W_MODE_X, S_W_MODE_Y, W_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
+		Sprite_Draw(UI_Window_Mode, S_W_MODE_X, S_W_MODE_Y, W_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
 	else
-		Sprite_Draw(W_Mode_TexID, S_W_MODE_X, S_W_MODE_Y, W_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Window_Mode, S_W_MODE_X, S_W_MODE_Y, W_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, {A_Origin, A_Origin, A_Origin, A_Half});
 
 	if (Get_Setting_Buffer() == SETTING_BUFFER::FULL_SCREEN_MODE)
-		Sprite_Draw(FS_Mode_TexID, S_FS_MODE_X, S_FS_MODE_Y, FS_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
+		Sprite_Draw(UI_Full_Screan_Mode, S_FS_MODE_X, S_FS_MODE_Y, FS_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f);
 	else
-		Sprite_Draw(FS_Mode_TexID, S_FS_MODE_X, S_FS_MODE_Y, FS_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Full_Screan_Mode, S_FS_MODE_X, S_FS_MODE_Y, FS_MODE_UI_WIDTH, SETTING_UI_HEIGHT, 0.f, {A_Origin, A_Origin, A_Origin, A_Half});
 
 	// Back
 	if (Get_Setting_Buffer() == SETTING_BUFFER::SETTING_BACK)
-		Sprite_Draw(Back_TexID, BACK_X, BACK_Y, BACK_UI_WIDTH, BACK_UI_HEIGHT, 0.f);
+		Sprite_Draw(UI_Back, BACK_X, BACK_Y, BACK_UI_WIDTH, BACK_UI_HEIGHT, 0.f);
 	else
-		Sprite_Draw(Back_TexID, BACK_X, BACK_Y, BACK_UI_WIDTH, BACK_UI_HEIGHT, 0.f, { A_Origin, A_Origin, A_Origin, A_Half });
+		Sprite_Draw(UI_Back, BACK_X, BACK_Y, BACK_UI_WIDTH, BACK_UI_HEIGHT, 0.f, {A_Origin, A_Origin, A_Origin, A_Half});
 
 }
 
@@ -612,47 +592,47 @@ void Setting_Sound_TexID(int Now_Scale, SOUND_SETTING_STATE Now_State)
 	switch (Now_Scale)
 	{
 	case SOUND_MIN:
-		Return_TexID = Sound_MIN_TexID;
+		Return_TexID = Num_Min;
 		break;
 
 	case ONE:
-		Return_TexID = Sound_1_TexID;
+		Return_TexID = Num_1;
 		break;
 
 	case TWO:
-		Return_TexID = Sound_2_TexID;
+		Return_TexID = Num_2;
 		break;
 
 	case THREE:
-		Return_TexID = Sound_3_TexID;
+		Return_TexID = Num_3;
 		break;
 
 	case FOUR:
-		Return_TexID = Sound_4_TexID;
+		Return_TexID = Num_4;
 		break;
 
 	case FIVE:
-		Return_TexID = Sound_5_TexID;
+		Return_TexID = Num_5;
 		break;
 
 	case SIX:
-		Return_TexID = Sound_6_TexID;
+		Return_TexID = Num_6;
 		break;
 
 	case SEVEN:
-		Return_TexID = Sound_7_TexID;
+		Return_TexID = Num_7;
 		break;
 
 	case EIGHT:
-		Return_TexID = Sound_8_TexID;
+		Return_TexID = Num_8;
 		break;
 
 	case NINE:
-		Return_TexID = Sound_9_TexID;
+		Return_TexID = Num_9;
 		break;
 
 	case SOUND_MAX:
-		Return_TexID = Sound_MAX_TexID;
+		Return_TexID = Num_MAX;
 		break;
 	}
 
@@ -666,4 +646,29 @@ void Setting_Sound_TexID(int Now_Scale, SOUND_SETTING_STATE Now_State)
 		NOW_SFX_TexID = Return_TexID;
 		break;
 	}
+}
+
+void Setting_Texture()
+{
+	//----------------Number Texture----------------//
+	Num_Min = Texture_M->GetID("UI_Num_MIN");
+	Num_1	= Texture_M->GetID("UI_Num_1");
+	Num_2	= Texture_M->GetID("UI_Num_2");
+	Num_3	= Texture_M->GetID("UI_Num_3");
+	Num_4	= Texture_M->GetID("UI_Num_4");
+	Num_5	= Texture_M->GetID("UI_Num_5");
+	Num_6	= Texture_M->GetID("UI_Num_6");
+	Num_7	= Texture_M->GetID("UI_Num_7");
+	Num_8	= Texture_M->GetID("UI_Num_8");
+	Num_9	= Texture_M->GetID("UI_Num_9");
+	Num_MAX = Texture_M->GetID("UI_Num_MAX");
+
+	//------------------UI Texture------------------//
+	UI_BGM = Texture_M->GetID("UI_BGM");
+	UI_SFX = Texture_M->GetID("UI_SFX");
+	UI_Button_L = Texture_M->GetID("UI_Num_Button_L");
+	UI_Button_R = Texture_M->GetID("UI_Num_Button_R");
+	UI_Window_Mode = Texture_M->GetID("UI_Window_Mode");
+	UI_Full_Screan_Mode = Texture_M->GetID("UI_Full_Screen_Mode");
+	UI_Back = Texture_M->GetID("UI_Back");
 }
