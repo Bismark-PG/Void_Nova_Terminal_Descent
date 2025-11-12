@@ -45,6 +45,7 @@ Please keep in mind that this is a student project, and my skills are still deve
 
 > ### ⁉️ Known Issues
 > 	**As of v1.1.0, there are no fatal bugs, but some minor bugs remain.**
+>    + **Full Screan Texture Error : If Choosed Mode Is Fullscrean, Twxture Will be crack**
 >   + **Story Mode Cutscene Bug**: Story cutscenes may fail to trigger in Story Mode if Stage Mode has been played previously.
 >   + **Stage 2 Spawn Timing**: Enemy spawn timings in Stage 2 are misaligned due to a new spawn logic.
 >
