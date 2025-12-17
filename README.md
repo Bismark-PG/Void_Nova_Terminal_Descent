@@ -20,7 +20,8 @@ Please keep in mind that this is a student project, and my skills are still deve
 
 * **Language** : C/C++
 * **Library** : DirectX 11
-* **Tools Used** : Visual Studio, Adobe Photoshop
+* **IDE** : Visual Studio, Adobe Photoshop
+* **Target Platform:** PC (Windows)
 * **Development start date** : 2025.08.01
 
 ## 🎮 How To Play
@@ -34,7 +35,7 @@ Please keep in mind that this is a student project, and my skills are still deve
 - Initial Release!
    + Early access version launched. While some bugs remain, Stages 1 through 4 are fully playable.
  
-### v1.1.0 (2025.10.26)
+### v1.1 (2025.10.26)
 - Alpha version Release!
    + Fixing bugs in stage 5 and improving the ending sequence.
 
