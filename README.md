@@ -20,12 +20,13 @@ Please keep in mind that this is a student project, and my skills are still deve
 
 * **Language** : C/C++
 * **Library** : DirectX 11
-* **Tools Used** : Visual Studio, Adobe Photoshop
+* **IDE** : Visual Studio, Adobe Photoshop
+* **Target Platform:** PC (Windows)
 * **Development start date** : 2025.08.01
 
 ## 🎮 How To Play
 
-***(Coming Soon!)***
+***(Only code is being distributed because the currently used sound source resources are not redistributable.)***
 
 ---
 
@@ -33,6 +34,10 @@ Please keep in mind that this is a student project, and my skills are still deve
 ### v1.0 (2025.09.09)
 - Initial Release!
    + Early access version launched. While some bugs remain, Stages 1 through 4 are fully playable.
+ 
+### v1.1 (2025.10.26)
+- Alpha version Release!
+   + Fixing bugs in stage 5 and improving the ending sequence.
 
 ## 📝 Roadmap & Dev Notes
 - **This section outlines known issues and future plans for the project.**
@@ -40,10 +45,13 @@ Please keep in mind that this is a student project, and my skills are still deve
 ---
 
 > ### ⁉️ Known Issues
->   + ***Stage 5 Progression Bug : A critical bug prevents progress in Stage 5.***
->   + **Ending Sequence** : The ending cutscene requires further debugging.
+> 	**As of v1.1.0, there are no fatal bugs, but some minor bugs remain.**
+>    + **Full Screan Texture Error : If Choosed Mode Is Fullscrean, Texture Will be crack**
+>   + **Story Mode Cutscene Bug**: Story cutscenes may fail to trigger in Story Mode if Stage Mode has been played previously.
+>   + **Stage 2 Spawn Timing**: Enemy spawn timings in Stage 2 are misaligned due to a new spawn logic.
 >
 > ### 🗃️ Planned Improvements
+>   + **Preparing for EXE Distribution: Researching file encryption methods for non-redistributable resources to allow for distribution.**
 >   + **Audio Balancing** : Adjust the volume for item acquisition sound effects.
 >   + **Difficulty Tuning** : Rebalance the overall game difficulty.
 >   + **Pattern Refinement** : Rework and improve existing boss and enemy patterns.
@@ -52,7 +60,8 @@ Please keep in mind that this is a student project, and my skills are still deve
 >  + ~~***(I`m Waiting!)***~~
 >
 > ### ✔️ Completed
->  + ~~***(Coming Soon!)***~~
+>  + ~~***Stage 5 Progression Bug : A critical bug prevents progress in Stage 5.***~~
+>  + ~~**Ending Sequence** : The ending cutscene requires further debugging.~~
 
 ---
 
@@ -61,9 +70,11 @@ Please keep in mind that this is a student project, and my skills are still deve
 ## ■ Texture ■
 
 ### ◆ [ChatGPT](https://chatgpt.com/)
+- Explosion Sprite
+- BackGround Texture
 - Enemy Texture
 - Bullet Texture
-- BackGround Texture
+- Ending Ally Base Texture
 - UI Texture
 
 ### ◆ [Freepik](https://www.freepik.com/)
@@ -71,16 +82,24 @@ Please keep in mind that this is a student project, and my skills are still deve
 - Story Commander Texture
 - Character Graphic (for Bomb Effect Cutscene)
 
+### ◆ [OpenGameArt](https://opengameart.org/)
+- Explosion Sprite
+  
 ### ◆ [Xbox One Controller Textures](https://forums.dolphin-emu.org/Thread-xbox-one-controller-textures?highlight=Xbox+One+Controller+Textures)
 - Controller Button Textures
+
+### ◆ Photoshop
+- Endind Text Script
+- Textures Editing
+- Player Bomb Effect
 
 ## ■ BGM / SFX ■
 
 ### ◆ [DOVA-SYNDROME](https://dova-s.jp/)
-- BGM ***(Editing...)***
+- BGM ***(Producers List Editing...)***
 
 ### ◆ [効果音ラボ (Sound Effect Lab)](https://soundeffect-lab.info/)
-- SFX ***(Editing...)***
+- SFX ***(Producers List Editing...)***
 
 ## ■ Editor Tools Site ■
 
