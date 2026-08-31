@@ -55,7 +55,7 @@ void Game_Logic_Finalize()
 void Game_Logic_Update(double elapsed_time)
 {
 	Score_Update(elapsed_time);
-	Enemy_Spawner_Update(elapsed_time);
+	//Enemy_Spawner_Update(elapsed_time);
 	Enemy_Update(elapsed_time);
 	Enemy_Bullet_Update(elapsed_time);
 	Game_Boss_UI_Update(elapsed_time);
@@ -91,7 +91,7 @@ void Game_Logic_Playing_Story_Update(double elapsed_time)
 
 void Game_Logic_Player_Respawn_Update(double elapsed_time)
 {
-	Enemy_Spawner_Update(elapsed_time);
+	//Enemy_Spawner_Update(elapsed_time);
 	Enemy_Update(elapsed_time);
 	Enemy_Bullet_Update(elapsed_time);
 	Game_Boss_UI_Update(elapsed_time);

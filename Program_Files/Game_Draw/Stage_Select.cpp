@@ -679,10 +679,10 @@ void Set_Power_Current_Stage(NOW_PLAYING_STAGE Stage)
 	{
 	case NOW_PLAYING_STAGE::STAGE_ONE:
 	case NOW_PLAYING_STAGE::STAGE_TWO:
-		Status_Add_Power(A_T_Quarters);
+		Status_Add_Power(A_Origin);
 		break;
 	case NOW_PLAYING_STAGE::STAGE_THREE:
-		Status_Add_Power(A_One_A_T_Quarters);
+		Status_Add_Power(A_Double);
 		break;
 	case NOW_PLAYING_STAGE::STAGE_FOUR:
 	case NOW_PLAYING_STAGE::STAGE_FIVE:

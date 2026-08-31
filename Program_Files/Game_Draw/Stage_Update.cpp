@@ -169,32 +169,32 @@ void Stage_One_Update(double elapsed_time)
 			Stage_Updater_Phase_Reset();
 
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Three) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 3.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 2.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Seven) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 3.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 2.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Up, Data);
 
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 20.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data_L);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 10.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data_L);
 			Enemy_Spawner_Create(Enemy_Type_Origin, { Game_Offset.x + (Game_Screen_Width * A_Half) - Enemy_Get_Width(Enemy_Type_Origin, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin, false) }, 20.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin, false) }, 10.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 20.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data_R);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 10.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data_R);
 
 			Data.Target_Y = Game_Screen_Height * A_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 32.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 17.5, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 32.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 17.5, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
 			Data.Target_Y = Game_Screen_Height * A_P_Three_Five;
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 37.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 20.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 37.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 20.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
 			Data.Target_Y = Game_Screen_Height * A_Half;
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 42.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 22.5, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 42.0, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 22.5, 0.5, 1, Enemy_Move_Pattern::Down_And_Down, Data);
 			Stage_1_Phase_1_Spawned = true;
 		}
 
@@ -211,21 +211,21 @@ void Stage_One_Update(double elapsed_time)
 
 			Data.Target_Y = Game_Screen_Height * A_Quarter;
 			Enemy_Spawner_Create(Enemy_Type_Armor_Give_HP, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Armor_Give_HP, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Armor_Give_HP, false) }, 2.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data);
+												-Enemy_Get_Width(Enemy_Type_Armor_Give_HP, false) }, 5.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data);
 			Enemy_Spawner_Create(Enemy_Type_Armor_Give_HP, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Armor_Give_HP, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Armor_Give_HP, false) }, 2.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data);
+												-Enemy_Get_Width(Enemy_Type_Armor_Give_HP, false) }, 5.0, 1.0, 1, Enemy_Move_Pattern::Down_Patrol, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Third;
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 12.0, 1.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 2.0, 1.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 12.0, 1.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 2.0, 1.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Half;
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 22.0, 5.0, 2, Enemy_Move_Pattern::Down_And_Chase_Player, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 10.0, 5.0, 2, Enemy_Move_Pattern::Down_And_Chase_Player, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 22.0, 5.0, 2, Enemy_Move_Pattern::Down_And_Chase_Player, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 10.0, 5.0, 2, Enemy_Move_Pattern::Down_And_Chase_Player, Data);
 
 			Stage_1_Phase_2_Spawned = true;
 		}
@@ -243,31 +243,31 @@ void Stage_One_Update(double elapsed_time)
 
 			Data.Target_Y = Game_Screen_Height * A_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Origin, { Game_Offset.x + (Game_Screen_Width * A_Point_Three) - Enemy_Get_Width(Enemy_Type_Origin, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin, false) }, 7.0, 15.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin, false) }, 0.0, 15.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin, { Game_Offset.x + (Game_Screen_Width * A_Point_Seven) - Enemy_Get_Width(Enemy_Type_Origin, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin, false) }, 7.0, 15.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin, false) }, 0.0, 15.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Two_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 15.0, 15.0, 4, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 7.5, 5.0, 4, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 15.0, 15.0, 4, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 7.5, 5.0, 4, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Quarter;
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 30.5, 12.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 15.0, 12.5, 2, Enemy_Move_Pattern::Down_And_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Spear, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 30.5, 12.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear, false) }, 15.0, 12.5, 2, Enemy_Move_Pattern::Down_And_Up, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Third;
 			Enemy_Spawner_Create(Enemy_Type_Saber, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Saber, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Saber, false) }, 40.0, 10.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Saber, false) }, 20.0, 12.5, 2, Enemy_Move_Pattern::Down_And_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Saber, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Saber, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Saber, false) }, 40.0, 10.0, 2, Enemy_Move_Pattern::Down_And_Up, Data);
+												-Enemy_Get_Width(Enemy_Type_Saber, false) }, 20.0, 12.5, 2, Enemy_Move_Pattern::Down_And_Up, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Two_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Spear_ZAKO_ITEM, { Game_Offset.x + (Game_Screen_Width * A_Half) - Enemy_Get_Width(Enemy_Type_Spear_ZAKO_ITEM, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear_ZAKO_ITEM, false) }, 45.0, 10.0, 2, Enemy_Move_Pattern::Down_And_Chase_Player, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear_ZAKO_ITEM, false) }, 22.5, 10.0, 2, Enemy_Move_Pattern::Down_And_Chase_Player, Data);
 			Stage_1_Phase_3_Spawned = true;
 		}
 
@@ -295,9 +295,9 @@ void Stage_One_Update(double elapsed_time)
 
 			Data.Target_Y = Game_Screen_Height * A_Third;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 5.0, 12.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 7.5, 15.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 5.0, 12.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 7.5, 15.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Stage_1_Phase_B_Spawned = true;
 		}
 
@@ -424,15 +424,15 @@ void Stage_Two_Update(double elapsed_time)
 		{
 			Stage_Updater_Phase_Reset();
 
-			Data.Target_Y = Game_Screen_Height * A_Third; // Mini BOSS
-			Enemy_Spawner_Create(Enemy_Type_Mini_Boss, { Game_Offset.x + (Game_Screen_Width * A_Half) - Enemy_Get_Width(Enemy_Type_Mini_Boss, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Mini_Boss, false) }, 30.0, 0.5, 1, Enemy_Move_Pattern::Down_Fixed, Data);
-
 			Data.Target_Y = Game_Screen_Height * A_Quarter;
 			Enemy_Spawner_Create(Enemy_Type_Spear_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Spear_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear_ZAKO, false) }, 28.0, 2.0, 6, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear_ZAKO, false) }, 0.0, 5.0, 6, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Spear_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Spear_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Spear_ZAKO, false) }, 28.0, 2.0, 6, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Spear_ZAKO, false) }, 0.0, 5.0, 6, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+			Data.Target_Y = Game_Screen_Height * A_Third; // Mini BOSS
+
+			Enemy_Spawner_Create(Enemy_Type_Mini_Boss, { Game_Offset.x + (Game_Screen_Width * A_Half) - Enemy_Get_Width(Enemy_Type_Mini_Boss, true) * A_Half,
+												-Enemy_Get_Width(Enemy_Type_Mini_Boss, false) }, 2.5, 0.5, 1, Enemy_Move_Pattern::Down_Fixed, Data);
 
 			Stage_2_Phase_B1_Spawned = true;
 		}
@@ -450,35 +450,35 @@ void Stage_Two_Update(double elapsed_time)
 
 			Data.Target_Y = Game_Screen_Height * A_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 40.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 0.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Three) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 42.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 2.5, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Seven) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 42.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 2.5, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 40.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 0.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Up, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Third;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 60.0, 8.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 20.0, 8.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 60.0, 8.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 20.0, 8.0, 1, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Quarter;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Quarter) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 61.0, 8.0, 2, Enemy_Move_Pattern::Down_And_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 22.0, 8.0, 2, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_T_Quarters) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 61.0, 8.0, 2, Enemy_Move_Pattern::Down_And_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 22.0, 8.0, 2, Enemy_Move_Pattern::Down_And_Down, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Three_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 62.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 24.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Six_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 62.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 24.0, 8.0, 2, Enemy_Move_Pattern::Down_Shoot_Down, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Point_Fifteen;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Half) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 63.0, 8.0, 2, Enemy_Move_Pattern::Down_And_Down, Data);
+											-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 26.0, 8.0, 2, Enemy_Move_Pattern::Down_And_Down, Data);
 			Stage_2_Phase_2_Spawned = true;
 		}
 
@@ -495,23 +495,23 @@ void Stage_Two_Update(double elapsed_time)
 
 			Data.Target_Y = Game_Screen_Height * A_Quarter; // BOSS
 			Enemy_Spawner_Create(Enemy_Type_Armor_Boss, { Game_Offset.x + (Game_Screen_Width * A_Half) - Enemy_Get_Width(Enemy_Type_Armor_Boss, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Armor_Boss, false) }, 75.0, 0.5, 1, Enemy_Move_Pattern::Down_Fixed, Data);
+												-Enemy_Get_Width(Enemy_Type_Armor_Boss, false) }, 0.0, 0.5, 1, Enemy_Move_Pattern::Down_Fixed, Data);
 
 			Data.Target_Y = Game_Screen_Height * A_Fifth;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 78.0, 7.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 2.5, 10.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 78.0, 7.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 2.5, 10.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
 			Data.Target_Y = Game_Screen_Height * A_P_Three_Five;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 80.0, 7.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 5.0, 10.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 80.0, 7.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 5.0, 10.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
 			Data.Target_Y = Game_Screen_Height * A_Half;
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_Point_Fifteen) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 82.0, 7.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 7.5, 10.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
 			Enemy_Spawner_Create(Enemy_Type_Origin_ZAKO, { Game_Offset.x + (Game_Screen_Width * A_P_Eight_Five) - Enemy_Get_Width(Enemy_Type_Origin_ZAKO, true) * A_Half,
-												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 82.0, 7.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
+												-Enemy_Get_Width(Enemy_Type_Origin_ZAKO, false) }, 7.5, 10.0, 3, Enemy_Move_Pattern::Down_And_Down, Data);
 			Stage_2_Phase_B2_Spawned = true;
 		}
 
